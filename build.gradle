@@ -63,6 +63,7 @@ minecraft {
 }
 
 repositories {
+	maven { url="https://www.cubicinterpolation.net/maven/" }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
@@ -77,6 +78,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    compile fg.deobf("commoble.looot:${looot_branch}:${looot_version}")
     
 	// compile against the JEI API but do not include it at runtime
 	// compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
