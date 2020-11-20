@@ -29,7 +29,7 @@ displayName="Workshops of Doom" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="workshopsofdoom.png" #optional
 # A text field displayed in the mod UI
-credits="I hear the Minecraft Mod Development discord channel is the cat's bananas" #optional
+credits="Thanks to TelepathicGrunt for explaining how structures work" #optional
 # A text field displayed in the mod UI
 authors="Commoble"
 # The description text for the mod (multi line!) (#mandatory)
@@ -47,7 +47,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mollis lacinia magn
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[35,)" #mandatory
+    versionRange="[35.0.22,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
