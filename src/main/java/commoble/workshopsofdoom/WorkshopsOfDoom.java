@@ -85,19 +85,20 @@ public class WorkshopsOfDoom
 	{
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
-		setStructureInfo(this.testStructure.get(), false, 3, 2, 892348920);
+		setStructureInfo(this.testStructure.get(), false, 4, 2, 892348920);
 		
 		// register configured features and structures
 		this.configuredTestStructure = registerConfiguredStructure(
 			Names.TEST,
 			this.testStructure.get(),
 			this.testStructure.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, "test/base_plates"), 7)));
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, "test/intersection_base"), 7)));
 	}
 
 	// called for each biome loaded when biomes are loaded
 	void addThingsToBiomeOnBiomeLoad(BiomeLoadingEvent event)
 	{
+		// beware! Only one configured structure per structure instance can be added to a given biome
 		event.getGeneration()
 			.getStructures()
 			.add(() -> this.configuredTestStructure);

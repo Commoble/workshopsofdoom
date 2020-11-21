@@ -26,7 +26,7 @@ import net.minecraft.world.gen.feature.structure.VillageConfig;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
-{
+{	
 	private final GenerationStage.Decoration generationStage;
 	
 	public LoadableJigsawStructure(Codec<LoadableJigsawConfig> codec, GenerationStage.Decoration generationStage)
@@ -61,9 +61,12 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 
 	static class Start extends StructureStart<LoadableJigsawConfig>
 	{
+		protected final Structure<LoadableJigsawConfig> structure;
+		
 		public Start(Structure<LoadableJigsawConfig> structure, int chunkX, int chunkZ, MutableBoundingBox mutableBox, int refCount, long seed)
 		{
 			super(structure, chunkX, chunkZ, mutableBox, refCount, seed);
+			this.structure = structure;
 		}
 		
 		// this method is responsible for:
@@ -83,9 +86,14 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 			JigsawPattern startPool = registries.getRegistry(Registry.JIGSAW_POOL_KEY)
 				.getOrDefault(config.getStartPool());
 			
+			if (startPool == null)
+			{
+				throw new NullPointerException(String.format("A configured structure %s is missing required initial template pool file: %s", this.structure.getRegistryName().toString(), config.getStartPool().toString()));
+			}
+			
 			// mcp calls this VillageConfig but it's the config used for vanilla jigsaw structures (bastions, pillager outposts, villages)
 			VillageConfig villageConfig = new VillageConfig(() -> startPool, config.getSize());
-			IPieceFactory pieceFactory = AbstractVillagePiece::new;
+  			IPieceFactory pieceFactory = AbstractVillagePiece::new;
 			JigsawManager.func_242837_a(registries, villageConfig, pieceFactory, generator, templates, startPos, this.components, this.rand,
 				config.getAllowIntersectingPieces(),
 				config.getSnapToHeightMap());
@@ -115,6 +123,16 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 			this(startPool, size, 0, true, true);
 		}
 		
+		/**
+		 * 
+		 * @param startPool The name of the template pool for the initial jigsaw piece,
+		 * e.g. "workshopsofdoom:start" => data/workshopsofdoom/worldgen/template_pool/start
+		 * @param size How many pieces deep the structure can generate beyond the initial piece.
+		 * The first piece is iteration 0, size must be greater than 0 to have more than one piece in the structure.
+		 * @param startY What y-level to start the structure at. Ignored if snapToHeightMap is true.
+		 * @param allowIntersectingPieces Allow pieces to generate with overlapping volumes?
+		 * @param snapToHeightMap If true, the starting position will snap to the local heightmap
+		 */
 		public LoadableJigsawConfig(ResourceLocation startPool, int size, int startY, boolean allowIntersectingPieces, boolean snapToHeightMap)
 		{
 			this.startPool = startPool;
