@@ -1,0 +1,59 @@
+{
+	"name": "workshopsofdoom:quarry/desert/debris",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 10,
+			"element": 
+			{
+				"feature": "workshopsofdoom:sand_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"feature": "workshopsofdoom:dirt_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"feature": "workshopsofdoom:gravel_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"feature": "workshopsofdoom:cobblestone_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:sandstone_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature"
+			}
+		},
+		{
+			"weight": 10,
+			"element": 
+			{
+				"element_type": "minecraft:empty_pool_element"
+			}
+		}
+	]
+}

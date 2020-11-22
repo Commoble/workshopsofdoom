@@ -1,7 +1,11 @@
 package commoble.workshopsofdoom;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,14 +14,23 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import commoble.workshopsofdoom.LoadableJigsawStructure.LoadableJigsawConfig;
+import commoble.workshopsofdoom.features.BlockMoundFeature;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatChunkGenerator;
 import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.blockstateprovider.SimpleBlockStateProvider;
+import net.minecraft.world.gen.feature.BlockStateProvidingFeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.structure.Structure;
@@ -46,10 +59,12 @@ public class WorkshopsOfDoom
 	public static WorkshopsOfDoom INSTANCE;
 	
 	// forge registry objects
-	public final RegistryObject<LoadableJigsawStructure> testStructure;
+	public final RegistryObject<BlockMoundFeature> blockMound;
+	
+	public final RegistryObject<LoadableJigsawStructure> quarry;
 	
 	// vanilla registry objects that we can't register in the mod constructor due to being off-thread
-	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredTestStructure = null;
+	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> desertQuarry = null;
 	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
@@ -61,11 +76,20 @@ public class WorkshopsOfDoom
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		
 		// create and register deferred registers
-//		DeferredRegister<Feature<?>> features = registerRegister(modBus, ForgeRegistries.FEATURES);
+		DeferredRegister<Feature<?>> features = registerRegister(modBus, ForgeRegistries.FEATURES);
 		DeferredRegister<Structure<?>> structures = registerRegister(modBus, ForgeRegistries.STRUCTURE_FEATURES);
 		
+		// get a temporary list of structures to finagle vanilla registries with later
+		Map<RegistryKey<World>, List<RegistryObject<LoadableJigsawStructure>>> structuresByWorld = new HashMap<>();
+		
 		// register registry objects
-		this.testStructure = structures.register(Names.TEST, () -> new LoadableJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES));
+		this.blockMound = features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockStateProvidingFeatureConfig.field_236453_a_));
+		
+		// structures are added to a list for later vanilla-registry-finagling
+		this.quarry = registerStructure(structures, structuresByWorld, Names.QUARRY,
+			() -> new LoadableJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES),
+			World.OVERWORLD);
+//		this.quarry = structureReg.apply(Names.QUARRY, () -> new LoadableJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES));
 		
 		// add event listeners to event busses
 		modBus.addListener(this::onCommonSetup);
@@ -73,7 +97,8 @@ public class WorkshopsOfDoom
 		// per forge recommendations, adding things to biomes should be done in the HIGH phase
 		forgeBus.addListener(EventPriority.HIGH, this::addThingsToBiomeOnBiomeLoad);
 		
-		forgeBus.addListener(this::onWorldLoad);
+		Consumer<WorldEvent.Load> addStructuresToWorldListener = event -> this.addStructuresToWorld(event,structuresByWorld);
+		forgeBus.addListener(addStructuresToWorldListener);
 	}
 	
 	void onCommonSetup(FMLCommonSetupEvent event)
@@ -85,26 +110,54 @@ public class WorkshopsOfDoom
 	{
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
-		setStructureInfo(this.testStructure.get(), false, 4, 2, 892348920);
+		setStructureInfo(this.quarry.get(), false, 8, 4, 892348929);
+		
+		// register to forgeless vanilla registries
+		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.GROUND_FEATURE), GroundFeatureJigsawPiece.DESERIALIZER);
+		
+		// register to vanilla worldgen registries
+		registerConfiguredFeature(Names.DIRT_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.DIRT.getDefaultState()))));
+		
+		registerConfiguredFeature(Names.SAND_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.SAND.getDefaultState()))));
+		
+		registerConfiguredFeature(Names.GRAVEL_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.GRAVEL.getDefaultState()))));
+		
+		registerConfiguredFeature(Names.COBBLESTONE_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.COBBLESTONE.getDefaultState()))));
+		
+		registerConfiguredFeature(Names.SANDSTONE_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.SANDSTONE.getDefaultState()))));
 		
 		// register configured features and structures
-		this.configuredTestStructure = registerConfiguredStructure(
-			Names.TEST,
-			this.testStructure.get(),
-			this.testStructure.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, "test/intersection_base"), 7)));
+		this.desertQuarry = registerConfiguredStructure(
+			Names.DESERT_QUARRY,
+			this.quarry.get(),
+			this.quarry.get()
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.DESERT_QUARRY_START), 7, 0, false, true)));
 	}
 
 	// called for each biome loaded when biomes are loaded
 	void addThingsToBiomeOnBiomeLoad(BiomeLoadingEvent event)
 	{
-		// beware! Only one configured structure per structure instance can be added to a given biome
-		event.getGeneration()
-			.getStructures()
-			.add(() -> this.configuredTestStructure);
+		if (event.getCategory() != Category.OCEAN)
+		{
+			// beware! Only one configured structure per structure instance can be added to a given biome
+			event.getGeneration()
+				.getStructures()
+				.add(() -> this.desertQuarry);
+		}
 	}
 	
-	void onWorldLoad(WorldEvent.Load event)
+	// TODO replace map with config later
+	void addStructuresToWorld(WorldEvent.Load event, Map<RegistryKey<World>, List<RegistryObject<LoadableJigsawStructure>>> structuresByWorld)
 	{
 		// structures are weird and need a seperation setting registered for any worlds they generate in
 		IWorld world = event.getWorld();
@@ -113,15 +166,21 @@ public class WorkshopsOfDoom
 			@SuppressWarnings("resource")
 			ServerWorld serverWorld = (ServerWorld)world;
 			ChunkGenerator chunkGenerator = serverWorld.getChunkProvider().getChunkGenerator();
+			List<RegistryObject<LoadableJigsawStructure>> empty = new ArrayList<>();
 			
 			// make sure we don't spawn in flat worlds or other dimensions
-			if (!(chunkGenerator instanceof FlatChunkGenerator)
-				&& serverWorld.getDimensionKey().equals(World.OVERWORLD))
+			if (!(chunkGenerator instanceof FlatChunkGenerator))
+//				&& serverWorld.getDimensionKey().equals(World.OVERWORLD))
 			{
+				List<RegistryObject<LoadableJigsawStructure>> structures = structuresByWorld.getOrDefault(serverWorld.getDimensionKey(), empty);
 				// the separations map may be immutable,
 				// so to add our separations, we need to copy the map and replace it
 				Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(chunkGenerator.func_235957_b_().field_236193_d_);
-				tempMap.put(this.testStructure.get(), DimensionStructuresSettings.field_236191_b_.get(this.testStructure.get()));
+				for (RegistryObject<LoadableJigsawStructure> registeredStructure : structures)
+				{
+					LoadableJigsawStructure structure = registeredStructure.get();
+					tempMap.put(structure, DimensionStructuresSettings.field_236191_b_.get(structure));
+				}
 				chunkGenerator.func_235957_b_().field_236193_d_ = tempMap;
 			}
 		}
@@ -133,6 +192,34 @@ public class WorkshopsOfDoom
 		DeferredRegister<T> register = DeferredRegister.create(registry, MODID);
 		register.register(modBus);
 		return register;
+	}
+	
+	@SafeVarargs
+	static RegistryObject<LoadableJigsawStructure> registerStructure(DeferredRegister<Structure<?>> structures,
+		Map<RegistryKey<World>, List<RegistryObject<LoadableJigsawStructure>>> structuresByWorld,
+		String name,
+		Supplier<? extends LoadableJigsawStructure> factory,
+		RegistryKey<World>...validWorlds)
+	{
+		RegistryObject<LoadableJigsawStructure> obj = structures.register(name, factory);
+		for (RegistryKey<World> key : validWorlds)
+		{
+			structuresByWorld.computeIfAbsent(key, WorkshopsOfDoom::makeList)
+				.add(obj);
+		}
+		return obj;
+	}
+	
+	// saves us a lambda in the above method
+	static List<RegistryObject<LoadableJigsawStructure>> makeList(Object foobar)
+	{
+		return new ArrayList<>();
+	}
+	
+	static <FC extends IFeatureConfig, F extends Feature<FC>, CF extends ConfiguredFeature<FC,F>> CF registerConfiguredFeature(String name, CF feature)
+	{
+		WorldGenRegistries.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(MODID, name), feature);
+		return feature;
 	}
 	
 	static <C extends IFeatureConfig, S extends Structure<C>, SF extends StructureFeature<C,? extends S>> SF registerConfiguredStructure(

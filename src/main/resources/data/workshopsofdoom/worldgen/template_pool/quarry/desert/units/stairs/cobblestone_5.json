@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:test/intersection_base",
+	"name": "workshopsofdoom:quarry/desert/units/stairs/cobblestone_5",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
@@ -7,7 +7,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:test/intersection_test/base",
+				"location": "workshopsofdoom:quarry/units/stairs/cobblestone_5",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "minecraft:single_pool_element"
