@@ -18,6 +18,7 @@ public class Names
 	public static final String DIRT_MOUND = "dirt_mound";
 	public static final String SAND_MOUND = "sand_mound";
 	public static final String GRAVEL_MOUND = "gravel_mound";
+	public static final String STONE_MOUND = "stone_mound";
 	public static final String COBBLESTONE_MOUND = "cobblestone_mound";
 	public static final String SANDSTONE_MOUND = "sandstone_mound";
 }

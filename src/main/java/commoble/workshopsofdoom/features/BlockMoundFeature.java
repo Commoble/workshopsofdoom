@@ -32,15 +32,15 @@ public class BlockMoundFeature extends Feature<BlockStateProvidingFeatureConfig>
 		}
 		else
 		{
-			int xOff = 1 + rand.nextInt(4);
-			int zOff = 2 + rand.nextInt(4);
+			int xOff = 2 + rand.nextInt(2);
+			int zOff = 2 + rand.nextInt(2);
 			int ySize = 1 + rand.nextInt(4);
 
 			for (BlockPos nextPos : BlockPos.getAllInBoxMutable(pos.add(-xOff, 0, -zOff), pos.add(xOff, ySize, zOff)))
 			{
 				int xDiff = pos.getX() - nextPos.getX();
 				int zDiff = pos.getZ() - nextPos.getZ();
-				if (xDiff * xDiff + zDiff * zDiff <= rand.nextFloat() * 10.0F - rand.nextFloat() * 6.0F)
+				if (xDiff * xDiff + zDiff * zDiff <= rand.nextFloat() * 16.0F - rand.nextFloat() * 12.0F)
 				{
 					this.setBlock(reader, nextPos, rand, config);
 				}

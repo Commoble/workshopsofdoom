@@ -132,6 +132,10 @@ public class WorkshopsOfDoom
 			new ConfiguredFeature<>(this.blockMound.get(),
 				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.COBBLESTONE.getDefaultState()))));
 		
+		registerConfiguredFeature(Names.STONE_MOUND,
+			new ConfiguredFeature<>(this.blockMound.get(),
+				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.STONE.getDefaultState()))));
+		
 		registerConfiguredFeature(Names.SANDSTONE_MOUND,
 			new ConfiguredFeature<>(this.blockMound.get(),
 				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.SANDSTONE.getDefaultState()))));
