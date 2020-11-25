@@ -118,9 +118,17 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 		private final boolean allowIntersectingPieces; public boolean getAllowIntersectingPieces() {return this.allowIntersectingPieces;}
 		private final boolean snapToHeightMap; public boolean getSnapToHeightMap() {return this.snapToHeightMap;}
 		
+		/**
+		 * As with the other constructor but with recommended params.
+		 * Snap-to-height is set to TRUE, and the intersection hack for legacy structures is disabled.
+		 * @param startPool The name of the template pool for the initial jigsaw piece,
+		 * e.g. "workshopsofdoom:start" => data/workshopsofdoom/worldgen/template_pool/start
+		 * @param size How many pieces deep the structure can generate beyond the initial piece.
+		 * The first piece is iteration 0, size must be greater than 0 to have more than one piece in the structure.
+		 */
 		public LoadableJigsawConfig(ResourceLocation startPool, int size)
 		{
-			this(startPool, size, 0, true, true);
+			this(startPool, size, 0, false, true);
 		}
 		
 		/**
@@ -130,15 +138,20 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 		 * @param size How many pieces deep the structure can generate beyond the initial piece.
 		 * The first piece is iteration 0, size must be greater than 0 to have more than one piece in the structure.
 		 * @param startY What y-level to start the structure at. Ignored if snapToHeightMap is true.
-		 * @param allowIntersectingPieces Allow pieces to generate with overlapping volumes?
+		 * @param enableLegacyIntersectionHack Affects the way in which the jigsaw placer decides
+		 * whether jigsaw pieces are intersecting in strange ways. If this is disabled, then
+		 * interior-pointing jigsaws' pieces must be entirely contained by their parent structure's cuboids,
+		 * and exterior-pointing jigsaw's pieces cannot overlap with previously-placed pieces. If this is enabled,
+		 * then the y-levels of the voxels used for collision-checking are offset in strange ways. Enabled for
+		 * villages and pillager outposts, but not bastions.
 		 * @param snapToHeightMap If true, the starting position will snap to the local heightmap
 		 */
-		public LoadableJigsawConfig(ResourceLocation startPool, int size, int startY, boolean allowIntersectingPieces, boolean snapToHeightMap)
+		public LoadableJigsawConfig(ResourceLocation startPool, int size, int startY, boolean enableLegacyIntersectionHack, boolean snapToHeightMap)
 		{
 			this.startPool = startPool;
 			this.size = size;
 			this.startY = startY;
-			this.allowIntersectingPieces = allowIntersectingPieces;
+			this.allowIntersectingPieces = enableLegacyIntersectionHack;
 			this.snapToHeightMap = snapToHeightMap;
 		}
 	}
