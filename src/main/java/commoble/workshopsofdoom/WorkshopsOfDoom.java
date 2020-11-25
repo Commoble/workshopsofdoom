@@ -65,6 +65,7 @@ public class WorkshopsOfDoom
 	
 	// vanilla registry objects that we can't register in the mod constructor due to being off-thread
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> desertQuarry = null;
+	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> plainsQuarry = null;
 	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
@@ -99,7 +100,23 @@ public class WorkshopsOfDoom
 		
 		Consumer<WorldEvent.Load> addStructuresToWorldListener = event -> this.addStructuresToWorld(event,structuresByWorld);
 		forgeBus.addListener(addStructuresToWorldListener);
+//		forgeBus.addListener(this::onChunkLoad);
 	}
+	
+//	void onChunkLoad(ChunkEvent.Load event)
+//	{
+//		IChunk chunk = event.getChunk();
+//		chunk.getTileEntitiesPos().forEach(pos ->{
+//			TileEntity te = chunk.getTileEntity(pos);
+//			if (te instanceof JigsawTileEntity)
+//			{
+//				JigsawTileEntity jigsaw = (JigsawTileEntity) te;
+//				String oldPool = jigsaw.func_235670_g_().toString(); //
+//				String newPool = oldPool.replace("quarry/desert", "quarry/default");
+//				jigsaw.func_235667_c_(new ResourceLocation(newPool));
+//			}
+//		});
+//	}
 	
 	void onCommonSetup(FMLCommonSetupEvent event)
 	{
@@ -113,7 +130,9 @@ public class WorkshopsOfDoom
 		setStructureInfo(this.quarry.get(), false, 8, 4, 892348929);
 		
 		// register to forgeless vanilla registries
-		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.GROUND_FEATURE), GroundFeatureJigsawPiece.DESERIALIZER);
+		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.GROUND_FEATURE_POOL_ELEMENT), GroundFeatureJigsawPiece.DESERIALIZER);
+		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.REJIGGABLE_POOL_ELEMENT), RejiggableJigsawPiece.DESERIALIZER);
+		Registry.register(Registry.STRUCTURE_PROCESSOR, new ResourceLocation(MODID, Names.EDIT_POOL), EditPoolStructureProcessor.DESERIALIZER);
 		
 		// register to vanilla worldgen registries
 		registerConfiguredFeature(Names.DIRT_MOUND,
@@ -146,17 +165,30 @@ public class WorkshopsOfDoom
 			this.quarry.get(),
 			this.quarry.get()
 				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.DESERT_QUARRY_START), 7, 0, false, true)));
+		
+		this.plainsQuarry = registerConfiguredStructure(
+			Names.PLAINS_QUARRY,
+			this.quarry.get(),
+			this.quarry.get()
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.PLAINS_QUARRY_START), 7, 0, false, true)));
+	
 	}
 
 	// called for each biome loaded when biomes are loaded
 	void addThingsToBiomeOnBiomeLoad(BiomeLoadingEvent event)
 	{
-		if (event.getCategory() != Category.OCEAN)
+		// beware! Only one configured structure per structure instance can be added to a given biome
+		if (event.getCategory() == Category.DESERT)
 		{
-			// beware! Only one configured structure per structure instance can be added to a given biome
 			event.getGeneration()
 				.getStructures()
 				.add(() -> this.desertQuarry);
+		}
+		else if (event.getCategory() == Category.PLAINS)
+		{
+			event.getGeneration()
+			.getStructures()
+			.add(() -> this.plainsQuarry);
 		}
 	}
 	

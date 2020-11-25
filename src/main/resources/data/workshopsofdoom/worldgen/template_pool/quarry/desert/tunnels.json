@@ -7,84 +7,92 @@
 			"weight": 3,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/single",
+				"location": "workshopsofdoom:quarry/default/tunnels/single",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/double",
+				"location": "workshopsofdoom:quarry/default/tunnels/double",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/triple",
+				"location": "workshopsofdoom:quarry/default/tunnels/triple",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/elbow",
+				"location": "workshopsofdoom:quarry/default/tunnels/elbow",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/small_junction",
+				"location": "workshopsofdoom:quarry/default/tunnels/small_junction",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/large_junction",
+				"location": "workshopsofdoom:quarry/default/tunnels/large_junction",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/multi_junction",
+				"location": "workshopsofdoom:quarry/default/tunnels/multi_junction",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/desert/tunnels/ramp",
+				"location": "workshopsofdoom:quarry/default/tunnels/down_ramp",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
 			}
 		},
 		{
-			"weight": 3,
+			"weight": 1,
 			"element": 
 			{
 				"element_type": "empty_pool_element"

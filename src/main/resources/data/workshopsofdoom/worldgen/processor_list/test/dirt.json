@@ -1,0 +1,10 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:edit_pool",
+			"replace": "test/default",
+			"with": "test/dirt"
+		}
+	]
+}

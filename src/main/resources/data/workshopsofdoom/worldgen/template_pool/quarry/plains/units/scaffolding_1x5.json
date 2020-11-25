@@ -1,0 +1,24 @@
+{
+	"name": "workshopsofdoom:quarry/units/scaffolding_1x5",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/units/scaffolding_1x5",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "minecraft:single_pool_element"
+			}
+		},
+		{
+			"weight": 4,
+			"element": 
+			{
+				"element_type": "minecraft:empty_pool_element"
+			}
+		}
+	]
+}

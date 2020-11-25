@@ -9,7 +9,7 @@
 			{
 				"feature": "workshopsofdoom:stone_mound",
 				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature"
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}
 		},
 		{
@@ -18,7 +18,7 @@
 			{
 				"feature": "workshopsofdoom:cobblestone_mound",
 				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature"
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}
 		},
 		{
@@ -27,7 +27,7 @@
 			{
 				"feature": "workshopsofdoom:dirt_mound",
 				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature"
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}
 		},
 		{
@@ -36,7 +36,7 @@
 			{
 				"feature": "workshopsofdoom:gravel_mound",
 				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature"
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}
 		},
 		{

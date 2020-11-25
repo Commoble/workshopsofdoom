@@ -1,0 +1,9 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:minecart_loot",
+			"loot_table": "workshopsofdoom:minecarts/desert_quarry"
+		}
+	]
+}

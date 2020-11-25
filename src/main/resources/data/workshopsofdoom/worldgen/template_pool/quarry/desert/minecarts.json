@@ -7,6 +7,16 @@
 			"weight": 1,
 			"element": 
 			{
+				"location": "workshopsofdoom:entities/minecart",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "minecraft:single_pool_element"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
 				"location": "workshopsofdoom:entities/minecart_with_chest",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
@@ -14,7 +24,7 @@
 			}
 		},
 		{
-			"weight": 2,
+			"weight": 1,
 			"element": 
 			{
 				"element_type": "empty_pool_element"

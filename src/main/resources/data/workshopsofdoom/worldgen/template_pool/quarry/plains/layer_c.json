@@ -1,0 +1,40 @@
+{
+	"name": "workshopsofdoom:quarry/plains/layer_c",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/default/layers/c/size_5",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/plains/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/default/layers/c/size_7",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/plains/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/default/layers/c/size_9",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/plains/jigsaws"
+			}
+		}
+	]
+}
