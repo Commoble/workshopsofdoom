@@ -7,7 +7,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/default/start",
+				"location": "workshopsofdoom:quarry/__biome__/start",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",

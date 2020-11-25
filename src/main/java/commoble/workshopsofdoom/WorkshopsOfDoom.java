@@ -108,12 +108,14 @@ public class WorkshopsOfDoom
 //		IChunk chunk = event.getChunk();
 //		chunk.getTileEntitiesPos().forEach(pos ->{
 //			TileEntity te = chunk.getTileEntity(pos);
-//			if (te instanceof JigsawTileEntity)
+//			if (te instanceof StructureBlockTileEntity)
 //			{
-//				JigsawTileEntity jigsaw = (JigsawTileEntity) te;
-//				String oldPool = jigsaw.func_235670_g_().toString(); //
-//				String newPool = oldPool.replace("quarry/desert", "quarry/default");
-//				jigsaw.func_235667_c_(new ResourceLocation(newPool));
+//				StructureBlockTileEntity block = (StructureBlockTileEntity) te;
+//				block.setName(new ResourceLocation(block.getName().toString().replace("desert", "__biome__")));
+////				JigsawTileEntity jigsaw = (JigsawTileEntity) te;
+////				String oldPool = jigsaw.func_235670_g_().toString(); //
+////				String newPool = oldPool.replace("default", "__biome__");
+////				jigsaw.func_235667_c_(new ResourceLocation(newPool));
 //			}
 //		});
 //	}

@@ -7,7 +7,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/default/layers/a/size_5",
+				"location": "workshopsofdoom:quarry/__biome__/layers/a/size_5",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
@@ -18,7 +18,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/default/layers/a/size_7",
+				"location": "workshopsofdoom:quarry/__biome__/layers/a/size_7",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
@@ -29,7 +29,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/default/layers/a/size_9",
+				"location": "workshopsofdoom:quarry/__biome__/layers/a/size_9",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",

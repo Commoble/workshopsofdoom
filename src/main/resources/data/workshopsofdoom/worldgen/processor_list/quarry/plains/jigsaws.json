@@ -3,8 +3,8 @@
 	[
 		{
 			"processor_type": "workshopsofdoom:edit_pool",
-			"replace": "/default",
-			"with": "/plains"
+			"replace": "__biome__",
+			"with": "plains"
 		}
 	]
 }

@@ -7,7 +7,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:quarry/units/stairs/cobblestone_9",
+				"location": "workshopsofdoom:quarry/units/stairs/sandstone_9",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "minecraft:single_pool_element"
