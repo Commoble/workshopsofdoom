@@ -91,18 +91,5 @@ public class SpawnEntityFeature extends Feature<EntityConfig>
 			this.entityType = entityType;
 			this.nbt = nbt;
 		}
-
-		// get a CompoundNBT that can be used as the nbt parameter for EntityType::spawn
-//		public CompoundNBT getSpawnNBT()
-//		{
-//			return this.getNBT().map(EntityConfig::getNBTWithData).orElse(null);
-//		}
-//
-//		static CompoundNBT getNBTWithData(@Nonnull CompoundNBT configNBT)
-//		{
-//			CompoundNBT out = new CompoundNBT();
-//			out.put("EntityTag", configNBT.copy());
-//			return out;
-//		}
 	}
 }
