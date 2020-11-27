@@ -1,8 +1,18 @@
 {
-	"name": "workshopsofdoom:quarry/desert/debris",
+	"name": "workshopsofdoom:quarry/units/tunnel_debris",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
+		{
+			"weight": 100,
+			"element": 
+			{
+				"location": "workshopsofdoom:entities/excavator",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "minecraft:single_pool_element"
+			}
+		},
 		{
 			"weight": 5,
 			"element": 

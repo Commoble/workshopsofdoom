@@ -1,0 +1,16 @@
+{
+	"name": "workshopsofdoom:quarry/units/tnt_mound",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:tnt_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
+			}
+		}
+	]
+}

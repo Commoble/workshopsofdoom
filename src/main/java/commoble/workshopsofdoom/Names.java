@@ -2,8 +2,15 @@ package commoble.workshopsofdoom;
 
 public class Names
 {
+	// items
+	public static final String EXCAVATOR_SPAWN_EGG = "excavator_spawn_egg";
+	// entities
+	public static final String EXCAVATOR = "excavator";
+	
 	// features
 	public static final String BLOCK_MOUND = "block_mound";
+	public static final String SPAWN_ENTITY = "spawn_entity";
+	
 	// structures
 	public static final String QUARRY = "quarry";
 	public static final String DESERT_QUARRY = "desert_quarry";

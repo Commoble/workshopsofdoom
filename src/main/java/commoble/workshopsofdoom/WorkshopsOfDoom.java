@@ -14,8 +14,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import commoble.workshopsofdoom.LoadableJigsawStructure.LoadableJigsawConfig;
+import commoble.workshopsofdoom.client.ClientInit;
+import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
-import net.minecraft.block.Blocks;
+import commoble.workshopsofdoom.features.SpawnEntityFeature;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -27,7 +35,6 @@ import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatChunkGenerator;
 import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.blockstateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.feature.BlockStateProvidingFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -37,7 +44,9 @@ import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.DimensionStructuresSettings;
 import net.minecraft.world.gen.settings.StructureSeparationSettings;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -46,6 +55,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -59,7 +69,8 @@ public class WorkshopsOfDoom
 	public static WorkshopsOfDoom INSTANCE;
 	
 	// forge registry objects
-	public final RegistryObject<BlockMoundFeature> blockMound;
+	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
+	public final RegistryObject<EntityType<ExcavatorEntity>> excavator;
 	
 	public final RegistryObject<LoadableJigsawStructure> quarry;
 	
@@ -77,14 +88,31 @@ public class WorkshopsOfDoom
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		
 		// create and register deferred registers
+		DeferredRegister<Item> items = registerRegister(modBus, ForgeRegistries.ITEMS);
+		DeferredRegister<EntityType<?>> entities = registerRegister(modBus, ForgeRegistries.ENTITIES);
 		DeferredRegister<Feature<?>> features = registerRegister(modBus, ForgeRegistries.FEATURES);
 		DeferredRegister<Structure<?>> structures = registerRegister(modBus, ForgeRegistries.STRUCTURE_FEATURES);
 		
 		// get a temporary list of structures to finagle vanilla registries with later
 		Map<RegistryKey<World>, List<RegistryObject<LoadableJigsawStructure>>> structuresByWorld = new HashMap<>();
 		
+		// static init entities so we can make spawn eggs for them
+		EntityType<ExcavatorEntity> initExcavator = EntityType.Builder.<ExcavatorEntity>create(ExcavatorEntity::new, EntityClassification.MONSTER)
+			.size(0.6F, 1.95F)
+			.trackingRange(8)
+			.build(new ResourceLocation(MODID, Names.EXCAVATOR).toString());
+		
 		// register registry objects
-		this.blockMound = features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockStateProvidingFeatureConfig.field_236453_a_));
+		// register items
+			// for spawn eggs, we need the instance of the entity type before the entity type registry event
+		this.excavatorSpawnEgg = items.register(Names.EXCAVATOR_SPAWN_EGG, () ->
+			new SpawnEggItem(initExcavator, 0x884724, 0xacf228, new Item.Properties().group(ItemGroup.MISC)));
+		// register entities -- just use the existing entity types we already made for spawn eggs
+		this.excavator = entities.register(Names.EXCAVATOR, () -> initExcavator);
+		
+		// register features
+		features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockStateProvidingFeatureConfig.field_236453_a_));
+		features.register(Names.SPAWN_ENTITY, () -> new SpawnEntityFeature(SpawnEntityFeature.EntityConfig.CODEC));
 		
 		// structures are added to a list for later vanilla-registry-finagling
 		this.quarry = registerStructure(structures, structuresByWorld, Names.QUARRY,
@@ -93,6 +121,7 @@ public class WorkshopsOfDoom
 //		this.quarry = structureReg.apply(Names.QUARRY, () -> new LoadableJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES));
 		
 		// add event listeners to event busses
+		modBus.addGenericListener(EntityType.class, this::onRegisterEntities);
 		modBus.addListener(this::onCommonSetup);
 
 		// per forge recommendations, adding things to biomes should be done in the HIGH phase
@@ -101,6 +130,11 @@ public class WorkshopsOfDoom
 		Consumer<WorldEvent.Load> addStructuresToWorldListener = event -> this.addStructuresToWorld(event,structuresByWorld);
 		forgeBus.addListener(addStructuresToWorldListener);
 //		forgeBus.addListener(this::onChunkLoad);
+		
+		if (FMLEnvironment.dist == Dist.CLIENT)
+		{
+			ClientInit.doClientInit(modBus, forgeBus);
+		}
 	}
 	
 //	void onChunkLoad(ChunkEvent.Load event)
@@ -120,6 +154,11 @@ public class WorkshopsOfDoom
 //		});
 //	}
 	
+	void onRegisterEntities(RegistryEvent.Register<EntityType<?>> event)
+	{
+		
+	}
+	
 	void onCommonSetup(FMLCommonSetupEvent event)
 	{
 		event.enqueueWork(this::afterCommonSetup);
@@ -127,6 +166,9 @@ public class WorkshopsOfDoom
 	
 	void afterCommonSetup()
 	{
+		// set entity attributes
+		GlobalEntityTypeAttributes.put(this.excavator.get(), ExcavatorEntity.getAttributes().create());
+		
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
 		setStructureInfo(this.quarry.get(), false, 8, 4, 892348929);
@@ -136,32 +178,7 @@ public class WorkshopsOfDoom
 		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.REJIGGABLE_POOL_ELEMENT), RejiggableJigsawPiece.DESERIALIZER);
 		Registry.register(Registry.STRUCTURE_PROCESSOR, new ResourceLocation(MODID, Names.EDIT_POOL), EditPoolStructureProcessor.DESERIALIZER);
 		
-		// register to vanilla worldgen registries
-		registerConfiguredFeature(Names.DIRT_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.DIRT.getDefaultState()))));
-		
-		registerConfiguredFeature(Names.SAND_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.SAND.getDefaultState()))));
-		
-		registerConfiguredFeature(Names.GRAVEL_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.GRAVEL.getDefaultState()))));
-		
-		registerConfiguredFeature(Names.COBBLESTONE_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.COBBLESTONE.getDefaultState()))));
-		
-		registerConfiguredFeature(Names.STONE_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.STONE.getDefaultState()))));
-		
-		registerConfiguredFeature(Names.SANDSTONE_MOUND,
-			new ConfiguredFeature<>(this.blockMound.get(),
-				new BlockStateProvidingFeatureConfig(new SimpleBlockStateProvider(Blocks.SANDSTONE.getDefaultState()))));
-		
-		// register configured features and structures
+		// register configured structures
 		this.desertQuarry = registerConfiguredStructure(
 			Names.DESERT_QUARRY,
 			this.quarry.get(),

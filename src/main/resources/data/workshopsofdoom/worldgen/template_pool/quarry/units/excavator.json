@@ -1,0 +1,17 @@
+{
+	"name": "workshopsofdoom:quarry/units/excavator",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:entities/excavator",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "minecraft:single_pool_element"
+			}
+		}
+	]
+}
