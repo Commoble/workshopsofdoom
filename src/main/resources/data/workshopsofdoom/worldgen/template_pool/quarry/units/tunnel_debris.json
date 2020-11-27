@@ -4,13 +4,13 @@
 	"elements": 
 	[
 		{
-			"weight": 100,
+			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:entities/excavator",
+				"feature": "workshopsofdoom:spawn_excavator",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}
 		},
 		{
