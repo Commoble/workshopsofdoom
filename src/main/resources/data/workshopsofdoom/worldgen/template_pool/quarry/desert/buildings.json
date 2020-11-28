@@ -1,0 +1,91 @@
+{
+	"name": "workshopsofdoom:quarry/desert/features",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 2,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/hinterlands",
+				"processors": "minecraft:empty",
+				"projection": "terrain_matching",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/hinterlands_alt",
+				"processors": "minecraft:empty",
+				"projection": "terrain_matching",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/start",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/buildings/explosives_bunker",
+				"processors": "workshopsofdoom:quarry/desert/explosives_bunker",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/buildings/barracks",
+				"processors": "workshopsofdoom:quarry/desert/barracks",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/buildings/overseers_shed",
+				"processors": "workshopsofdoom:quarry/desert/overseers_shed",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/buildings/sheep_stable",
+				"processors": "workshopsofdoom:quarry/desert/sheep_stable",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+			}
+		},
+		{
+			"weight": 6,
+			"element": 
+			{
+				"element_type": "empty_pool_element"
+			}
+		}
+	]
+}

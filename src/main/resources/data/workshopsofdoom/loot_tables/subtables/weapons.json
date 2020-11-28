@@ -1,0 +1,48 @@
+{
+	"type": "minecraft:generic",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:tag",
+					"weight": 10,
+					"expand": true,
+					"name": "forge:weapons/iron"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 10,
+					"expand": true,
+					"name": "forge:missile_weapons"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 3,
+					"expand": true,
+					"name": "forge:weapons/wooden"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 3,
+					"expand": true,
+					"name": "forge:weapons/golden"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"expand": true,
+					"name": "forge:weapons/diamond"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"expand": true,
+					"name": "forge:tridents"
+				}
+			]
+		}
+	]
+}

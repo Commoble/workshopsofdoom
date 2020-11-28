@@ -18,6 +18,10 @@ import commoble.workshopsofdoom.client.ClientInit;
 import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
+import commoble.workshopsofdoom.structure_pieces.GroundFeatureJigsawPiece;
+import commoble.workshopsofdoom.structure_pieces.RejiggableJigsawPiece;
+import commoble.workshopsofdoom.structure_processors.EditPoolStructureProcessor;
+import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
@@ -174,9 +178,10 @@ public class WorkshopsOfDoom
 		setStructureInfo(this.quarry.get(), false, 8, 4, 892348929);
 		
 		// register to forgeless vanilla registries
-		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.GROUND_FEATURE_POOL_ELEMENT), GroundFeatureJigsawPiece.DESERIALIZER);
-		Registry.register(Registry.STRUCTURE_POOL_ELEMENT, new ResourceLocation(MODID, Names.REJIGGABLE_POOL_ELEMENT), RejiggableJigsawPiece.DESERIALIZER);
-		Registry.register(Registry.STRUCTURE_PROCESSOR, new ResourceLocation(MODID, Names.EDIT_POOL), EditPoolStructureProcessor.DESERIALIZER);
+		registerVanilla(Registry.STRUCTURE_POOL_ELEMENT, Names.GROUND_FEATURE_POOL_ELEMENT, GroundFeatureJigsawPiece.DESERIALIZER);
+		registerVanilla(Registry.STRUCTURE_POOL_ELEMENT, Names.REJIGGABLE_POOL_ELEMENT, RejiggableJigsawPiece.DESERIALIZER);
+		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.EDIT_POOL, EditPoolStructureProcessor.DESERIALIZER);
+		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.SET_NBT, SetNBTStructureProcessor.DESERIALIZER);
 		
 		// register configured structures
 		this.desertQuarry = registerConfiguredStructure(
@@ -247,6 +252,12 @@ public class WorkshopsOfDoom
 		DeferredRegister<T> register = DeferredRegister.create(registry, MODID);
 		register.register(modBus);
 		return register;
+	}
+	
+	// register a thing to a vanilla Registry (not worldgen registries)
+	static <T> T registerVanilla(Registry<T> registry, String name, T thing)
+	{
+		return Registry.register(registry, new ResourceLocation(MODID, name), thing);
 	}
 	
 	@SafeVarargs

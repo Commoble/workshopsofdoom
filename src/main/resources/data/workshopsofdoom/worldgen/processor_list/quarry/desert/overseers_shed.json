@@ -1,0 +1,38 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:set_nbt",
+			"nbt": 
+			{
+				"LootTable": "workshopsofdoom:chests/desert_overseers_shed_treasure"
+			},
+			"input_predicate": 
+			{
+				"block": "minecraft:chest",
+				"predicate_type": "minecraft:block_match"
+			}
+		},
+		{
+			"rules": 
+			[
+				{
+					"output_state": 
+					{
+						"Name": "minecraft:sand"
+					},
+					"input_predicate": 
+					{
+						"block": "minecraft:dirt",
+						"predicate_type": "minecraft:block_match"
+					},
+					"location_predicate": 
+					{
+						"predicate_type": "minecraft:always_true"
+					}
+				}
+			],
+			"processor_type": "minecraft:rule"
+		}
+	]
+}

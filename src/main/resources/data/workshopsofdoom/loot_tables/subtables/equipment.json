@@ -1,0 +1,27 @@
+{
+	"type": "minecraft:generic",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:loot_table",
+					"name": "workshopsofdoom:subtables/weapons",
+					"weight": 2
+				},
+				{
+					"type": "minecraft:loot_table",
+					"name": "workshopsofdoom:subtables/armor",
+					"weight": 2
+				},
+				{
+					"type": "minecraft:loot_table",
+					"name": "workshopsofdoom:subtables/tools",
+					"weight": 1
+				}
+			]
+		}
+	]
+}

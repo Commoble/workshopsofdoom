@@ -1,4 +1,4 @@
-package commoble.workshopsofdoom;
+package commoble.workshopsofdoom.structure_processors;
 
 import java.util.HashMap;
 import java.util.Map;

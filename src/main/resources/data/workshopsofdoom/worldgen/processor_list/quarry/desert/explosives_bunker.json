@@ -1,0 +1,29 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:set_nbt",
+			"nbt":
+			{
+				"LootTable": "workshopsofdoom:chests/desert_explosives_bunker_supplies"
+			},
+			"input_predicate": 
+			{
+				"block": "minecraft:barrel",
+				"predicate_type": "minecraft:block_match"
+			}
+		},
+		{
+			"processor_type": "workshopsofdoom:set_nbt",
+			"nbt":
+			{
+				"LootTable": "workshopsofdoom:chests/desert_explosives_bunker_treasure"
+			},
+			"input_predicate": 
+			{
+				"block": "minecraft:chest",
+				"predicate_type": "minecraft:block_match"
+			}
+		}
+	]
+}

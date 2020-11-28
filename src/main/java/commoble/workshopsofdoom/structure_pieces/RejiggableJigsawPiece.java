@@ -1,4 +1,4 @@
-package commoble.workshopsofdoom;
+package commoble.workshopsofdoom.structure_pieces;
 
 import java.util.ArrayList;
 import java.util.List;

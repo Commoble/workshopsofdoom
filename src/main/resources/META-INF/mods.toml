@@ -60,3 +60,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mollis lacinia magn
     versionRange="[1.16.4,1.17)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.workshopsofdoom]]
+    modId="looot"
+    mandatory=true
+    versionRange="[1.0.0.1,)"
+    ordering="NONE"
+    side="BOTH"

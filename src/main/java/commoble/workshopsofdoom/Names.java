@@ -22,6 +22,7 @@ public class Names
 	
 	// structure processors
 	public static final String EDIT_POOL = "edit_pool";
+	public static final String SET_NBT = "set_nbt";
 	
 	// structure pools
 	public static final String DESERT_QUARRY_START = "quarry/desert/start";
