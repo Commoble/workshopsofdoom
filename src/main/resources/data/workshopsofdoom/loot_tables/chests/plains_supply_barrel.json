@@ -1,0 +1,170 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 2.0,
+				"max": 3.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"weight": 7,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 5.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:wheat"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 5.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:potato"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 5.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:carrot"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:cooked_beef"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:cooked_porkchop"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:cooked_chicken"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:cooked_mutton"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:string"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 5,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:leather"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:set_nbt",
+			"nbt": 
+			{
+				"LootTable": "workshopsofdoom:chests/plains_supply_barrel"
+			},
+			"input_predicate": 
+			{
+				"block": "minecraft:barrel",
+				"predicate_type": "minecraft:block_match"
+			}
+		}
+	]
+}

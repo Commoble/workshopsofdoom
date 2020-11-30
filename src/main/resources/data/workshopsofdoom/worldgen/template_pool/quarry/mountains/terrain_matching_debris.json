@@ -1,40 +1,40 @@
 {
-	"name": "workshopsofdoom:quarry/desert/minecarts",
+	"name": "workshopsofdoom:quarry/mountains/terrain_matching_debris",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
 		{
-			"weight": 1,
+			"weight": 12,
 			"element": 
 			{
-				"feature": "workshopsofdoom:entities/minecart",
+				"feature": "workshopsofdoom:dirt_mound",
 				"projection": "rigid",
 				"element_type": "minecraft:feature_pool_element"
 			}
 		},
 		{
-			"weight": 1,
+			"weight": 3,
 			"element": 
 			{
-				"feature": "workshopsofdoom:entities/desert_quarry_chest_minecart",
+				"feature": "workshopsofdoom:gravel_mound",
 				"projection": "rigid",
 				"element_type": "minecraft:feature_pool_element"
 			}
 		},
 		{
-			"weight": 1,
+			"weight": 3,
 			"element": 
 			{
-				"feature": "workshopsofdoom:entities/tnt_minecart",
+				"feature": "workshopsofdoom:cobblestone_mound",
 				"projection": "rigid",
 				"element_type": "minecraft:feature_pool_element"
 			}
 		},
 		{
-			"weight": 1,
+			"weight": 10,
 			"element": 
 			{
-				"element_type":"minecraft:empty_pool_element"
+				"element_type": "minecraft:empty_pool_element"
 			}
 		}
 	]

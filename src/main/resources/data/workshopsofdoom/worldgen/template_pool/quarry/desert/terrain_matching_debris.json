@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:quarry/desert/debris",
+	"name": "workshopsofdoom:quarry/desert/terrain_matching_debris",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[

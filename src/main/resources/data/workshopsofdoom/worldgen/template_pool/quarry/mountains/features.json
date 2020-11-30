@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:quarry/desert/features",
+	"name": "workshopsofdoom:quarry/mountains/features",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
@@ -8,20 +8,10 @@
 			"element": 
 			{
 				"location": "workshopsofdoom:quarry/__biome__/features/large_tent",
-				"processors": "workshopsofdoom:quarry/desert/large_tent",
+				"processors": "workshopsofdoom:quarry/mountains/large_tent",
 				"projection": "terrain_matching",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
-			}
-		},
-		{
-			"weight": 1,
-			"element": 
-			{
-				"location": "workshopsofdoom:quarry/desert/features/rabbit_cage",
-				"processors": "minecraft:empty",
-				"projection": "rigid",
-				"element_type": "minecraft:single_pool_element"
+				"jigsaw_processors": "workshopsofdoom:quarry/mountains/jigsaws"
 			}
 		},
 		{

@@ -12,21 +12,29 @@ public class Names
 	public static final String SPAWN_ENTITY = "spawn_entity";
 	
 	// structures
-	public static final String QUARRY = "quarry";
 	public static final String DESERT_QUARRY = "desert_quarry";
 	public static final String PLAINS_QUARRY = "plains_quarry";
+	public static final String MOUNTAIN_MINES = "mountain_mines";
 	
 	// jigsaw deserializers
 	public static final String GROUND_FEATURE_POOL_ELEMENT = "ground_feature_pool_element";
 	public static final String REJIGGABLE_POOL_ELEMENT = "rejiggable_pool_element";
 	
+	// rule test types
+	public static final String RANDOM_CHANCE = "random_chance";
+	public static final String AND = "and";
+	public static final String HEIGHT = "height";
+	
 	// structure processors
 	public static final String EDIT_POOL = "edit_pool";
 	public static final String SET_NBT = "set_nbt";
+	public static final String PREDICATE = "predicate";
+	public static final String HEIGHT_PROCESSOR = "process_height";
 	
 	// structure pools
 	public static final String DESERT_QUARRY_START = "quarry/desert/start";
 	public static final String PLAINS_QUARRY_START = "quarry/plains/start";
+	public static final String MOUNTAIN_MINES_START = "quarry/mountains/start";
 	
 	// configured features
 	public static final String DIRT_MOUND = "dirt_mound";

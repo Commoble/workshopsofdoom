@@ -1,0 +1,108 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 2.0,
+				"max": 4.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"weight": 9,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 16.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:cobblestone"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 4.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:gunpowder"
+				}
+			]
+		},
+		{
+			"rolls": 
+			{
+				"min": 3.0,
+				"max": 9.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:tag",
+					"weight": 20,
+					"name": "workshopsofdoom:mine_loot/ores/common",
+					"expand": true
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 5,
+					"name": "workshopsofdoom:mine_loot/ores/uncommon",
+					"expand": true
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"name": "workshopsofdoom:mine_loot/ores/rare",
+					"expand": true
+				}
+			],
+			"functions": 
+			[
+				{
+					"function": "minecraft:set_count",
+					"count": 
+					{
+						"min": 1.0,
+						"max": 4.0,
+						"type": "minecraft:uniform"
+					}
+				},
+				{
+					"function": "looot:apply_functions_if_tagged",
+					"tag": "workshopsofdoom:mine_loot/ores/supernuminous",
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 4.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"type": "workshopsofdoom:spawn_entity",
+	"config": 
+	{
+		"entity": "chest_minecart",
+		"nbt":
+		{
+			"LootTable": "workshopsofdoom:minecarts/plains_quarry"
+		}
+	}
+}

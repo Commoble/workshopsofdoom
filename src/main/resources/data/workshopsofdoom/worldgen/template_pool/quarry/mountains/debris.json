@@ -1,28 +1,10 @@
 {
-	"name": "workshopsofdoom:quarry/units/tunnel_debris",
+	"name": "workshopsofdoom:quarry/mountains/debris",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
 		{
-			"weight": 5,
-			"element": 
-			{
-				"feature": "workshopsofdoom:stone_mound",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature_pool_element"
-			}
-		},
-		{
-			"weight": 5,
-			"element": 
-			{
-				"feature": "workshopsofdoom:cobblestone_mound",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:ground_feature_pool_element"
-			}
-		},
-		{
-			"weight": 3,
+			"weight": 12,
 			"element": 
 			{
 				"feature": "workshopsofdoom:dirt_mound",
@@ -35,6 +17,15 @@
 			"element": 
 			{
 				"feature": "workshopsofdoom:gravel_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"feature": "workshopsofdoom:cobblestone_mound",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:ground_feature_pool_element"
 			}

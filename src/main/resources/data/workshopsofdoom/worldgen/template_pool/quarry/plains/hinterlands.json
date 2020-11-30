@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:quarry/desert/hinterlands",
+	"name": "workshopsofdoom:quarry/plains/hinterlands",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
@@ -11,7 +11,7 @@
 				"processors": "minecraft:empty",
 				"projection": "terrain_matching",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+				"jigsaw_processors": "workshopsofdoom:quarry/plains/jigsaws"
 			}
 		},
 		{
@@ -22,7 +22,7 @@
 				"processors": "minecraft:empty",
 				"projection": "terrain_matching",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:quarry/desert/jigsaws"
+				"jigsaw_processors": "workshopsofdoom:quarry/plains/jigsaws"
 			}
 		},
 		{

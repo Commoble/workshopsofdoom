@@ -1,5 +1,8 @@
 package commoble.workshopsofdoom;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -12,6 +15,7 @@ import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.registry.DynamicRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo.Spawners;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationStage;
@@ -28,11 +32,43 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 {	
 	private final GenerationStage.Decoration generationStage;
+	private final boolean restrictSpawnBoxes;
+	private final Supplier<List<Spawners>> monsterSpawnerGetter;
+	private final Supplier<List<Spawners>> creatureSpawnerGetter;
 	
-	public LoadableJigsawStructure(Codec<LoadableJigsawConfig> codec, GenerationStage.Decoration generationStage)
+	public final int maxSeperation;
+	public final int minSeparation;
+	public final int placementSalt;
+	public final boolean transformSurroundingLand;
+	
+	/**
+	 * 
+	 * @param codec The deserializer for the config
+	 * @param generationStage When to generate the structure
+	 * @param restrictSpawnBoxes If true, the structure's spawn entries are only used in the bounding boxes of the structure pieces.
+	 * If false, the structure's spawn entries will be used inside the structure's entire AABB cuboid.
+	 * @param monsterSpawnerGetter Monster spawns, only have monsters in these (zombies, illagers, guardians, etc)
+	 * @param creatureSpawnerGetter Creature spawns, only have creatures (pigs, cows, bears, etc) in these
+	 * @param maxSeperation Maximum farapartness in chunks that structures will attempt to spawn
+	 * @param minSeperation Mininum farapartness in chunks between attempst to spawn structure
+	 * @param placementSalt A salt added to the location seed by the structure placer; for best results this should be large and not the same as any other structure's seed (see DimensionStructuresSettings for vanilla values)
+	 * @param transformSurroundingLand <br>
+		// " Will add land at the base of the structure like it does for Villages and Outposts. "<br>
+		// " Doesn't work well on structure that have pieces stacked vertically or change in heights. "<br>
+		// ~TelepathicGrunt<br>
+		// (vanilla only uses this for villages, outposts, and Nether Fossils)
+	 */
+	public LoadableJigsawStructure(Codec<LoadableJigsawConfig> codec, GenerationStage.Decoration generationStage, boolean restrictSpawnBoxes, Supplier<List<Spawners>> monsterSpawnerGetter, Supplier<List<Spawners>> creatureSpawnerGetter, int maxSeperation, int minSeperation, int placementSalt, boolean transformSurroundingLand)
 	{
 		super(codec);
 		this.generationStage = generationStage;
+		this.restrictSpawnBoxes = restrictSpawnBoxes;
+		this.monsterSpawnerGetter = monsterSpawnerGetter;
+		this.creatureSpawnerGetter = creatureSpawnerGetter;
+		this.maxSeperation = maxSeperation;
+		this.minSeparation = minSeperation;
+		this.placementSalt = placementSalt;
+		this.transformSurroundingLand = transformSurroundingLand;
 	}
 
 	@Override
@@ -47,7 +83,26 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 		return this.generationStage;
 	}
 	
-	// also consider overriding getDefaultSpawnList and getDefaultCreatureSpawnList
+	
+	
+
+	@Override
+	public List<Spawners> getDefaultSpawnList()
+	{
+		return this.monsterSpawnerGetter.get();
+	}
+
+	@Override
+	public List<Spawners> getDefaultCreatureSpawnList()
+	{
+		return this.creatureSpawnerGetter.get();
+	}
+
+	@Override
+	public boolean getDefaultRestrictsSpawnsToInside()
+	{
+		return this.restrictSpawnBoxes;
+	}
 
 	// shouldGenerate
 	@Override
