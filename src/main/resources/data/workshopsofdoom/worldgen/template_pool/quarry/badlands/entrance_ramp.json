@@ -1,0 +1,40 @@
+{
+	"name": "workshopsofdoom:mines/badlands/start",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/entrance_ramp",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 4,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/entrance_ramp_u",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/triple",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		}
+	]
+}

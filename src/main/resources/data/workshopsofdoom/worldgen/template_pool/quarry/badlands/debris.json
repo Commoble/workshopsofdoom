@@ -1,0 +1,41 @@
+{
+	"name": "workshopsofdoom:quarry/badlands/debris",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 12,
+			"element": 
+			{
+				"feature": "workshopsofdoom:dirt_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"feature": "workshopsofdoom:gravel_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"feature": "workshopsofdoom:cobblestone_mound",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:ground_feature_pool_element"
+			}
+		},
+		{
+			"weight": 10,
+			"element": 
+			{
+				"element_type": "minecraft:empty_pool_element"
+			}
+		}
+	]
+}

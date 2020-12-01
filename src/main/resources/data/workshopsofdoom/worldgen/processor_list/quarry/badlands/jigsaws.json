@@ -1,0 +1,22 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:edit_pool",
+			"replace": "__biome__",
+			"with": "badlands"
+		},
+		{
+			"processor_type": "workshopsofdoom:process_height",
+			"min": 50,
+			"processors": 
+			[
+				{
+					"processor_type": "workshopsofdoom:edit_pool",
+					"replace": "/tunnels",
+					"with": "/entrance_ramp"
+				}
+			]
+		}
+	]
+}

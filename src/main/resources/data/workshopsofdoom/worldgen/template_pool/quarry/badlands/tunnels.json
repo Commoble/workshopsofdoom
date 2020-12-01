@@ -1,0 +1,84 @@
+{
+	"name": "workshopsofdoom:quarry/badlands/tunnels",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 2,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/single",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/double",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/triple",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/elbow",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/small_junction",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/large_junction",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"location": "workshopsofdoom:quarry/__biome__/tunnels/down_ramp",
+				"processors": "minecraft:empty",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:quarry/badlands/jigsaws"
+			}
+		}
+	]
+}

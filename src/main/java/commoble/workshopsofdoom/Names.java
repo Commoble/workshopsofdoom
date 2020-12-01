@@ -15,6 +15,7 @@ public class Names
 	public static final String DESERT_QUARRY = "desert_quarry";
 	public static final String PLAINS_QUARRY = "plains_quarry";
 	public static final String MOUNTAIN_MINES = "mountain_mines";
+	public static final String BADLANDS_MINES = "badlands_mines";
 	
 	// jigsaw deserializers
 	public static final String GROUND_FEATURE_POOL_ELEMENT = "ground_feature_pool_element";
@@ -35,6 +36,7 @@ public class Names
 	public static final String DESERT_QUARRY_START = "quarry/desert/start";
 	public static final String PLAINS_QUARRY_START = "quarry/plains/start";
 	public static final String MOUNTAIN_MINES_START = "quarry/mountains/start";
+	public static final String BADLANDS_MINES_START = "quarry/badlands/start";
 	
 	// configured features
 	public static final String DIRT_MOUND = "dirt_mound";

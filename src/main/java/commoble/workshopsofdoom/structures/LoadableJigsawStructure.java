@@ -1,4 +1,4 @@
-package commoble.workshopsofdoom;
+package commoble.workshopsofdoom.structures;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import commoble.workshopsofdoom.LoadableJigsawStructure.LoadableJigsawConfig;
+import commoble.workshopsofdoom.structures.LoadableJigsawStructure.LoadableJigsawConfig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;

@@ -1,4 +1,4 @@
-package commoble.workshopsofdoom;
+package commoble.workshopsofdoom.rule_tests;
 
 import java.util.List;
 import java.util.Random;

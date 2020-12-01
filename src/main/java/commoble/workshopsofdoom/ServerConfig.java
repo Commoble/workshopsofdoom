@@ -30,6 +30,7 @@ public class ServerConfig
 	public final ConfigObjectListener<SpawnDataList> desertQuarryMonsters;
 	public final ConfigObjectListener<SpawnDataList> plainsQuarryMonsters;
 	public final ConfigObjectListener<SpawnDataList> mountainMinesMonsters;
+	public final ConfigObjectListener<SpawnDataList> badlandsMinesMonsters;
 	
 	static final SpawnDataList DEFAULT_QUARRY_MONSTERS = new SpawnDataList(
 		new SpawnData(EntityType.PILLAGER.getRegistryName(), 100, 1, 4),
@@ -42,6 +43,7 @@ public class ServerConfig
 		this.desertQuarryMonsters = subscriber.subscribeObject(builder, Names.DESERT_QUARRY, SPAWN_LIST_CODEC, DEFAULT_QUARRY_MONSTERS);
 		this.plainsQuarryMonsters = subscriber.subscribeObject(builder, Names.PLAINS_QUARRY, SPAWN_LIST_CODEC, DEFAULT_QUARRY_MONSTERS);
 		this.mountainMinesMonsters = subscriber.subscribeObject(builder, Names.MOUNTAIN_MINES, SPAWN_LIST_CODEC, DEFAULT_QUARRY_MONSTERS);
+		this.badlandsMinesMonsters = subscriber.subscribeObject(builder, Names.BADLANDS_MINES, SPAWN_LIST_CODEC, DEFAULT_QUARRY_MONSTERS);
 		builder.pop();
 	}
 	

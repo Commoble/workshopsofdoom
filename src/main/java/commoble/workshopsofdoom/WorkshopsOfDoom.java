@@ -13,17 +13,22 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import commoble.workshopsofdoom.LoadableJigsawStructure.LoadableJigsawConfig;
 import commoble.workshopsofdoom.client.ClientInit;
 import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
+import commoble.workshopsofdoom.pos_rule_tests.HeightInWorldTest;
+import commoble.workshopsofdoom.rule_tests.AndRuleTest;
+import commoble.workshopsofdoom.rule_tests.ChanceRuleTest;
 import commoble.workshopsofdoom.structure_pieces.GroundFeatureJigsawPiece;
 import commoble.workshopsofdoom.structure_pieces.RejiggableJigsawPiece;
 import commoble.workshopsofdoom.structure_processors.EditPoolStructureProcessor;
 import commoble.workshopsofdoom.structure_processors.HeightProcessor;
 import commoble.workshopsofdoom.structure_processors.PredicatedStructureProcessor;
 import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
+import commoble.workshopsofdoom.structures.LoadableJigsawStructure;
+import commoble.workshopsofdoom.structures.LoadableJigsawStructure.LoadableJigsawConfig;
+import commoble.workshopsofdoom.structures.PillagerJigsawStructure;
 import commoble.workshopsofdoom.util.ConfigHelper;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -85,11 +90,13 @@ public class WorkshopsOfDoom
 	public final RegistryObject<PillagerJigsawStructure> desertQuarry;
 	public final RegistryObject<PillagerJigsawStructure> plainsQuarry;
 	public final RegistryObject<PillagerJigsawStructure> mountainsMines;
+	public final RegistryObject<PillagerJigsawStructure> badlandsMines;
 	
 	// vanilla registry objects that we can't register in the mod constructor due to being off-thread
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredDesertQuarry = null;
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredPlainsQuarry = null;
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredMountainsMines = null;
+	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredBadlandsMines = null;
 	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
@@ -163,8 +170,15 @@ public class WorkshopsOfDoom
 				305511170,
 				false),
 			World.OVERWORLD);
-		
-//		this.quarry = structureReg.apply(Names.QUARRY, () -> new LoadableJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES));
+		this.badlandsMines = registerStructure(structures, structuresByWorld, Names.BADLANDS_MINES,
+			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
+				() -> this.serverConfig.badlandsMinesMonsters.get().get(),
+				noSpawns,
+				64,
+				32,
+				219011832,
+				false),
+			World.OVERWORLD);
 		
 		// add event listeners to event busses
 		modBus.addListener(this::onCommonSetup);
@@ -214,6 +228,7 @@ public class WorkshopsOfDoom
 		setStructureInfo(this.desertQuarry.get());
 		setStructureInfo(this.plainsQuarry.get());
 		setStructureInfo(this.mountainsMines.get());
+		setStructureInfo(this.badlandsMines.get());
 		
 		// register to forgeless vanilla registries
 		registerVanilla(Registry.STRUCTURE_POOL_ELEMENT, Names.GROUND_FEATURE_POOL_ELEMENT, GroundFeatureJigsawPiece.DESERIALIZER);
@@ -244,30 +259,40 @@ public class WorkshopsOfDoom
 			this.mountainsMines.get(),
 			this.mountainsMines.get()
 				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.MOUNTAIN_MINES_START), 25, 0, false, true)));
+		
+		this.configuredBadlandsMines = registerConfiguredStructure(
+			Names.BADLANDS_MINES,
+			this.badlandsMines.get(),
+			this.badlandsMines.get()
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.BADLANDS_MINES_START), 25, 0, false, true)));
 	
 	}
 
 	// called for each biome loaded when biomes are loaded
+	// TODO replace with config
 	void addThingsToBiomeOnBiomeLoad(BiomeLoadingEvent event)
 	{
+		Consumer<StructureFeature<?,?>> structureAdder = structure -> 
+			event.getGeneration()
+			.getStructures()
+			.add(() -> structure);
+			
 		// beware! Only one configured structure per structure instance can be added to a given biome
 		if (event.getCategory() == Category.DESERT)
 		{
-			event.getGeneration()
-				.getStructures()
-				.add(() -> this.configuredDesertQuarry);
+			structureAdder.accept(this.configuredDesertQuarry);
 		}
 		else if (event.getCategory() == Category.PLAINS)
 		{
-			event.getGeneration()
-				.getStructures()
-				.add(() -> this.configuredPlainsQuarry);
+			structureAdder.accept(this.configuredPlainsQuarry);
 		}
 		else if (event.getCategory() == Category.EXTREME_HILLS)
 		{
-			event.getGeneration()
-				.getStructures()
-				.add(() -> this.configuredMountainsMines);
+			structureAdder.accept(this.configuredMountainsMines);
+		}
+		else if (event.getCategory() == Category.MESA)
+		{
+			structureAdder.accept(this.configuredBadlandsMines);
 		}
 	}
 	
