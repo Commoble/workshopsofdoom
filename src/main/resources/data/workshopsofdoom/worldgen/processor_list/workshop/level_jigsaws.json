@@ -1,0 +1,55 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:process_height",
+			"max": 20,
+			"processors": 
+			[
+				{
+					"processor_type": "workshopsofdoom:edit_pool",
+					"replace": "__level__",
+					"with": "deep"
+				}
+			]
+		},
+		{
+			"processor_type": "workshopsofdoom:process_height",
+			"min": 21,
+			"max": 61,
+			"processors": 
+			[
+				{
+					"processor_type": "workshopsofdoom:edit_pool",
+					"replace": "__level__",
+					"with": "underground"
+				}
+			]
+		},
+		{
+			"processor_type": "workshopsofdoom:process_height",
+			"min": 62,
+			"max": 74,
+			"processors": 
+			[
+				{
+					"processor_type": "workshopsofdoom:edit_pool",
+					"replace": "__level__",
+					"with": "surface"
+				}
+			]
+		},
+		{
+			"processor_type": "workshopsofdoom:process_height",
+			"min": 75,
+			"processors": 
+			[
+				{
+					"processor_type": "workshopsofdoom:edit_pool",
+					"replace": "__level__",
+					"with": "high"
+				}
+			]
+		}
+	]
+}

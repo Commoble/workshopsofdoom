@@ -91,12 +91,14 @@ public class WorkshopsOfDoom
 	public final RegistryObject<PillagerJigsawStructure> plainsQuarry;
 	public final RegistryObject<PillagerJigsawStructure> mountainsMines;
 	public final RegistryObject<PillagerJigsawStructure> badlandsMines;
+	public final RegistryObject<PillagerJigsawStructure> workshop;
 	
 	// vanilla registry objects that we can't register in the mod constructor due to being off-thread
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredDesertQuarry = null;
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredPlainsQuarry = null;
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredMountainsMines = null;
 	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredBadlandsMines = null;
+	public StructureFeature<LoadableJigsawConfig, ? extends Structure<LoadableJigsawConfig>> configuredWorkshop = null;
 	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
@@ -179,6 +181,15 @@ public class WorkshopsOfDoom
 				219011832,
 				false),
 			World.OVERWORLD);
+		this.workshop = registerStructure(structures, structuresByWorld, Names.WORKSHOP,
+			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
+				noSpawns,
+				noSpawns,
+				64,
+				32,
+				567764539,
+				false),
+			World.OVERWORLD);
 		
 		// add event listeners to event busses
 		modBus.addListener(this::onCommonSetup);
@@ -229,6 +240,7 @@ public class WorkshopsOfDoom
 		setStructureInfo(this.plainsQuarry.get());
 		setStructureInfo(this.mountainsMines.get());
 		setStructureInfo(this.badlandsMines.get());
+		setStructureInfo(this.workshop.get());
 		
 		// register to forgeless vanilla registries
 		registerVanilla(Registry.STRUCTURE_POOL_ELEMENT, Names.GROUND_FEATURE_POOL_ELEMENT, GroundFeatureJigsawPiece.DESERIALIZER);
@@ -265,7 +277,11 @@ public class WorkshopsOfDoom
 			this.badlandsMines.get(),
 			this.badlandsMines.get()
 				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.BADLANDS_MINES_START), 25, 0, false, true)));
-	
+		this.configuredWorkshop = registerConfiguredStructure(
+			Names.WORKSHOP,
+			this.workshop.get(),
+			this.workshop.get()
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.WORKSHOP_START), 30, 0, false, true)));
 	}
 
 	// called for each biome loaded when biomes are loaded
@@ -293,6 +309,10 @@ public class WorkshopsOfDoom
 		else if (event.getCategory() == Category.MESA)
 		{
 			structureAdder.accept(this.configuredBadlandsMines);
+		}
+		else if (event.getCategory() == Category.ICY)
+		{
+			structureAdder.accept(this.configuredWorkshop);
 		}
 	}
 	

@@ -1,0 +1,10 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:edit_pool",
+			"replace": "__level__",
+			"with": "deep"
+		}
+	]
+}
