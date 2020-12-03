@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:workshop/surface/doors/hallway",
+	"name": "workshopsofdoom:workshop/underground/doors/closet",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
@@ -7,7 +7,7 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/doors/dark_oak",
+				"location": "workshopsofdoom:workshop/doors/spruce",
 				"processors": "minecraft:empty",
 				"projection": "rigid",
 				"element_type": "minecraft:single_pool_element"

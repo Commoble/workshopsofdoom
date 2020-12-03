@@ -1,0 +1,25 @@
+{
+	"name": "workshopsofdoom:workshop/underground/roofs/9x9",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 4,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/roofs/flat_ceiling_9x9",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"element_type": "empty_pool_element"
+			}
+		}
+	]
+}

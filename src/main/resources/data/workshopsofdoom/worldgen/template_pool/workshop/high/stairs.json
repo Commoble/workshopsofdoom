@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:workshop/surface/stairs",
+	"name": "workshopsofdoom:workshop/high/stairs",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
@@ -8,7 +8,7 @@
 			"element": 
 			{
 				"location": "workshopsofdoom:workshop/stairs/stairwell",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"processors": "workshopsofdoom:workshop/high/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
@@ -19,7 +19,7 @@
 			"element": 
 			{
 				"location": "workshopsofdoom:workshop/passages/stairs_down",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"processors": "workshopsofdoom:workshop/high/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"

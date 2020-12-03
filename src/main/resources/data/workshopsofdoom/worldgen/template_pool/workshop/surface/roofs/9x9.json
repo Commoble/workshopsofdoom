@@ -1,13 +1,13 @@
 {
-	"name": "workshopsofdoom:workshop/surface/stairs",
+	"name": "workshopsofdoom:workshop/surface/roofs/9x9",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[
 		{
-			"weight": 1,
+			"weight": 4,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/stairs/stairwell",
+				"location": "workshopsofdoom:workshop/roofs/smokestack_9x9",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
@@ -15,10 +15,10 @@
 			}
 		},
 		{
-			"weight": 5,
+			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/passages/stairs_down",
+				"location": "workshopsofdoom:workshop/roofs/flat_ceiling_9x9",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",

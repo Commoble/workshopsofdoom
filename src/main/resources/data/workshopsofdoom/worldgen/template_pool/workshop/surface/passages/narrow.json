@@ -70,11 +70,22 @@
 			}
 		},
 		{
-			"weight": 2,
+			"weight": 1,
 			"element": 
 			{
 				"location": "workshopsofdoom:workshop/rooms/closet",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"processors": "workshopsofdoom:workshop/surface/closet",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/rooms/kitchen",
+				"processors": "workshopsofdoom:workshop/surface/kitchen",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"

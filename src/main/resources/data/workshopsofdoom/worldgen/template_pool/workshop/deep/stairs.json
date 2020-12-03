@@ -1,0 +1,18 @@
+{
+	"name": "workshopsofdoom:workshop/deep/stairs",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/stairs_up",
+				"processors": "workshopsofdoom:workshop/deep/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		}
+	]
+}

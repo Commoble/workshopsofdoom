@@ -30,7 +30,7 @@
 					{
 						"block": "minecraft:cobblestone",
 						"predicate_type": "random_block_match",
-						"probability": 0.30
+						"probability": 0.70
 					},
 					"location_predicate": 
 					{
