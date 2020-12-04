@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:generic",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:tag",
+					"expand": true,
+					"name": "minecraft:wool"
+				}
+			]
+		}
+	]
+}

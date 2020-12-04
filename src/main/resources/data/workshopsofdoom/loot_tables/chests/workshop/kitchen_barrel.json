@@ -1,0 +1,202 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 1.0,
+				"max": 1.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "sugar_cane"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/mushrooms"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 6.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/crops"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 3.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "bread"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/seeds"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 3.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/eggs"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "cocoa_beans"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "bone_meal"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 3.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "apple"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"name": "mushroom_stew"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"name": "pumpkin_pie"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"name": "beetroot_soup"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 10.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "dried_kelp"
+				}
+			]
+		}
+	]
+}

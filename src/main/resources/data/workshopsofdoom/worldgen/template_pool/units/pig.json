@@ -1,0 +1,16 @@
+{
+	"name": "workshopsofdoom:units/pig",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:entities/pig",
+				"projection": "rigid",
+				"element_type": "minecraft:feature_pool_element"
+			}
+		}
+	]
+}

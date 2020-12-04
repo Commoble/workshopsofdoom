@@ -17,6 +17,7 @@ import commoble.workshopsofdoom.client.ClientInit;
 import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
+import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature;
 import commoble.workshopsofdoom.pos_rule_tests.HeightInWorldTest;
 import commoble.workshopsofdoom.rule_tests.AndRuleTest;
 import commoble.workshopsofdoom.rule_tests.ChanceRuleTest;
@@ -135,6 +136,7 @@ public class WorkshopsOfDoom
 		// register features
 		features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockStateProvidingFeatureConfig.field_236453_a_));
 		features.register(Names.SPAWN_ENTITY, () -> new SpawnEntityFeature(SpawnEntityFeature.EntityConfig.CODEC));
+		features.register(Names.SPAWN_LEASHED_ENTITY, () -> new SpawnLeashedEntityFeature(SpawnLeashedEntityFeature.LeashedEntityConfig.CODEC));
 
 		// server config needs to be initialized after entity registry objects intialize but before structures
 		this.serverConfig = ConfigHelper.register(ModConfig.Type.SERVER, ServerConfig::new);

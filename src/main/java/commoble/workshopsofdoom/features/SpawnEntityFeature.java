@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import commoble.looot.data.DataCodecs;
 import commoble.workshopsofdoom.features.SpawnEntityFeature.EntityConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,11 +18,11 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ISeedReader;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class SpawnEntityFeature extends Feature<EntityConfig>
 {
@@ -68,28 +67,29 @@ public class SpawnEntityFeature extends Feature<EntityConfig>
 
 	public static class EntityConfig implements IFeatureConfig
 	{
-		public static final Codec<EntityConfig> CODEC = RecordCodecBuilder
-			.create(instance -> instance.group(DataCodecs.makeRegistryEntryCodec(ForgeRegistries.ENTITIES).fieldOf("entity").forGetter(EntityConfig::getEntityType),
-				CompoundNBT.CODEC.optionalFieldOf("nbt").forGetter(EntityConfig::getNBT)).apply(instance, EntityConfig::new));
+		@SuppressWarnings("deprecation")
+		public static final Codec<EntityConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				Registry.ENTITY_TYPE.fieldOf("entity").forGetter(EntityConfig::getEntityType),
+				CompoundNBT.CODEC.optionalFieldOf("nbt").forGetter(EntityConfig::getNBT)).
+			apply(instance, EntityConfig::new));
 
 		private final EntityType<?> entityType;
+		private final @Nullable Optional<CompoundNBT> nbt;
+
+		public EntityConfig(EntityType<?> entityType, Optional<CompoundNBT> nbt)
+		{
+			this.entityType = entityType;
+			this.nbt = nbt;
+		}
 
 		public EntityType<?> getEntityType()
 		{
 			return this.entityType;
 		}
 
-		private final @Nullable Optional<CompoundNBT> nbt;
-
 		public Optional<CompoundNBT> getNBT()
 		{
 			return this.nbt;
-		}
-
-		public EntityConfig(EntityType<?> entityType, Optional<CompoundNBT> nbt)
-		{
-			this.entityType = entityType;
-			this.nbt = nbt;
 		}
 	}
 }

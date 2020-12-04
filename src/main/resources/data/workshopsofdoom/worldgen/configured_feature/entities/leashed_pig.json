@@ -1,0 +1,8 @@
+{
+	"type": "workshopsofdoom:spawn_leashed_entity",
+	"config": 
+	{
+		"entity": "pig",
+		"leash_offset": [0,1,0]
+	}
+}

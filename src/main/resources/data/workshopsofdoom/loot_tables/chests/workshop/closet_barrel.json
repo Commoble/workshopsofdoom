@@ -1,0 +1,187 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 1.0,
+				"max": 1.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 16.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "red_wool"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 16.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "black_wool"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 16.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "white_wool"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/string"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/feathers"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/wool"
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "workshopsofdoom:subtables/dyes"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "paper"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "ink_sac"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "stick"
+				}
+			]
+		}
+	]
+}

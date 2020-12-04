@@ -10,6 +10,7 @@ public class Names
 	// features
 	public static final String BLOCK_MOUND = "block_mound";
 	public static final String SPAWN_ENTITY = "spawn_entity";
+	public static final String SPAWN_LEASHED_ENTITY = "spawn_leashed_entity";
 	
 	// structures
 	public static final String DESERT_QUARRY = "desert_quarry";
