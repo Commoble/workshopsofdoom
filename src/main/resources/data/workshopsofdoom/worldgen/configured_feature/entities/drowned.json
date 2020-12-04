@@ -1,0 +1,7 @@
+{
+	"type": "workshopsofdoom:spawn_entity",
+	"config": 
+	{
+		"entity": "drowned"
+	}
+}

@@ -1,0 +1,51 @@
+{
+	"name": "workshopsofdoom:workshop/underground/wells",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 3,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/wells/extension",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/wells/bottom",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/wells/bottom_wide",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/wells/bottom_secret",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		}
+	]
+}

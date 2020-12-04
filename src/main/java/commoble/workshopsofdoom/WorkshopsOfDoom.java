@@ -283,7 +283,7 @@ public class WorkshopsOfDoom
 			Names.WORKSHOP,
 			this.workshop.get(),
 			this.workshop.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.WORKSHOP_START), 30, 0, false, true)));
+				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.WORKSHOP_START), 50, 0, false, true)));
 	}
 
 	// called for each biome loaded when biomes are loaded

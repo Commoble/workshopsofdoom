@@ -1,0 +1,85 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 2.0,
+				"max": 3.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"name": "minecraft:arrow",
+					"functions":
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 3.0,
+								"max": 6.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					]
+				},
+				{
+					"type": "minecraft:loot_table",
+					"weight": 1,
+					"name": "workshopsofdoom:subtables/cooked_meat",
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 1.0,
+								"max": 3.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					]
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:string"
+				},
+				{
+					"type": "minecraft:item",
+					"weight": 1,
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 2.0,
+								"max": 4.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					],
+					"name": "minecraft:leather"
+				}
+			]
+		}
+	]
+}

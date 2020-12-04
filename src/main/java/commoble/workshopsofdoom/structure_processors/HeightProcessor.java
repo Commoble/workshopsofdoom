@@ -19,7 +19,7 @@ import net.minecraft.world.gen.feature.template.Template.EntityInfo;
 public class HeightProcessor extends StructureProcessor
 {
 	public static final Codec<HeightProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.optionalFieldOf("min", 0).forGetter(HeightProcessor::getMin),
+			Codec.INT.optionalFieldOf("min", Integer.MIN_VALUE).forGetter(HeightProcessor::getMin),
 			Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(HeightProcessor::getMax),
 			IStructureProcessorType.PROCESSOR_TYPE.listOf().fieldOf("processors").forGetter(HeightProcessor::getProcessors)
 		).apply(instance, HeightProcessor::new));

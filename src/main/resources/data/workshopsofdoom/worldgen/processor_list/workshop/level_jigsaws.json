@@ -3,7 +3,7 @@
 	[
 		{
 			"processor_type": "workshopsofdoom:process_height",
-			"max": 20,
+			"max": 30,
 			"processors": 
 			[
 				{
@@ -15,7 +15,7 @@
 		},
 		{
 			"processor_type": "workshopsofdoom:process_height",
-			"min": 21,
+			"min": 31,
 			"max": 61,
 			"processors": 
 			[
