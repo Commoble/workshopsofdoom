@@ -1,0 +1,9 @@
+{
+	"processors": 
+	[
+		{
+			"processor_type": "workshopsofdoom:item_frame_loot",
+			"loot_table": "workshopsofdoom:chests/workshop/treasure_display_frame"
+		}
+	]
+}

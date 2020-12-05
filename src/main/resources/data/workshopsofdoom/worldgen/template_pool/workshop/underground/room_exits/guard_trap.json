@@ -145,6 +145,17 @@
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
 			}
+		},
+		{
+			"weight": 10,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/rooms/vault",
+				"processors": "workshopsofdoom:workshop/underground/vault",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
 		}
 	]
 }

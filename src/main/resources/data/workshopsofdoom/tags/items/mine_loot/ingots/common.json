@@ -2,7 +2,7 @@
 	"replace": false,
 	"values": 
 	[
-		"#forge:ores/iron",
+		"#forge:ingots/iron",
 		"minecraft:coal"
 	]
 }

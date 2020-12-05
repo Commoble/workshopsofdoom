@@ -3,6 +3,9 @@ package commoble.workshopsofdoom.structures;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -31,6 +34,7 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 {	
+	static final Logger LOGGER = LogManager.getLogger();
 	private final GenerationStage.Decoration generationStage;
 	private final boolean restrictSpawnBoxes;
 	private final Supplier<List<Spawners>> monsterSpawnerGetter;
@@ -133,6 +137,14 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 		public void func_230364_a_(DynamicRegistries registries, ChunkGenerator generator, TemplateManager templates, int chunkX, int chunkZ, Biome biome,
 			LoadableJigsawConfig config)
 		{
+			int depth = config.size;
+			String logSuffix = depth < 20 ? "" : " (this may take some time)";
+			LOGGER.debug("Running initial structure generation for structure {} at chunk position {}, {}, with jigsaw depth of {}{}",
+				this.getStructure().getRegistryName().toString(),
+				chunkX,
+				chunkZ,
+				depth,
+				logSuffix);
 			// from JigsawStructure, but we don't create a VillageConfig until now
 			// if we create one when configured structures / StructureFeatures are registered,
 			// then the worldgen data loader tries to resolve the jigsaw pool before jigsaw pools are loaded from data
@@ -153,6 +165,7 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 				config.getAllowIntersectingPieces(),
 				config.getSnapToHeightMap());
 			this.recalculateStructureSize();
+			LOGGER.debug("Structure generation completed");
 		}
 		
 	}

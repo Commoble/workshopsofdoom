@@ -33,6 +33,7 @@ public class Names
 	public static final String SET_NBT = "set_nbt";
 	public static final String PREDICATE = "predicate";
 	public static final String HEIGHT_PROCESSOR = "process_height";
+	public static final String ITEM_FRAME_LOOT = "item_frame_loot";
 	
 	// structure pools
 	public static final String DESERT_QUARRY_START = "quarry/desert/start";

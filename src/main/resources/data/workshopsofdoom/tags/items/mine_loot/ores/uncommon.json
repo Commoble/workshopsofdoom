@@ -2,7 +2,7 @@
 	"replace": false,
 	"values": 
 	[
-		"minecraft:redstone",
-		"minecraft:gold_ore"
+		"#forge:dusts/redstone",
+		"#forge:ores/gold"
 	]
 }

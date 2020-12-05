@@ -22,6 +22,7 @@ import commoble.workshopsofdoom.pos_rule_tests.HeightInWorldTest;
 import commoble.workshopsofdoom.rule_tests.AndRuleTest;
 import commoble.workshopsofdoom.rule_tests.ChanceRuleTest;
 import commoble.workshopsofdoom.structure_pieces.GroundFeatureJigsawPiece;
+import commoble.workshopsofdoom.structure_pieces.ItemFrameLootProcessor;
 import commoble.workshopsofdoom.structure_pieces.RejiggableJigsawPiece;
 import commoble.workshopsofdoom.structure_processors.EditPoolStructureProcessor;
 import commoble.workshopsofdoom.structure_processors.HeightProcessor;
@@ -251,6 +252,7 @@ public class WorkshopsOfDoom
 		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.SET_NBT, SetNBTStructureProcessor.DESERIALIZER);
 		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.PREDICATE, PredicatedStructureProcessor.DESERIALIZER);
 		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.HEIGHT_PROCESSOR, HeightProcessor.DESERIALIZER);
+		registerVanilla(Registry.STRUCTURE_PROCESSOR, Names.ITEM_FRAME_LOOT, ItemFrameLootProcessor.DESERIALIZER);
 		registerVanilla(Registry.RULE_TEST, Names.RANDOM_CHANCE, ChanceRuleTest.DESERIALIZER);
 		registerVanilla(Registry.RULE_TEST, Names.AND, AndRuleTest.DESERIALIZER);
 		registerVanilla(Registry.POS_RULE_TEST, Names.HEIGHT, HeightInWorldTest.DESERIALIZER);

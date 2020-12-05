@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+		
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:loot_table",
+					"name": "workshopsofdoom:subtables/random_loot_with_big_enchantments"
+				}
+			]
+		}
+	]
+}
