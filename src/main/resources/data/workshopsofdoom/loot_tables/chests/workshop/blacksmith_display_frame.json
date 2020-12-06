@@ -1,0 +1,36 @@
+{
+	"type": "minecraft:generic",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"expand": true,
+					"name": "forge:armor/iron"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 4,
+					"expand": true,
+					"name": "forge:weapons/iron"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 4,
+					"expand": true,
+					"name": "forge:tools/iron"
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"expand": true,
+					"name": "forge:armor/chainmail"
+				}
+			]
+		}
+	]
+}

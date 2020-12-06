@@ -1,0 +1,63 @@
+{
+	"type": "minecraft:chest",
+	"pools": 
+	[
+		{
+			"rolls": 
+			{
+				"min": 1.0,
+				"max": 3.0,
+				"type": "minecraft:uniform"
+			},
+			"entries": 
+			[
+				{
+					"type": "minecraft:tag",
+					"weight": 20,
+					"name": "workshopsofdoom:mine_loot/ingots/common",
+					"expand": true
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 5,
+					"name": "workshopsofdoom:mine_loot/ingots/uncommon",
+					"expand": true
+				},
+				{
+					"type": "minecraft:tag",
+					"weight": 1,
+					"name": "workshopsofdoom:mine_loot/ingots/rare",
+					"expand": true
+				}
+			],
+			"functions": 
+			[
+				{
+					"function": "minecraft:set_count",
+					"count": 
+					{
+						"min": 1.0,
+						"max": 4.0,
+						"type": "minecraft:uniform"
+					}
+				},
+				{
+					"function": "looot:apply_functions_if_tagged",
+					"tag": "workshopsofdoom:mine_loot/ingots/supernuminous",
+					"functions": 
+					[
+						{
+							"function": "minecraft:set_count",
+							"count": 
+							{
+								"min": 4.0,
+								"max": 9.0,
+								"type": "minecraft:uniform"
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

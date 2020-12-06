@@ -1,8 +1,41 @@
 {
-	"name": "workshopsofdoom:workshop/surface/passages/medium",
+	"name": "workshopsofdoom:workshop/surface/room_exits/furnaces",
 	"fallback": "minecraft:empty",
-	"elements":
+	"elements": 
 	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/narrow/double",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/narrow/triple",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/narrow/elbow",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
 		{
 			"weight": 1,
 			"element": 
@@ -29,17 +62,6 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/passages/medium/triple_with_door",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
-			}
-		},
-		{
-			"weight": 1,
-			"element": 
-			{
 				"location": "workshopsofdoom:workshop/passages/medium/elbow",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
 				"projection": "rigid",
@@ -51,7 +73,40 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/passages/junctions/medium_to_narrow",
+				"location": "workshopsofdoom:workshop/passages/wide/double",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/wide/triple",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/wide/elbow",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 3,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/stairs_down",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
@@ -73,41 +128,8 @@
 			"weight": 1,
 			"element": 
 			{
-				"location": "workshopsofdoom:workshop/rooms/kitchen",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
-			}
-		},
-		{
-			"weight": 1,
-			"element": 
-			{
-				"location": "workshopsofdoom:workshop/rooms/butchery",
-				"processors": "workshopsofdoom:workshop/surface/weathering",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
-			}
-		},
-		{
-			"weight": 1,
-			"element": 
-			{
 				"location": "workshopsofdoom:workshop/rooms/furnaces",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
-				"projection": "rigid",
-				"element_type": "workshopsofdoom:rejiggable_pool_element",
-				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
-			}
-		},
-		{
-			"weight": 1,
-			"element": 
-			{
-				"location": "workshopsofdoom:workshop/rooms/blacksmith",
-				"processors": "workshopsofdoom:workshop/surface/blacksmith",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"

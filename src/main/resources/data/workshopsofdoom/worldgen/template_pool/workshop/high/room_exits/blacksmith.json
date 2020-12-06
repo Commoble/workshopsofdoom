@@ -1,0 +1,29 @@
+{
+	"name": "workshopsofdoom:workshop/high/room_exits/furnaces",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 5,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/passages/stairs_down",
+				"processors": "workshopsofdoom:workshop/high/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/rooms/closet",
+				"processors": "workshopsofdoom:workshop/high/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		}
+	]
+}
