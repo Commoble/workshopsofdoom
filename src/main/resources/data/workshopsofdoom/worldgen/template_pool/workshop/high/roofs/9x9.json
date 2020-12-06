@@ -13,6 +13,17 @@
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
 			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/roofs/flagpole_9x9",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
 		}
 	]
 }
