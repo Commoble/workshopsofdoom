@@ -171,7 +171,7 @@ public class WorkshopsOfDoom
 				() -> this.serverConfig.mountainMinesMonsters.get().get(),
 				noSpawns,
 				64,
-				32,
+				20,
 				305511170,
 				false),
 			World.OVERWORLD);
@@ -180,7 +180,7 @@ public class WorkshopsOfDoom
 				() -> this.serverConfig.badlandsMinesMonsters.get().get(),
 				noSpawns,
 				64,
-				32,
+				20,
 				219011832,
 				false),
 			World.OVERWORLD);
@@ -188,8 +188,8 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				noSpawns,
 				noSpawns,
-				64,
-				32,
+				80,
+				30,
 				567764539,
 				false),
 			World.OVERWORLD);

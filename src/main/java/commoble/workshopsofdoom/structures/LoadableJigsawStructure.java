@@ -176,7 +176,7 @@ public class LoadableJigsawStructure extends Structure<LoadableJigsawConfig>
 				ResourceLocation.CODEC.fieldOf("start_pool").forGetter(LoadableJigsawConfig::getStartPool),
 				Codec.INT.fieldOf("size").forGetter(LoadableJigsawConfig::getSize),
 				Codec.INT.optionalFieldOf("start_y",0).forGetter(LoadableJigsawConfig::getStartY),
-				Codec.BOOL.optionalFieldOf("allow_intersecting_pieces", true).forGetter(LoadableJigsawConfig::getAllowIntersectingPieces),
+				Codec.BOOL.optionalFieldOf("allow_intersecting_pieces", false).forGetter(LoadableJigsawConfig::getAllowIntersectingPieces),
 				Codec.BOOL.optionalFieldOf("snap_to_height_map", true).forGetter(LoadableJigsawConfig::getSnapToHeightMap)
 			).apply(instance, LoadableJigsawConfig::new));
 		
