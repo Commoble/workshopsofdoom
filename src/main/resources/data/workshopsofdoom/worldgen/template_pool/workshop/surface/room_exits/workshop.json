@@ -1,5 +1,5 @@
 {
-	"name": "workshopsofdoom:workshop/surface/room_exits/blacksmith",
+	"name": "workshopsofdoom:workshop/surface/room_exits/workshop",
 	"fallback": "minecraft:empty",
 	"elements": 
 	[

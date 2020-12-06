@@ -167,6 +167,17 @@
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
 				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
 			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/rooms/workshop",
+				"processors": "workshopsofdoom:workshop/underground/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
 		}
 	]
 }
