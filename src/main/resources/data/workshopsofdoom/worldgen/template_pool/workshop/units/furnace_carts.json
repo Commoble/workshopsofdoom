@@ -1,0 +1,32 @@
+{
+	"name": "workshopsofdoom:quarry/plains/minecarts",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:entities/minecart",
+				"projection": "rigid",
+				"element_type": "minecraft:feature_pool_element"
+			}
+		},
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:entities/workshop_furnaces_chest_minecart",
+				"projection": "rigid",
+				"element_type": "minecraft:feature_pool_element"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"element_type":"minecraft:empty_pool_element"
+			}
+		}
+	]
+}

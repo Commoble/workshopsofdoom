@@ -1,0 +1,14 @@
+{
+	"type": "workshopsofdoom:block_mound",
+	"config": 
+	{
+		"state_provider": 
+		{
+			"type": "minecraft:simple_state_provider",
+			"state": 
+			{
+				"Name": "minecraft:coal_block"
+			}
+		}
+	}
+}

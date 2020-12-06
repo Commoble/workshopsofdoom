@@ -1,0 +1,23 @@
+{
+	"name": "workshopsofdoom:units/sometimes_excavator",
+	"fallback": "minecraft:empty",
+	"elements": 
+	[
+		{
+			"weight": 1,
+			"element": 
+			{
+				"feature": "workshopsofdoom:entities/excavator",
+				"projection": "rigid",
+				"element_type": "minecraft:feature_pool_element"
+			}
+		},
+		{
+			"weight": 2,
+			"element": 
+			{
+				"element_type": "empty_pool_element"
+			}
+		}
+	]
+}
