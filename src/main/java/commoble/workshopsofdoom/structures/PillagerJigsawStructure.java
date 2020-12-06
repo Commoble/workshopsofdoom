@@ -13,7 +13,6 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationStage.Decoration;
 import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.feature.structure.VillageConfig;
 import net.minecraft.world.gen.settings.StructureSeparationSettings;
 
 // we override a placement check here to keep the structure from spawning near villages (same logic as pillager outposts)
@@ -26,8 +25,10 @@ public class PillagerJigsawStructure extends LoadableJigsawStructure
 		super(codec, generationStage, restrictSpawnBoxes, monsterSpawnerGetter, creatureSpawnerGetter, maxSeperation, minSeperation, placementSalt, transformSurroundingLand);
 	}
 
+	// returns whether a structure can start generating in the given chunk
+	@Override
 	protected boolean func_230363_a_(ChunkGenerator generator, BiomeProvider biomeProvider, long seed, SharedSeedRandom random, int x, int z,
-		Biome p_230363_8_, ChunkPos p_230363_9_, VillageConfig p_230363_10_)
+		Biome biome, ChunkPos chunkPos, LoadableJigsawConfig config)
 	{
 		int i = x >> 4;
 		int j = z >> 4;
