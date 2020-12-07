@@ -45,9 +45,9 @@ public class CommonConfig
 		
 		this.desertQuarry = subscriber.subscribeObject(builder, "desert_quarry", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.DESERT_QUARRY_START), 7, 12, 32, 0, false, true));
 		this.plainsQuarry = subscriber.subscribeObject(builder, "plains_quarry", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.PLAINS_QUARRY_START), 7, 12, 32, 0, false, true));	
-		this.mountainsMines = subscriber.subscribeObject(builder, "mountain_mines", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.MOUNTAIN_MINES_START), 25, 12, 32, 0, false, true));	
-		this.badlandsMines = subscriber.subscribeObject(builder, "badlands_mines", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.BADLANDS_MINES_START), 25, 12, 32, 0, false, true));	
-		this.workshop = subscriber.subscribeObject(builder, "workshop", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.WORKSHOP_START), 25, 12, 32, 0, false, true));	
+		this.mountainsMines = subscriber.subscribeObject(builder, "mountain_mines", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.MOUNTAIN_MINES_START), 20, 12, 32, 0, false, true));	
+		this.badlandsMines = subscriber.subscribeObject(builder, "badlands_mines", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.BADLANDS_MINES_START), 20, 12, 32, 0, false, true));	
+		this.workshop = subscriber.subscribeObject(builder, "workshop", LoadableJigsawConfig.CODEC, new LoadableJigsawConfig(new ResourceLocation(WorkshopsOfDoom.MODID, Names.WORKSHOP_START), 20, 12, 32, 0, false, true));	
 		
 		
 		builder.pop();
