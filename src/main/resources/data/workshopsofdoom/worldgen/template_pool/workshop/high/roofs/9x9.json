@@ -4,10 +4,21 @@
 	"elements": 
 	[
 		{
-			"weight": 1,
+			"weight": 5,
 			"element": 
 			{
 				"location": "workshopsofdoom:workshop/roofs/smokestack_9x9",
+				"processors": "workshopsofdoom:workshop/surface/weathering",
+				"projection": "rigid",
+				"element_type": "workshopsofdoom:rejiggable_pool_element",
+				"jigsaw_processors": "workshopsofdoom:workshop/level_jigsaws"
+			}
+		},
+		{
+			"weight": 10,
+			"element": 
+			{
+				"location": "workshopsofdoom:workshop/roofs/flat_ceiling_9x9",
 				"processors": "workshopsofdoom:workshop/surface/weathering",
 				"projection": "rigid",
 				"element_type": "workshopsofdoom:rejiggable_pool_element",
