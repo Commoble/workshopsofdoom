@@ -84,6 +84,7 @@ public class WorkshopsOfDoom
 	public static WorkshopsOfDoom INSTANCE;
 	
 	public final ServerConfig serverConfig;
+	public final CommonConfig commonConfig;
 	
 	// forge registry objects
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
@@ -140,6 +141,7 @@ public class WorkshopsOfDoom
 		features.register(Names.SPAWN_LEASHED_ENTITY, () -> new SpawnLeashedEntityFeature(SpawnLeashedEntityFeature.LeashedEntityConfig.CODEC));
 
 		// server config needs to be initialized after entity registry objects intialize but before structures
+		this.commonConfig = ConfigHelper.register(ModConfig.Type.COMMON, CommonConfig::new);
 		this.serverConfig = ConfigHelper.register(ModConfig.Type.SERVER, ServerConfig::new);
 		
 		List<Spawners> noSpawnList = ImmutableList.of();
@@ -152,8 +154,6 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				() -> this.serverConfig.desertQuarryMonsters.get().get(),
 				noSpawns,
-				32,
-				16,
 				420764282,
 				false),
 			World.OVERWORLD);
@@ -161,8 +161,6 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				() -> this.serverConfig.plainsQuarryMonsters.get().get(),
 				noSpawns,
-				32,
-				16,
 				489846822,
 				false),
 			World.OVERWORLD);
@@ -170,8 +168,6 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				() -> this.serverConfig.mountainMinesMonsters.get().get(),
 				noSpawns,
-				64,
-				20,
 				305511170,
 				false),
 			World.OVERWORLD);
@@ -179,8 +175,6 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				() -> this.serverConfig.badlandsMinesMonsters.get().get(),
 				noSpawns,
-				64,
-				20,
 				219011832,
 				false),
 			World.OVERWORLD);
@@ -188,8 +182,6 @@ public class WorkshopsOfDoom
 			() -> new PillagerJigsawStructure(LoadableJigsawConfig.CODEC, GenerationStage.Decoration.SURFACE_STRUCTURES, true,
 				noSpawns,
 				noSpawns,
-				80,
-				20,
 				567764539,
 				false),
 			World.OVERWORLD);
@@ -239,11 +231,11 @@ public class WorkshopsOfDoom
 		
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
-		setStructureInfo(this.desertQuarry.get());
-		setStructureInfo(this.plainsQuarry.get());
-		setStructureInfo(this.mountainsMines.get());
-		setStructureInfo(this.badlandsMines.get());
-		setStructureInfo(this.workshop.get());
+		setStructureInfo(this.desertQuarry.get(), this.commonConfig.desertQuarry.get());
+		setStructureInfo(this.plainsQuarry.get(), this.commonConfig.plainsQuarry.get());
+		setStructureInfo(this.mountainsMines.get(), this.commonConfig.mountainsMines.get());
+		setStructureInfo(this.badlandsMines.get(), this.commonConfig.badlandsMines.get());
+		setStructureInfo(this.workshop.get(), this.commonConfig.workshop.get());
 		
 		// register to forgeless vanilla registries
 		registerVanilla(Registry.STRUCTURE_POOL_ELEMENT, Names.GROUND_FEATURE_POOL_ELEMENT, GroundFeatureJigsawPiece.DESERIALIZER);
@@ -262,30 +254,30 @@ public class WorkshopsOfDoom
 			Names.DESERT_QUARRY,
 			this.desertQuarry.get(),
 			this.desertQuarry.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.DESERT_QUARRY_START), 7, 0, false, true)));
+				.withConfiguration(this.commonConfig.desertQuarry.get()));
 		
 		this.configuredPlainsQuarry = registerConfiguredStructure(
 			Names.PLAINS_QUARRY,
 			this.plainsQuarry.get(),
 			this.plainsQuarry.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.PLAINS_QUARRY_START), 7, 0, false, true)));
+				.withConfiguration(this.commonConfig.plainsQuarry.get()));
 		
 		this.configuredMountainsMines = registerConfiguredStructure(
 			Names.MOUNTAIN_MINES,
 			this.mountainsMines.get(),
 			this.mountainsMines.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.MOUNTAIN_MINES_START), 25, 0, false, true)));
+				.withConfiguration(this.commonConfig.mountainsMines.get()));
 		
 		this.configuredBadlandsMines = registerConfiguredStructure(
 			Names.BADLANDS_MINES,
 			this.badlandsMines.get(),
 			this.badlandsMines.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.BADLANDS_MINES_START), 25, 0, false, true)));
+				.withConfiguration(this.commonConfig.badlandsMines.get()));
 		this.configuredWorkshop = registerConfiguredStructure(
 			Names.WORKSHOP,
 			this.workshop.get(),
 			this.workshop.get()
-				.withConfiguration(new LoadableJigsawConfig(new ResourceLocation(MODID, Names.WORKSHOP_START), 50, 0, false, true)));
+				.withConfiguration(this.commonConfig.workshop.get()));
 	}
 
 	// called for each biome loaded when biomes are loaded
@@ -416,7 +408,7 @@ public class WorkshopsOfDoom
 	 * ~TelepathicGrunt
 	 * 
 	 * */
-	static <STRUCTURE extends LoadableJigsawStructure> void setStructureInfo(STRUCTURE structure)
+	static <STRUCTURE extends LoadableJigsawStructure> void setStructureInfo(STRUCTURE structure, LoadableJigsawConfig config)
 	{
 		Structure.NAME_STRUCTURE_BIMAP.put(structure.getRegistryName().toString(), structure);
 		
@@ -432,7 +424,7 @@ public class WorkshopsOfDoom
 				.build();
 		}
 		
-		StructureSeparationSettings seperation = new StructureSeparationSettings(structure.maxSeperation, structure.minSeparation, structure.placementSalt);
+		StructureSeparationSettings seperation = new StructureSeparationSettings(config.getMaxSeparation(), config.getMinSeparation(), structure.placementSalt);
 		
 		DimensionStructuresSettings.field_236191_b_ =
 			ImmutableMap.<Structure<?>, StructureSeparationSettings>builder()

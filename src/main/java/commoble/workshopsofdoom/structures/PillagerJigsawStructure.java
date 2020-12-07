@@ -20,9 +20,9 @@ public class PillagerJigsawStructure extends LoadableJigsawStructure
 {
 
 	public PillagerJigsawStructure(Codec<LoadableJigsawConfig> codec, Decoration generationStage, boolean restrictSpawnBoxes, Supplier<List<Spawners>> monsterSpawnerGetter,
-		Supplier<List<Spawners>> creatureSpawnerGetter, int maxSeperation, int minSeperation, int placementSalt, boolean transformSurroundingLand)
+		Supplier<List<Spawners>> creatureSpawnerGetter, int placementSalt, boolean transformSurroundingLand)
 	{
-		super(codec, generationStage, restrictSpawnBoxes, monsterSpawnerGetter, creatureSpawnerGetter, maxSeperation, minSeperation, placementSalt, transformSurroundingLand);
+		super(codec, generationStage, restrictSpawnBoxes, monsterSpawnerGetter, creatureSpawnerGetter, placementSalt, transformSurroundingLand);
 	}
 
 	// returns whether a structure can start generating in the given chunk
