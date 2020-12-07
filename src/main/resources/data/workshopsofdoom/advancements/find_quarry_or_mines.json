@@ -1,0 +1,78 @@
+{
+	"parent": "minecraft:adventure/root",
+	"display": 
+	{
+		"icon": 
+		{
+			"item": "minecraft:tnt"
+		},
+		"title": 
+		{
+			"translate": "workshopsofdoom.advancements.find_quarry_or_mines.title"
+		},
+		"description": 
+		{
+			"translate": "workshopsofdoom.advancements.find_quarry_or_mines.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": 
+	{
+		"workshopsofdoom:desert_quarry": 
+		{
+			"trigger": "minecraft:location",
+			"conditions": 
+			{
+				"location": 
+				{
+					"feature": "workshopsofdoom:desert_quarry"
+				}
+			}
+		},
+		"workshopsofdoom:plains_quarry": 
+		{
+			"trigger": "minecraft:location",
+			"conditions": 
+			{
+				"location": 
+				{
+					"feature": "workshopsofdoom:plains_quarry"
+				}
+			}
+		},
+		"workshopsofdoom:mountain_mines":
+		{
+			"trigger": "minecraft:location",
+			"conditions": 
+			{
+				"location": 
+				{
+					"feature": "workshopsofdoom:mountain_mines"
+				}
+			}
+		},
+		"workshopsofdoom:badlands_mines":
+		{
+			"trigger": "minecraft:location",
+			"conditions": 
+			{
+				"location": 
+				{
+					"feature": "workshopsofdoom:badlands_mines"
+				}
+			}
+		}
+	},
+	"requirements":
+	[
+		[
+			"workshopsofdoom:desert_quarry",
+			"workshopsofdoom:plains_quarry",
+			"workshopsofdoom:mountain_mines",
+			"workshopsofdoom:badlands_mines"
+		]
+	]
+}

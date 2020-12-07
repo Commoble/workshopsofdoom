@@ -1,0 +1,63 @@
+{
+	"parent": "workshopsofdoom:find_quarry_or_mines",
+	"display": 
+	{
+		"icon": 
+		{
+			"item": "black_banner",
+			"nbt": "{BlockEntityTag:{Base:0,Patterns:[{Pattern:\"hh\",Color:15},{Pattern:\"mr\",Color:14},{Pattern:\"hhb\",Color:15},{Pattern:\"bt\",Color:14}]}}",
+			"stag":
+			{
+				"BlockEntityTag":
+				{
+					"Base": 0,
+					"Patterns":
+					[
+						{
+							"Pattern":"hh",
+							"Color":15
+						},
+						{
+							"Pattern": "mr",
+							"Color": 14
+						},
+						{
+							"Pattern": "hhb",
+							"Color": 15
+						},
+						{
+							"Pattern": "bt",
+							"Color":14
+						}
+					]
+				}
+			}
+		},
+		"title": 
+		{
+			"translate": "workshopsofdoom.advancements.find_workshop.title"
+		},
+		"description": 
+		{
+			"translate": "workshopsofdoom.advancements.find_workshop.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": 
+	{
+		"workshop": 
+		{
+			"trigger": "minecraft:location",
+			"conditions": 
+			{
+				"location": 
+				{
+					"feature": "workshopsofdoom:workshop"
+				}
+			}
+		}
+	}
+}
