@@ -189,7 +189,7 @@ public class WorkshopsOfDoom
 				noSpawns,
 				noSpawns,
 				80,
-				30,
+				20,
 				567764539,
 				false),
 			World.OVERWORLD);
