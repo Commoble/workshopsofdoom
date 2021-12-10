@@ -1,20 +1,19 @@
 package commoble.workshopsofdoom.client;
 
 import commoble.workshopsofdoom.WorkshopsOfDoom;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientInit
 {
 	// called from mod constructor
 	public static void doClientInit(IEventBus modBus, IEventBus forgeBus)
 	{
-		modBus.addListener(ClientInit::onClientSetup);
+		modBus.addListener(ClientInit::onRegisterEntityRenderers);
 	}
 	
-	public static void onClientSetup(FMLClientSetupEvent event)
+	public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event)
 	{
-		RenderingRegistry.registerEntityRenderingHandler(WorkshopsOfDoom.INSTANCE.excavator.get(), ExcavatorRenderer::new);
+		event.registerEntityRenderer(WorkshopsOfDoom.INSTANCE.excavator.get(), ExcavatorRenderer::new);
 	}
 }

@@ -6,19 +6,19 @@ import java.util.Random;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.AlwaysTrueRuleTest;
-import net.minecraft.world.gen.feature.template.AlwaysTrueTest;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.PosRuleTest;
-import net.minecraft.world.gen.feature.template.RuleTest;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.gen.feature.template.Template.BlockInfo;
-import net.minecraft.world.gen.feature.template.Template.EntityInfo;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosAlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureEntityInfo;
 
 // similar to the rules list processor but can be used with other processors
 // if predicates match, will apply its list of sub-processors
@@ -26,13 +26,13 @@ import net.minecraft.world.gen.feature.template.Template.EntityInfo;
 public class PredicatedStructureProcessor extends StructureProcessor
 {
 	public static final Codec<PredicatedStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			RuleTest.field_237127_c_.optionalFieldOf("input_predicate", AlwaysTrueRuleTest.INSTANCE).forGetter(PredicatedStructureProcessor::getInputpredicate),
-			RuleTest.field_237127_c_.optionalFieldOf("location_predicate", AlwaysTrueRuleTest.INSTANCE).forGetter(PredicatedStructureProcessor::getLocationpredicate),
-			PosRuleTest.field_237102_c_.optionalFieldOf("position_predicate", AlwaysTrueTest.field_237100_b_).forGetter(PredicatedStructureProcessor::getPositionPredicate),
-			IStructureProcessorType.PROCESSOR_TYPE.listOf().fieldOf("processors").forGetter(PredicatedStructureProcessor::getProcessors)
+			RuleTest.CODEC.optionalFieldOf("input_predicate", AlwaysTrueTest.INSTANCE).forGetter(PredicatedStructureProcessor::getInputpredicate),
+			RuleTest.CODEC.optionalFieldOf("location_predicate", AlwaysTrueTest.INSTANCE).forGetter(PredicatedStructureProcessor::getLocationpredicate),
+			PosRuleTest.CODEC.optionalFieldOf("position_predicate", PosAlwaysTrueTest.INSTANCE).forGetter(PredicatedStructureProcessor::getPositionPredicate),
+			StructureProcessorType.SINGLE_CODEC.listOf().fieldOf("processors").forGetter(PredicatedStructureProcessor::getProcessors)
 		).apply(instance, PredicatedStructureProcessor::new));
 	
-	public static final IStructureProcessorType<PredicatedStructureProcessor> DESERIALIZER = () -> CODEC;
+	public static final StructureProcessorType<PredicatedStructureProcessor> DESERIALIZER = () -> CODEC;
 
 	// input blockinfo in the structure file
 	private final RuleTest inputPredicate;	public RuleTest getInputpredicate() { return this.inputPredicate; }
@@ -52,23 +52,23 @@ public class PredicatedStructureProcessor extends StructureProcessor
 	}
 
 	@Override
-	protected IStructureProcessorType<?> getType()
+	protected StructureProcessorType<?> getType()
 	{
 		return DESERIALIZER;
 	}
 
 	@Override
-	public BlockInfo process(IWorldReader world, BlockPos originalPos, BlockPos structureOrigin, BlockInfo originalInfo, BlockInfo transformedInfo, PlacementSettings placement,
-		Template template)
+	public StructureBlockInfo process(LevelReader world, BlockPos originalPos, BlockPos structureOrigin, StructureBlockInfo originalInfo, StructureBlockInfo transformedInfo, StructurePlaceSettings placement,
+		StructureTemplate template)
 	{
-		Random random = new Random(MathHelper.getPositionRandom(transformedInfo.pos));
+		Random random = new Random(Mth.getSeed(transformedInfo.pos));
 		if (this.inputPredicate.test(transformedInfo.state, random))
 		{
-			if (this.positionPredicate.func_230385_a_(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
+			if (this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
 			{
 				if (this.locationPredicate.test(world.getBlockState(transformedInfo.pos), random))
 				{
-					BlockInfo output = transformedInfo;
+					StructureBlockInfo output = transformedInfo;
 					for (StructureProcessor processor : this.processors)
 					{
 						output = processor.process(world, originalPos, structureOrigin, originalInfo, output, placement, template);
@@ -81,7 +81,7 @@ public class PredicatedStructureProcessor extends StructureProcessor
 	}
 
 	@Override
-	public EntityInfo processEntity(IWorldReader world, BlockPos seedPos, EntityInfo rawEntityInfo, EntityInfo entityInfo, PlacementSettings placementSettings, Template template)
+	public StructureEntityInfo processEntity(LevelReader world, BlockPos seedPos, StructureEntityInfo rawEntityInfo, StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template)
 	{
 		// the predicates we use are only for blocks, unfortunately
 		return super.processEntity(world, seedPos, rawEntityInfo, entityInfo, placementSettings, template);

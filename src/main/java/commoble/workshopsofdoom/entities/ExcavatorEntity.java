@@ -4,54 +4,41 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.VindicatorEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.pathfinding.WalkNodeProcessor;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.raid.Raid;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.Vindicator;
+import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 
-public class ExcavatorEntity extends VindicatorEntity
+public class ExcavatorEntity extends Vindicator
 {
 
-	public ExcavatorEntity(EntityType<? extends ExcavatorEntity> type, World worldIn)
+	public ExcavatorEntity(EntityType<? extends ExcavatorEntity> type, Level worldIn)
 	{
 		super(type, worldIn);
-	}
-
-	public static AttributeModifierMap.MutableAttribute getAttributes()
-	{
-		return MonsterEntity.func_234295_eP_()
-			.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35F)
-			.createMutableAttribute(Attributes.FOLLOW_RANGE, 12.0D)
-			.createMutableAttribute(Attributes.MAX_HEALTH, 24.0D)
-			.createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D)
-			.createMutableAttribute(Attributes.ARMOR, 2.0D);
 	}
 
 	/**
 	 * Returns new PathNavigateGround instance
 	 */
 	@Override
-	protected PathNavigator createNavigator(World worldIn)
+	protected PathNavigation createNavigation(Level worldIn)
 	{
 		return new ExcavatorEntity.Navigator(this, worldIn);
 	}
@@ -70,22 +57,22 @@ public class ExcavatorEntity extends VindicatorEntity
 
 	public ItemStack getStartingWeapon()
 	{
-		Item item = this.world.rand.nextBoolean() ? Items.IRON_PICKAXE : Items.IRON_SHOVEL;
+		Item item = this.level.random.nextBoolean() ? Items.IRON_PICKAXE : Items.IRON_SHOVEL;
 		return new ItemStack(item);
 	}
 
 	@Override
-	public void applyWaveBonus(int wave, boolean p_213660_2_)
+	public void applyRaidBuffs(int wave, boolean p_213660_2_)
 	{
 		ItemStack itemstack = this.getStartingWeapon();
-		Raid raid = this.getRaid();
+		Raid raid = this.getCurrentRaid();
 		int i = 1;
-		if (wave > raid.getWaves(Difficulty.NORMAL))
+		if (wave > raid.getNumGroups(Difficulty.NORMAL))
 		{
 			i = 2;
 		}
 
-		boolean flag = this.rand.nextFloat() <= raid.getEnchantOdds();
+		boolean flag = this.random.nextFloat() <= raid.getEnchantOdds();
 		if (flag)
 		{
 			Map<Enchantment, Integer> map = Maps.newHashMap();
@@ -93,18 +80,18 @@ public class ExcavatorEntity extends VindicatorEntity
 			EnchantmentHelper.setEnchantments(map, itemstack);
 		}
 
-		this.setItemStackToSlot(EquipmentSlotType.MAINHAND, itemstack);
+		this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
 	}
 
 	/**
 	 * Gives armor or weapon for entity based on given DifficultyInstance
 	 */
 	@Override
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
+	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty)
 	{
-		if (this.getRaid() == null)
+		if (this.getCurrentRaid() == null)
 		{
-			this.setItemStackToSlot(EquipmentSlotType.MAINHAND, this.getStartingWeapon());
+			this.setItemSlot(EquipmentSlot.MAINHAND, this.getStartingWeapon());
 		}
 
 	}
@@ -113,35 +100,35 @@ public class ExcavatorEntity extends VindicatorEntity
 	// just setting the path weight of UNPASSABLE_RAIL to 0 doesn't work as there are a few checks that assume
 	// that UNPASSABLE_RAILs can't be pathed through
 	// so we need to ensure that rails aren't classified as UNPASSABLE_RAILS at all
-	// overriding func_215744_a (process path node type) in the WalkNodeProcessor to ensure that UNPASSABLE_RAIL
+	// overriding evaluateBlockPathType (process path node type) in the WalkNodeProcessor to ensure that UNPASSABLE_RAIL
 	// is never returned should be sufficient
-	static class Navigator extends GroundPathNavigator
+	static class Navigator extends GroundPathNavigation
 	{
-		public Navigator(MobEntity mob, World world)
+		public Navigator(Mob mob, Level world)
 		{
 			super(mob, world);
 		}
 
 		@Override
-		protected PathFinder getPathFinder(int followRangeTimesSixteen)
+		protected PathFinder createPathFinder(int followRangeTimesSixteen)
 		{
-			this.nodeProcessor = new ExcavatorEntity.Processor();
-			return new PathFinder(this.nodeProcessor, followRangeTimesSixteen);
+			this.nodeEvaluator = new ExcavatorEntity.Processor();
+			return new PathFinder(this.nodeEvaluator, followRangeTimesSixteen);
 		}
 	}
 
-	static class Processor extends WalkNodeProcessor
+	static class Processor extends WalkNodeEvaluator
 	{
 		private Processor()
 		{
 		}
 
 		@Override
-		protected PathNodeType func_215744_a(IBlockReader world, boolean canOpenDoors, boolean canEnterDoors, BlockPos pos, PathNodeType pathNodeType)
+		protected BlockPathTypes evaluateBlockPathType(BlockGetter world, boolean canOpenDoors, boolean canEnterDoors, BlockPos pos, BlockPathTypes pathNodeType)
 		{
-			PathNodeType base = super.func_215744_a(world, canOpenDoors, canEnterDoors, pos, pathNodeType);
-			return base == PathNodeType.RAIL || base == PathNodeType.UNPASSABLE_RAIL
-				? PathNodeType.WALKABLE
+			BlockPathTypes base = super.evaluateBlockPathType(world, canOpenDoors, canEnterDoors, pos, pathNodeType);
+			return base == BlockPathTypes.RAIL || base == BlockPathTypes.UNPASSABLE_RAIL
+				? BlockPathTypes.WALKABLE
 				: base;
 		}
 	}

@@ -5,9 +5,9 @@ import java.util.Random;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.world.gen.feature.template.IRuleTestType;
-import net.minecraft.world.gen.feature.template.RuleTest;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
 public class ChanceRuleTest extends RuleTest
 {
@@ -15,7 +15,7 @@ public class ChanceRuleTest extends RuleTest
 			Codec.FLOAT.fieldOf("probability").forGetter(ChanceRuleTest::getProbability)
 		).apply(instance, ChanceRuleTest::new));
 	
-	public static final IRuleTestType<ChanceRuleTest> DESERIALIZER = () -> CODEC;
+	public static final RuleTestType<ChanceRuleTest> DESERIALIZER = () -> CODEC;
 
 	private final float probability;	public float getProbability() { return this.probability; }
 
@@ -31,7 +31,7 @@ public class ChanceRuleTest extends RuleTest
 	}
 
 	@Override
-	protected IRuleTestType<?> getType()
+	protected RuleTestType<?> getType()
 	{
 		return DESERIALIZER;
 	}

@@ -6,47 +6,46 @@ import java.util.function.Supplier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.jigsaw.FeatureJigsawPiece;
-import net.minecraft.world.gen.feature.jigsaw.IJigsawDeserializer;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
-import net.minecraft.world.gen.feature.structure.StructureManager;
-import net.minecraft.world.gen.feature.template.TemplateManager;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.StructureFeatureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.structures.FeaturePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElementType;
+import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 
 // like FeatureJigsawPiece, but offset downward by 1 block
 // useful for making features at the same position as the parent jigsaw
 // when snap-to-heightmap isn't viable
-public class GroundFeatureJigsawPiece extends FeatureJigsawPiece
+public class GroundFeatureJigsawPiece extends FeaturePoolElement
 {
 	public static final Codec<GroundFeatureJigsawPiece> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-			ConfiguredFeature.field_236264_b_.fieldOf("feature").forGetter((piece) -> piece.featureGetter),
-			func_236848_d_()
+			PlacedFeature.CODEC.fieldOf("feature").forGetter((piece) -> piece.featureGetter),
+			projectionCodec()
 		).apply(instance, GroundFeatureJigsawPiece::new));
-	public static final IJigsawDeserializer<GroundFeatureJigsawPiece> DESERIALIZER = () -> CODEC;
+	public static final StructurePoolElementType<GroundFeatureJigsawPiece> DESERIALIZER = () -> CODEC;
 	
-	private final Supplier<ConfiguredFeature<?, ?>> featureGetter;
+	private final Supplier<PlacedFeature> featureGetter;
 
-	protected GroundFeatureJigsawPiece(Supplier<ConfiguredFeature<?, ?>> feature, JigsawPattern.PlacementBehaviour placement)
+	protected GroundFeatureJigsawPiece(Supplier<PlacedFeature> feature, StructureTemplatePool.Projection placement)
 	{
 		super(feature, placement);
 		this.featureGetter = feature;
 	}
 
 	@Override
-	public boolean func_230378_a_(TemplateManager templates, ISeedReader world, StructureManager structures, ChunkGenerator chunkGenerator, BlockPos posToGenerate,
-		BlockPos posB, Rotation rotation, MutableBoundingBox box, Random rand, boolean flag)
+	public boolean place(StructureManager templates, WorldGenLevel world, StructureFeatureManager structures, ChunkGenerator chunkGenerator, BlockPos posToGenerate,
+		BlockPos posB, Rotation rotation, BoundingBox box, Random rand, boolean flag)
 	{
-		return this.featureGetter.get().generate(world, chunkGenerator, rand, posToGenerate.down());
+		return this.featureGetter.get().place(world, chunkGenerator, rand, posToGenerate.below());
 	}
 
 	@Override
-	public IJigsawDeserializer<?> getType()
+	public StructurePoolElementType<?> getType()
 	{
 		return DESERIALIZER;
 	}
@@ -54,6 +53,6 @@ public class GroundFeatureJigsawPiece extends FeatureJigsawPiece
 	@Override
 	public String toString()
 	{
-		return "GroundFeature[" + ForgeRegistries.FEATURES.getKey(this.featureGetter.get().getFeature()) + "]";
+		return "GroundFeature[" + this.featureGetter.get() + "]";
 	}
 }

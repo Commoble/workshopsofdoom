@@ -15,9 +15,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import commoble.workshopsofdoom.util.ConfigHelper;
 import commoble.workshopsofdoom.util.ConfigHelper.ConfigObjectListener;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.MobSpawnInfo.Spawners;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -78,21 +78,21 @@ public class ServerConfig
 				: DataResult.error(String.format("No entity type registered for identifier: %s", this.entityID.toString()));
 		}
 		
-		public DataResult<Spawners> getSpawnEntry()
+		public DataResult<SpawnerData> getSpawnEntry()
 		{
 			return this.getEntityType().map(this::toSpawner);
 		}
 		
-		public Spawners toSpawner(EntityType<?> validatedType)
+		public SpawnerData toSpawner(EntityType<?> validatedType)
 		{
-			return new Spawners(validatedType, this.weight, this.min, this.max);
+			return new SpawnerData(validatedType, this.weight, this.min, this.max);
 		}
 	}
 	
-	public static class SpawnDataList implements Supplier<List<Spawners>>
+	public static class SpawnDataList implements Supplier<List<SpawnerData>>
 	{
 		private final List<SpawnData> entries; public List<SpawnData> getEntries() { return this.entries; }
-		private final Supplier<List<Spawners>> validatedSpawns = Suppliers.memoize(this::validateData);
+		private final Supplier<List<SpawnerData>> validatedSpawns = Suppliers.memoize(this::validateData);
 		
 		public SpawnDataList(List<SpawnData> entries)
 		{
@@ -105,14 +105,14 @@ public class ServerConfig
 		}
 
 		@Override
-		public List<Spawners> get()
+		public List<SpawnerData> get()
 		{
 			return this.validatedSpawns.get();
 		}
 		
-		public List<Spawners> validateData()
+		public List<SpawnerData> validateData()
 		{
-			List<Spawners> results = new ArrayList<>();
+			List<SpawnerData> results = new ArrayList<>();
 			for(SpawnData data : this.entries)
 			{
 				data.getSpawnEntry() // returns DataResult<Spawners>

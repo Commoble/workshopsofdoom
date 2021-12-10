@@ -10,65 +10,65 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.jigsaw.IJigsawDeserializer;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPattern.PlacementBehaviour;
-import net.minecraft.world.gen.feature.jigsaw.SingleJigsawPiece;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.ProcessorLists;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.StructureProcessorList;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.gen.feature.template.Template.BlockInfo;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElementType;
+import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool.Projection;
+import net.minecraft.world.level.levelgen.feature.structures.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.data.worldgen.ProcessorLists;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 
-public class RejiggableJigsawPiece extends SingleJigsawPiece
+public class RejiggableJigsawPiece extends SinglePoolElement
 {
 	public static final Codec<RejiggableJigsawPiece> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			// base class fields . . .
-			SingleJigsawPiece.func_236846_c_(), // "location"
-			SingleJigsawPiece.func_236844_b_(), // "processors"
-			SingleJigsawPiece.func_236848_d_(), // "projection"
+			SinglePoolElement.templateCodec(), // "location"
+			SinglePoolElement.processorsCodec(), // "processors"
+			SinglePoolElement.projectionCodec(), // "projection"
 			// field for the extra jigsaw processors
-			IStructureProcessorType.field_242922_m.fieldOf("jigsaw_processors").forGetter(RejiggableJigsawPiece::getJigsawProcessors)
+			StructureProcessorType.LIST_CODEC.fieldOf("jigsaw_processors").forGetter(RejiggableJigsawPiece::getJigsawProcessors)
 		).apply(instance, RejiggableJigsawPiece::new));
-	public static final IJigsawDeserializer<RejiggableJigsawPiece> DESERIALIZER = () -> CODEC;
+	public static final StructurePoolElementType<RejiggableJigsawPiece> DESERIALIZER = () -> CODEC;
 			
 	protected final Supplier<StructureProcessorList> jigsawProcessors;
 	public Supplier<StructureProcessorList> getJigsawProcessors() { return this.jigsawProcessors; }
 
-	protected RejiggableJigsawPiece(Either<ResourceLocation, Template> location, Supplier<StructureProcessorList> processors, PlacementBehaviour projection, Supplier<StructureProcessorList> jigsawProcessors)
+	protected RejiggableJigsawPiece(Either<ResourceLocation, StructureTemplate> location, Supplier<StructureProcessorList> processors, Projection projection, Supplier<StructureProcessorList> jigsawProcessors)
 	{
 		super(location, processors, projection);
 		this.jigsawProcessors = jigsawProcessors;
 	}
 	
-	protected RejiggableJigsawPiece(Template template)
+	protected RejiggableJigsawPiece(StructureTemplate template)
 	{
 		this(Either.right(template),
-			() -> ProcessorLists.field_244101_a,
-			PlacementBehaviour.RIGID,
-			() -> ProcessorLists.field_244101_a);
+			() -> ProcessorLists.EMPTY,
+			Projection.RIGID,
+			() -> ProcessorLists.EMPTY);
 	}
 
-	protected Template getTemplate(TemplateManager p_236843_1_)
+	protected StructureTemplate getTemplate(StructureManager p_236843_1_)
 	{
-		return this.field_236839_c_.map(p_236843_1_::getTemplateDefaulted, Function.identity());
+		return this.template.map(p_236843_1_::getOrCreate, Function.identity());
 	}
 
 	@Override
-	public List<Template.BlockInfo> getJigsawBlocks(TemplateManager templateManager, BlockPos structureOffset, Rotation rotation, Random rand)
+	public List<StructureTemplate.StructureBlockInfo> getShuffledJigsawBlocks(StructureManager templateManager, BlockPos structureOffset, Rotation rotation, Random rand)
 	{
-		List<BlockInfo> oldJigsaws = super.getJigsawBlocks(templateManager, structureOffset, rotation, rand);
+		List<StructureBlockInfo> oldJigsaws = super.getShuffledJigsawBlocks(templateManager, structureOffset, rotation, rand);
 		
-		Template template = this.getTemplate(templateManager);
-		PlacementSettings placementSettings = new PlacementSettings().setRotation(rotation);
+		StructureTemplate template = this.getTemplate(templateManager);
+		StructurePlaceSettings placementSettings = new StructurePlaceSettings().setRotation(rotation);
 		int size = oldJigsaws.size();
-		List<BlockInfo> newJigsaws = new ArrayList<>(size);
-		List<StructureProcessor> jigsawProcessorList = this.jigsawProcessors.get().func_242919_a();
+		List<StructureBlockInfo> newJigsaws = new ArrayList<>(size);
+		List<StructureProcessor> jigsawProcessorList = this.jigsawProcessors.get().list();
 		for (int i=0; i<size; i++)
 		{
 			newJigsaws.add(this.processJigsaw(jigsawProcessorList, structureOffset, oldJigsaws.get(i), placementSettings, template));
@@ -76,10 +76,10 @@ public class RejiggableJigsawPiece extends SingleJigsawPiece
 		return newJigsaws;
 	}
 	
-	protected Template.BlockInfo processJigsaw(List<StructureProcessor> jigsawProcessorList, BlockPos structureOffset, BlockInfo originalInfo, PlacementSettings placementSettings, Template template)
+	protected StructureTemplate.StructureBlockInfo processJigsaw(List<StructureProcessor> jigsawProcessorList, BlockPos structureOffset, StructureBlockInfo originalInfo, StructurePlaceSettings placementSettings, StructureTemplate template)
 	{
 		int size = jigsawProcessorList.size();
-		Template.BlockInfo transformedInfo = originalInfo;
+		StructureTemplate.StructureBlockInfo transformedInfo = originalInfo;
 		
 		for (int i=0; i<size; i++)
 		{

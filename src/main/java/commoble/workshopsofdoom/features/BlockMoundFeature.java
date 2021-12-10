@@ -4,69 +4,73 @@ import java.util.Random;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.BlockStateProvidingFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.configurations.BlockPileConfiguration;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 // similar to BlockPileFeature but has some adjustments that make it more suitable for structure feature jigsaws
 // size has slightly more variability as well
-public class BlockMoundFeature extends Feature<BlockStateProvidingFeatureConfig>
+public class BlockMoundFeature extends Feature<BlockPileConfiguration>
 {
-	public BlockMoundFeature(Codec<BlockStateProvidingFeatureConfig> codec)
+	public BlockMoundFeature(Codec<BlockPileConfiguration> codec)
 	{
 		super(codec);
 	}
 
 	@Override
-	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, BlockStateProvidingFeatureConfig config)
+	public boolean place(FeaturePlaceContext<BlockPileConfiguration> context)
 	{
+		BlockPos pos = context.origin();
 		if (pos.getY() < 5)
 		{
 			return false;
 		}
-		else
+		
+		Random rand = context.random();
+		WorldGenLevel level = context.level();
+		BlockPileConfiguration config = context.config();
+		
+		int xOff = 2 + rand.nextInt(2);
+		int zOff = 2 + rand.nextInt(2);
+		int ySize = 1 + rand.nextInt(4);
+
+		for (BlockPos nextPos : BlockPos.betweenClosed(pos.offset(-xOff, 0, -zOff), pos.offset(xOff, ySize, zOff)))
 		{
-			int xOff = 2 + rand.nextInt(2);
-			int zOff = 2 + rand.nextInt(2);
-			int ySize = 1 + rand.nextInt(4);
-
-			for (BlockPos nextPos : BlockPos.getAllInBoxMutable(pos.add(-xOff, 0, -zOff), pos.add(xOff, ySize, zOff)))
+			int xDiff = pos.getX() - nextPos.getX();
+			int zDiff = pos.getZ() - nextPos.getZ();
+			if (xDiff * xDiff + zDiff * zDiff <= rand.nextFloat() * 16.0F - rand.nextFloat() * 12.0F)
 			{
-				int xDiff = pos.getX() - nextPos.getX();
-				int zDiff = pos.getZ() - nextPos.getZ();
-				if (xDiff * xDiff + zDiff * zDiff <= rand.nextFloat() * 16.0F - rand.nextFloat() * 12.0F)
-				{
-					this.setBlock(reader, nextPos, rand, config);
-				}
-				else if (rand.nextFloat() < 0.031D)
-				{
-					this.setBlock(reader, nextPos, rand, config);
-				}
+				this.setBlock(level, nextPos, rand, config);
 			}
-
-			return true;
+			else if (rand.nextFloat() < 0.031D)
+			{
+				this.setBlock(level, nextPos, rand, config);
+			}
 		}
+
+		return true;
 	}
 
-	private boolean canPlaceOn(IWorld worldIn, BlockPos pos, Random random)
+	private boolean canPlaceOn(WorldGenLevel worldIn, BlockPos pos, Random random)
 	{
-		BlockPos belowPos = pos.down();
+		BlockPos belowPos = pos.below();
 		BlockState belowState = worldIn.getBlockState(belowPos);
-		return belowState.isIn(Blocks.GRASS_PATH) ? random.nextBoolean() : belowState.isSolidSide(worldIn, belowPos, Direction.UP);
+		return belowState.is(Blocks.DIRT_PATH) ? random.nextBoolean() : belowState.isFaceSturdy(worldIn, belowPos, Direction.UP);
 	}
 
-	private void setBlock(IWorld world, BlockPos pos, Random rand, BlockStateProvidingFeatureConfig config)
+	private void setBlock(WorldGenLevel world, BlockPos pos, Random rand, BlockPileConfiguration config)
 	{
-		if (world.isAirBlock(pos) && this.canPlaceOn(world, pos, rand))
+		if (world.isEmptyBlock(pos) && this.canPlaceOn(world, pos, rand))
 		{
 			// block pile uses flag 4, which doesn't sync the change to the client, stupidly
-			world.setBlockState(pos, config.field_227268_a_.getBlockState(rand, pos), 2);
+			world.setBlock(pos, config.stateProvider.getState(rand, pos), 2);
 		}
 
 	}

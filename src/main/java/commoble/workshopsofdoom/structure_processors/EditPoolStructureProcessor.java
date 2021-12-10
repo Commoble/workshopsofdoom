@@ -8,15 +8,15 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 // structure processor that performs a string-replace on the jigsaw's pool target field for all jigsaw blocks in the structure
 // cannot be used with standard jigsaw pieces, use a rejiggable pool element
@@ -26,7 +26,7 @@ public class EditPoolStructureProcessor extends StructureProcessor
 			Codec.STRING.fieldOf("replace").forGetter(EditPoolStructureProcessor::getInput),
 			Codec.STRING.fieldOf("with").forGetter(EditPoolStructureProcessor::getOutput)
 		).apply(instance, EditPoolStructureProcessor::new));
-	public static final IStructureProcessorType<EditPoolStructureProcessor> DESERIALIZER = () -> CODEC;
+	public static final StructureProcessorType<EditPoolStructureProcessor> DESERIALIZER = () -> CODEC;
 	public static final String POOL = "pool"; // name of the field in jigsaw block NBT
 	
 	private final String input; public String getInput() { return this.input; }
@@ -34,7 +34,7 @@ public class EditPoolStructureProcessor extends StructureProcessor
 	
 	// we are doing frequent-ish string operations on the same strings,
 	// use a cache to improve structure generation times
-	private final Map<String,StringNBT> cache = new HashMap<>();
+	private final Map<String,StringTag> cache = new HashMap<>();
 	
 	public EditPoolStructureProcessor(String input, String output)
 	{
@@ -43,7 +43,7 @@ public class EditPoolStructureProcessor extends StructureProcessor
 	}
 
 	@Override
-	protected IStructureProcessorType<?> getType()
+	protected StructureProcessorType<?> getType()
 	{
 		return DESERIALIZER;
 	}
@@ -52,29 +52,29 @@ public class EditPoolStructureProcessor extends StructureProcessor
 	// Beware! World and the second blockpos argument are null
 	@Override
 	@Nullable
-	public Template.BlockInfo process(@Nullable IWorldReader world, BlockPos offset, @Nullable BlockPos structureOrigin, Template.BlockInfo originalInfo, Template.BlockInfo transformedInfo,
-		PlacementSettings placementSettings, @Nullable Template template)
+	public StructureTemplate.StructureBlockInfo process(@Nullable LevelReader world, BlockPos offset, @Nullable BlockPos structureOrigin, StructureTemplate.StructureBlockInfo originalInfo, StructureTemplate.StructureBlockInfo transformedInfo,
+		StructurePlaceSettings placementSettings, @Nullable StructureTemplate template)
 	{
 		
 		if (transformedInfo.state.getBlock() == Blocks.JIGSAW)
 		{
-			CompoundNBT nbt = transformedInfo.nbt;
+			CompoundTag nbt = transformedInfo.nbt;
 			if (nbt != null)
 			{
 				String oldPool = nbt.getString(POOL);
-				StringNBT newPool = this.cache.computeIfAbsent(oldPool, this::editPoolName);
-				CompoundNBT newNBT = nbt.copy();
+				StringTag newPool = this.cache.computeIfAbsent(oldPool, this::editPoolName);
+				CompoundTag newNBT = nbt.copy();
 				newNBT.put(POOL, newPool);
-				return new Template.BlockInfo(transformedInfo.pos, transformedInfo.state, newNBT);
+				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos, transformedInfo.state, newNBT);
 			}
 		}
 
 		return transformedInfo;
 	}
 	
-	protected StringNBT editPoolName(String oldPool)
+	protected StringTag editPoolName(String oldPool)
 	{
-		return StringNBT.valueOf(oldPool.replace(this.input, this.output));
+		return StringTag.valueOf(oldPool.replace(this.input, this.output));
 	}
 
 }

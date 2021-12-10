@@ -5,9 +5,9 @@ import java.util.Random;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.template.IPosRuleTests;
-import net.minecraft.world.gen.feature.template.PosRuleTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTest;
 
 public class HeightInWorldTest extends PosRuleTest
 {
@@ -16,7 +16,7 @@ public class HeightInWorldTest extends PosRuleTest
 			Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(HeightInWorldTest::getMax)
 		).apply(instance, HeightInWorldTest::new));
 	
-	public static final IPosRuleTests<HeightInWorldTest> DESERIALIZER = () -> CODEC;
+	public static final PosRuleTestType<HeightInWorldTest> DESERIALIZER = () -> CODEC;
 
 	private final int min;	public int getMin() { return this.min; }
 	private final int max;	public int getMax() { return this.max; }
@@ -28,14 +28,14 @@ public class HeightInWorldTest extends PosRuleTest
 	}
 
 	@Override
-	public boolean func_230385_a_(BlockPos originalPos, BlockPos transformedPos, BlockPos structureOrigin, Random rand)
+	public boolean test(BlockPos originalPos, BlockPos transformedPos, BlockPos structureOrigin, Random rand)
 	{
 		int y = transformedPos.getY();
 		return y >= this.min && y <= this.max;
 	}
 
 	@Override
-	protected IPosRuleTests<?> func_230384_a_()
+	protected PosRuleTestType<?> getType()
 	{
 		return DESERIALIZER;
 	}

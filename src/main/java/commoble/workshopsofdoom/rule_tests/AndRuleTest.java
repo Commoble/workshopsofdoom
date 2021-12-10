@@ -6,9 +6,9 @@ import java.util.Random;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.world.gen.feature.template.IRuleTestType;
-import net.minecraft.world.gen.feature.template.RuleTest;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
 // composite rule test
 // returns true if all of its subrules return true
@@ -17,10 +17,10 @@ import net.minecraft.world.gen.feature.template.RuleTest;
 public class AndRuleTest extends RuleTest
 {
 	public static final Codec<AndRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			RuleTest.field_237127_c_.listOf().fieldOf("predicates").forGetter(AndRuleTest::getPredicates)
+			RuleTest.CODEC.listOf().fieldOf("predicates").forGetter(AndRuleTest::getPredicates)
 		).apply(instance, AndRuleTest::new));
 	
-	public static final IRuleTestType<AndRuleTest> DESERIALIZER = () -> CODEC;
+	public static final RuleTestType<AndRuleTest> DESERIALIZER = () -> CODEC;
 
 	private final List<RuleTest> predicates;	public List<RuleTest> getPredicates() { return this.predicates; }
 
@@ -43,7 +43,7 @@ public class AndRuleTest extends RuleTest
 	}
 
 	@Override
-	protected IRuleTestType<?> getType()
+	protected RuleTestType<?> getType()
 	{
 		return DESERIALIZER;
 	}

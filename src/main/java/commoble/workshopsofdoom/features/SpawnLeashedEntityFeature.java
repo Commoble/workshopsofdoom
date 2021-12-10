@@ -10,21 +10,21 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature.LeashedEntityConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 {
@@ -34,61 +34,64 @@ public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 	}
 
 	@Override
-	public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, LeashedEntityConfig config)
+	public boolean place(FeaturePlaceContext<LeashedEntityConfig> context)
 	{
-		ServerWorld serverWorld = reader.getWorld();
-		Entity entity = config.entityType.create(serverWorld);
-		if (entity instanceof MobEntity) // only mobs can be leashed
-		{
-			MobEntity mob = (MobEntity) entity;
-			mob.setLocationAndAngles(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, MathHelper.wrapDegrees(rand.nextFloat() * 360.0F), 0.0F);
-			// this bit comes from EntityType::spawn
-			CompoundNBT newNBT = config.getNBT().orElseGet(CompoundNBT::new);
-			CompoundNBT entityNbt = mob.writeWithoutTypeId(new CompoundNBT());
-			
-			// mark the mob as leashed
-			// we can't just create the leash knot entity
-			// because leash knot entities aren't serialized
-			// so if we add the leash during chunk generation, it will get yeeted when the world reifies
-			// we work around this by adding a leash position to the entity's nbt
-			// (which is converted to a leash entity in its first tick)
-			BlockPos leashPos = pos.add(config.leashOffset); // leash position in actual worldspace
-            UUID uuid = mob.getUniqueID();
-            entityNbt.merge(newNBT);
-            entityNbt.put("Leash", NBTUtil.writeBlockPos(leashPos));
-            mob.setUniqueId(uuid);
-            mob.read(entityNbt);
-			
-			// if we don't enable persistance
-			// then the entity will despawn instantly if it isn't normally persistant
-			// as structures generate well outside of the instant-despawn range
-			// so there's no point in making transient entities via structure generation
-			mob.enablePersistence();
-			mob.onInitialSpawn(reader, reader.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData)null, entity.serializeNBT());
+		WorldGenLevel level = context.level();
+		ServerLevel serverLevel = level.getLevel();
+		LeashedEntityConfig config = context.config();
+		Entity entity = config.entityType.create(serverLevel);
+		if (!(entity instanceof Mob)) // only mobs can be leashed
+			return false;
 
-			// add entity and any riders
-			reader.func_242417_l(mob);
-			
-			return true;
-		}
+		Mob mob = (Mob) entity;
+		BlockPos pos = context.origin();
+		Random rand = context.random();
+		
+		mob.moveTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, Mth.wrapDegrees(rand.nextFloat() * 360.0F), 0.0F);
+		// this bit comes from EntityType::spawn
+		CompoundTag newNBT = config.getNBT().orElseGet(CompoundTag::new);
+		CompoundTag entityNbt = mob.saveWithoutId(new CompoundTag());
+		
+		// mark the mob as leashed
+		// we can't just create the leash knot entity
+		// because leash knot entities aren't serialized
+		// so if we add the leash during chunk generation, it will get yeeted when the world reifies
+		// we work around this by adding a leash position to the entity's nbt
+		// (which is converted to a leash entity in its first tick)
+		BlockPos leashPos = pos.offset(config.leashOffset); // leash position in actual worldspace
+        UUID uuid = mob.getUUID();
+        entityNbt.merge(newNBT);
+        entityNbt.put("Leash", NbtUtils.writeBlockPos(leashPos));
+        mob.setUUID(uuid);
+        mob.load(entityNbt);
+		
+		// if we don't enable persistance
+		// then the entity will despawn instantly if it isn't normally persistant
+		// as structures generate well outside of the instant-despawn range
+		// so there's no point in making transient entities via structure generation
+		mob.setPersistenceRequired();
+		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData)null, entity.serializeNBT());
 
-		return false;
+		// add entity and any riders
+		level.addFreshEntityWithPassengers(mob);
+		
+		return true;
 	}
 
-	public static class LeashedEntityConfig implements IFeatureConfig
+	public static class LeashedEntityConfig implements FeatureConfiguration
 	{
 		@SuppressWarnings("deprecation")
 		public static final Codec<LeashedEntityConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Registry.ENTITY_TYPE.fieldOf("entity").forGetter(LeashedEntityConfig::getEntityType),
+				Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(LeashedEntityConfig::getEntityType),
 				BlockPos.CODEC.fieldOf("leash_offset").forGetter(LeashedEntityConfig::getLeashOffset),
-				CompoundNBT.CODEC.optionalFieldOf("nbt").forGetter(LeashedEntityConfig::getNBT)
+				CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(LeashedEntityConfig::getNBT)
 			).apply(instance, LeashedEntityConfig::new));
 
 		private final EntityType<?> entityType;
 		private final BlockPos leashOffset;
-		private final @Nullable Optional<CompoundNBT> nbt;
+		private final @Nullable Optional<CompoundTag> nbt;
 
-		public LeashedEntityConfig(EntityType<?> entityType, BlockPos leashOffset, Optional<CompoundNBT> nbt)
+		public LeashedEntityConfig(EntityType<?> entityType, BlockPos leashOffset, Optional<CompoundTag> nbt)
 		{
 			this.entityType = entityType;
 			this.leashOffset = leashOffset;
@@ -105,7 +108,7 @@ public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 			return this.leashOffset;
 		}
 
-		public Optional<CompoundNBT> getNBT()
+		public Optional<CompoundTag> getNBT()
 		{
 			return this.nbt;
 		}

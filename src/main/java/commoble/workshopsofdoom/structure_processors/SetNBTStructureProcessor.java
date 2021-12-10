@@ -7,18 +7,18 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.AlwaysTrueRuleTest;
-import net.minecraft.world.gen.feature.template.AlwaysTrueTest;
-import net.minecraft.world.gen.feature.template.IStructureProcessorType;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.PosRuleTest;
-import net.minecraft.world.gen.feature.template.RuleTest;
-import net.minecraft.world.gen.feature.template.StructureProcessor;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosAlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 // the rule entry structure processor allows the setting of NBT in template blockinfos,
 // but it *requires* that the output state be specified
@@ -27,21 +27,21 @@ import net.minecraft.world.gen.feature.template.Template;
 public class SetNBTStructureProcessor extends StructureProcessor
 {
 	public static final Codec<SetNBTStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance
-		.group(CompoundNBT.CODEC.fieldOf("nbt").forGetter(SetNBTStructureProcessor::getNBT),
-			RuleTest.field_237127_c_.fieldOf("input_predicate").forGetter(SetNBTStructureProcessor::getInputPredicate),
-			RuleTest.field_237127_c_.optionalFieldOf("location_predicate", AlwaysTrueRuleTest.INSTANCE).forGetter(SetNBTStructureProcessor::getLocationPredicate),
-			PosRuleTest.field_237102_c_.optionalFieldOf("position_predicate", AlwaysTrueTest.field_237100_b_).forGetter(SetNBTStructureProcessor::getPositionPredicate))
+		.group(CompoundTag.CODEC.fieldOf("nbt").forGetter(SetNBTStructureProcessor::getNBT),
+			RuleTest.CODEC.fieldOf("input_predicate").forGetter(SetNBTStructureProcessor::getInputPredicate),
+			RuleTest.CODEC.optionalFieldOf("location_predicate", AlwaysTrueTest.INSTANCE).forGetter(SetNBTStructureProcessor::getLocationPredicate),
+			PosRuleTest.CODEC.optionalFieldOf("position_predicate", PosAlwaysTrueTest.INSTANCE).forGetter(SetNBTStructureProcessor::getPositionPredicate))
 		.apply(instance, SetNBTStructureProcessor::new));
 
-	public static final IStructureProcessorType<SetNBTStructureProcessor> DESERIALIZER = () -> CODEC;
+	public static final StructureProcessorType<SetNBTStructureProcessor> DESERIALIZER = () -> CODEC;
 
 	/** The nbt to set for a given blockinfo in a structure template (required) **/
-	public CompoundNBT getNBT()
+	public CompoundTag getNBT()
 	{
 		return this.nbt;
 	}
 
-	private final CompoundNBT nbt;
+	private final CompoundTag nbt;
 
 	// The predicate for an input blockinfo in a structure template (required) **/
 	public RuleTest getInputPredicate()
@@ -69,7 +69,7 @@ public class SetNBTStructureProcessor extends StructureProcessor
 
 	private final PosRuleTest positionPredicate;
 
-	public SetNBTStructureProcessor(CompoundNBT nbt, RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate)
+	public SetNBTStructureProcessor(CompoundTag nbt, RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate)
 	{
 		this.nbt = nbt;
 		this.inputPredicate = inputPredicate;
@@ -78,22 +78,22 @@ public class SetNBTStructureProcessor extends StructureProcessor
 	}
 
 	@Override
-	protected IStructureProcessorType<?> getType()
+	protected StructureProcessorType<?> getType()
 	{
 		return DESERIALIZER;
 	}
 
 	@Override
 	@Nullable
-	public Template.BlockInfo process(@Nullable IWorldReader world, BlockPos offset, @Nullable BlockPos structureOrigin, Template.BlockInfo originalInfo, Template.BlockInfo transformedInfo,
-		PlacementSettings placementSettings, @Nullable Template template)
+	public StructureTemplate.StructureBlockInfo process(@Nullable LevelReader world, BlockPos offset, @Nullable BlockPos structureOrigin, StructureTemplate.StructureBlockInfo originalInfo, StructureTemplate.StructureBlockInfo transformedInfo,
+		StructurePlaceSettings placementSettings, @Nullable StructureTemplate template)
 	{
-		Random random = new Random(MathHelper.getPositionRandom(transformedInfo.pos));
+		Random random = new Random(Mth.getSeed(transformedInfo.pos));
 		if (this.inputPredicate.test(transformedInfo.state, random)
 			&& this.locationPredicate.test(world.getBlockState(transformedInfo.pos), random)
-			&& this.positionPredicate.func_230385_a_(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
+			&& this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
 			{
-				return new Template.BlockInfo(transformedInfo.pos, transformedInfo.state, this.nbt);
+				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos, transformedInfo.state, this.nbt);
 			}
 		else
 		{
