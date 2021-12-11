@@ -9,10 +9,13 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.ImmutableList;
 
 import commoble.workshopsofdoom.client.ClientInit;
+import commoble.workshopsofdoom.data.FakeTagManager;
 import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
 import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature;
+import commoble.workshopsofdoom.global_noise_generator_settings_modifiers.ApplyIfTaggedNoiseSettingsModifier;
+import commoble.workshopsofdoom.global_noise_generator_settings_modifiers.NoNoiseSettingsModifier;
 import commoble.workshopsofdoom.pos_rule_tests.HeightInWorldTest;
 import commoble.workshopsofdoom.rule_tests.AndRuleTest;
 import commoble.workshopsofdoom.rule_tests.ChanceRuleTest;
@@ -26,24 +29,21 @@ import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
 import commoble.workshopsofdoom.structures.LoadableJigsawStructure;
 import commoble.workshopsofdoom.util.Codecs;
 import commoble.workshopsofdoom.util.ConfigHelper;
-import net.minecraft.core.BlockSource;
-import net.minecraft.core.Direction;
+import commoble.workshopsofdoom.util.RegistryDispatcher;
 import net.minecraft.core.Registry;
-import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.PillagerOutpostFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
@@ -51,6 +51,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.BlockPileConfig
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -71,7 +72,19 @@ public class WorkshopsOfDoom
 	public static final Logger logger = LogManager.getLogger();
 	public static WorkshopsOfDoom INSTANCE;
 	
+	// resource keys
+	public static final ResourceKey<Registry<GlobalNoiseSettingsModifier>> STRUCTURE_NOISE_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "worldgen/workshopsofdoom/structure_noise_additions"));
+	
+	// data loaders
+	public static final FakeTagManager<ResourceKey<NoiseGeneratorSettings>> NOISE_GEN_SETTINGS_TAGS = new FakeTagManager<>(
+		ResourceKey.elementKey(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY),
+		"tags/worldgen/noise_generator_settings");
+	
+	// configs
 	public final ServerConfig serverConfig;
+	
+	// custom registries
+	public final RegistryDispatcher<GlobalNoiseSettingsModifier.Serializer<?>, GlobalNoiseSettingsModifier> globalNoiseModifiersDispatcher;
 	
 	// forge registry objects
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
@@ -83,6 +96,9 @@ public class WorkshopsOfDoom
 	public final RegistryObject<LoadableJigsawStructure> badlandsMines;
 	public final RegistryObject<LoadableJigsawStructure> workshop;
 	
+	public final RegistryObject<GlobalNoiseSettingsModifier.Serializer<NoNoiseSettingsModifier>> noNoiseSettingsModifier;
+	public final RegistryObject<GlobalNoiseSettingsModifier.Serializer<ApplyIfTaggedNoiseSettingsModifier>> applyIfTaggedNoiseSettingsModifer;
+	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
 		INSTANCE = this;
@@ -92,11 +108,23 @@ public class WorkshopsOfDoom
 		// forge bus is for server starting events and in-game events
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		
+		// custom registries
+		this.globalNoiseModifiersDispatcher =
+			RegistryDispatcher.<GlobalNoiseSettingsModifier.Serializer<?>, GlobalNoiseSettingsModifier>makeDispatchForgeRegistry(
+				modBus,
+				GlobalNoiseSettingsModifier.Serializer.class,
+				new ResourceLocation(MODID, Names.GLOBAL_NOISE_GENERATOR_SETTINGS_MODIFIERS),
+				builder -> builder
+					.disableSaving()
+					.disableSync()
+				);
+		
 		// create and register deferred registers
 		DeferredRegister<Item> items = registerRegister(modBus, ForgeRegistries.ITEMS);
 		DeferredRegister<EntityType<?>> entities = registerRegister(modBus, ForgeRegistries.ENTITIES);
 		DeferredRegister<Feature<?>> features = registerRegister(modBus, ForgeRegistries.FEATURES);
 		DeferredRegister<StructureFeature<?>> structures = registerRegister(modBus, ForgeRegistries.STRUCTURE_FEATURES);
+		DeferredRegister<GlobalNoiseSettingsModifier.Serializer<?>> globalNoiseSettingsModifiers = this.globalNoiseModifiersDispatcher.makeDeferredRegister(MODID);
 		
 		// register registry objects
 		
@@ -114,6 +142,10 @@ public class WorkshopsOfDoom
 		features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockPileConfiguration.CODEC));
 		features.register(Names.SPAWN_ENTITY, () -> new SpawnEntityFeature(SpawnEntityFeature.EntityConfig.CODEC));
 		features.register(Names.SPAWN_LEASHED_ENTITY, () -> new SpawnLeashedEntityFeature(SpawnLeashedEntityFeature.LeashedEntityConfig.CODEC));
+		
+		// global noise modifiers
+		this.noNoiseSettingsModifier = globalNoiseSettingsModifiers.register(Names.NONE, () -> new GlobalNoiseSettingsModifier.Serializer<>(NoNoiseSettingsModifier.CODEC));
+		this.applyIfTaggedNoiseSettingsModifer = globalNoiseSettingsModifiers.register(Names.APPLY_IF_TAGGED, () -> new GlobalNoiseSettingsModifier.Serializer<>(ApplyIfTaggedNoiseSettingsModifier.CODEC));
 
 		// server config needs to be initialized after entity registry objects intialize but before structures
 		this.serverConfig = ConfigHelper.register(ModConfig.Type.SERVER, ServerConfig::new);
@@ -136,6 +168,8 @@ public class WorkshopsOfDoom
 		modBus.addListener(this::onCommonSetup);
 		modBus.addListener(this::onRegisterEntityAttributes);
 		
+		forgeBus.addListener(this::onAddReloadListeners);
+		
 		if (FMLEnvironment.dist == Dist.CLIENT)
 		{
 			ClientInit.doClientInit(modBus, forgeBus);
@@ -150,23 +184,26 @@ public class WorkshopsOfDoom
 	void afterCommonSetup()
 	{
 		// add spawn egg behaviours to dispenser
-		DefaultDispenseItemBehavior spawnEggBehavior = new DefaultDispenseItemBehavior()
-		{
-			/**
-			 * Dispense the specified stack, play the dispense sound and spawn particles.
-			 */
-			@Override
-			public ItemStack execute(BlockSource source, ItemStack stack)
-			{
-				Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-				EntityType<?> entitytype = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
-				entitytype.spawn(source.getLevel(), stack, (Player) null, source.getPos().relative(direction), MobSpawnType.DISPENSER, direction != Direction.UP, false);
-				stack.shrink(1);
-				return stack;
-			}
-		};
+//		DefaultDispenseItemBehavior spawnEggBehavior = new DefaultDispenseItemBehavior()
+//		{
+//			/**
+//			 * Dispense the specified stack, play the dispense sound and spawn particles.
+//			 */
+//			@Override
+//			public ItemStack execute(BlockSource source, ItemStack stack)
+//			{
+//				Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+//				EntityType<?> entitytype = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
+//				entitytype.spawn(source.getLevel(), stack, (Player) null, source.getPos().relative(direction), MobSpawnType.DISPENSER, direction != Direction.UP, false);
+//				stack.shrink(1);
+//				return stack;
+//			}
+//		};
+//		
+//		DispenserBlock.registerBehavior(this.excavatorSpawnEgg.get(), spawnEggBehavior);
 		
-		DispenserBlock.registerBehavior(this.excavatorSpawnEgg.get(), spawnEggBehavior);
+		// add custom dynamic registries
+		BuiltinRegistries.registerSimple(STRUCTURE_NOISE_REGISTRY_KEY, () -> NoNoiseSettingsModifier.INSTANCE);
 		
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
@@ -199,6 +236,11 @@ public class WorkshopsOfDoom
 				.add(Attributes.ATTACK_DAMAGE, 4.0D)
 				.add(Attributes.ARMOR, 2.0D)
 				.build());
+	}
+	
+	void onAddReloadListeners(AddReloadListenerEvent event)
+	{
+		event.addListener(NOISE_GEN_SETTINGS_TAGS);
 	}
 	
 	// create and register a forge deferred register

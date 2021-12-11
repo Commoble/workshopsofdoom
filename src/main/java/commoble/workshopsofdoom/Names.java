@@ -2,8 +2,12 @@ package commoble.workshopsofdoom;
 
 public class Names
 {
+	// custom registries
+	public static final String GLOBAL_NOISE_GENERATOR_SETTINGS_MODIFIERS = "global_noise_settings_modifiers";
+	
 	// items
 	public static final String EXCAVATOR_SPAWN_EGG = "excavator_spawn_egg";
+	
 	// entities
 	public static final String EXCAVATOR = "excavator";
 	
@@ -49,4 +53,9 @@ public class Names
 	public static final String STONE_MOUND = "stone_mound";
 	public static final String COBBLESTONE_MOUND = "cobblestone_mound";
 	public static final String SANDSTONE_MOUND = "sandstone_mound";
+	
+	// global noise modifiers
+	public static final String NONE = "none";
+	public static final String APPLY_IF_TAGGED = "apply_if_tagged";
+	public static final String ADD_STRUCTURE = "add_structure";
 }
