@@ -3,7 +3,11 @@ package commoble.workshopsofdoom;
 public class Names
 {
 	// custom registries
-	public static final String GLOBAL_NOISE_GENERATOR_SETTINGS_MODIFIERS = "global_noise_settings_modifiers";
+	public static final String NOISE_SETTINGS_MODIFIER = "noise_settings_modifier";
+	public static final String BIOME_PROVIDER = "biome_provider";
+	
+	// custom dynamic registries
+	public static final String CONFIGURED_NOISE_SETTINGS_MODIFIERS = "worldgen/workshopsofdoom/configured_noise_settings_modifier";
 	
 	// items
 	public static final String EXCAVATOR_SPAWN_EGG = "excavator_spawn_egg";
@@ -54,8 +58,13 @@ public class Names
 	public static final String COBBLESTONE_MOUND = "cobblestone_mound";
 	public static final String SANDSTONE_MOUND = "sandstone_mound";
 	
-	// global noise modifiers
+	// noise settings modifiers
 	public static final String NONE = "none";
-	public static final String APPLY_IF_TAGGED = "apply_if_tagged";
+	public static final String APPLY_IF_DIMENSION = "apply_if_dimension";
 	public static final String ADD_STRUCTURE = "add_structure";
+	
+	// biome providers
+	public static final String BIOMES = "biomes";
+	public static final String BIOME_CATEGORY = "categories";
+	public static final String BIOME_TYPE = "biome_type";
 }

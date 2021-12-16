@@ -8,14 +8,20 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableList;
 
+import commoble.workshopsofdoom.biome_providers.BiomeCategoryProvider;
+import commoble.workshopsofdoom.biome_providers.BiomeProvider;
+import commoble.workshopsofdoom.biome_providers.BiomeTypeProvider;
+import commoble.workshopsofdoom.biome_providers.BiomesProvider;
 import commoble.workshopsofdoom.client.ClientInit;
 import commoble.workshopsofdoom.data.FakeTagManager;
 import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
 import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature;
-import commoble.workshopsofdoom.global_noise_generator_settings_modifiers.ApplyIfTaggedNoiseSettingsModifier;
-import commoble.workshopsofdoom.global_noise_generator_settings_modifiers.NoNoiseSettingsModifier;
+import commoble.workshopsofdoom.noise_settings_modifiers.AddStructureNoiseSettingsModifier;
+import commoble.workshopsofdoom.noise_settings_modifiers.ApplyIfDimensionNoiseSettingsModifier;
+import commoble.workshopsofdoom.noise_settings_modifiers.NoNoiseSettingsModifier;
+import commoble.workshopsofdoom.noise_settings_modifiers.NoiseSettingsModifier;
 import commoble.workshopsofdoom.pos_rule_tests.HeightInWorldTest;
 import commoble.workshopsofdoom.rule_tests.AndRuleTest;
 import commoble.workshopsofdoom.rule_tests.ChanceRuleTest;
@@ -31,9 +37,12 @@ import commoble.workshopsofdoom.util.Codecs;
 import commoble.workshopsofdoom.util.ConfigHelper;
 import commoble.workshopsofdoom.util.RegistryDispatcher;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -41,6 +50,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
@@ -53,6 +65,9 @@ import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -73,18 +88,33 @@ public class WorkshopsOfDoom
 	public static WorkshopsOfDoom INSTANCE;
 	
 	// resource keys
-	public static final ResourceKey<Registry<GlobalNoiseSettingsModifier>> STRUCTURE_NOISE_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "worldgen/workshopsofdoom/structure_noise_additions"));
+	public static final ResourceKey<Registry<NoiseSettingsModifier>> CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, Names.CONFIGURED_NOISE_SETTINGS_MODIFIERS));
 	
 	// data loaders
-	public static final FakeTagManager<ResourceKey<NoiseGeneratorSettings>> NOISE_GEN_SETTINGS_TAGS = new FakeTagManager<>(
-		ResourceKey.elementKey(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY),
-		"tags/worldgen/noise_generator_settings");
+	public static final FakeTagManager<ResourceKey<Level>> DIMENSION_TAGS = new FakeTagManager<>(
+		ResourceKey.elementKey(Registry.DIMENSION_REGISTRY),
+		"tags/dimensions");
 	
 	// configs
 	public final ServerConfig serverConfig;
 	
 	// custom registries
-	public final RegistryDispatcher<GlobalNoiseSettingsModifier.Serializer<?>, GlobalNoiseSettingsModifier> globalNoiseModifiersDispatcher;
+	public static final RegistryDispatcher<NoiseSettingsModifier.Serializer<?>, NoiseSettingsModifier> NOISE_SETTINGS_MODIFIER_DISPATCHER = 
+		RegistryDispatcher.<NoiseSettingsModifier.Serializer<?>, NoiseSettingsModifier>makeDispatchForgeRegistry(
+			NoiseSettingsModifier.Serializer.class,
+			new ResourceLocation(MODID, Names.NOISE_SETTINGS_MODIFIER),
+			builder -> builder
+				.disableSaving()
+				.disableSync()
+			);
+	public static final RegistryDispatcher<BiomeProvider.Serializer<?>, BiomeProvider> BIOME_PROVIDER_DISPATCHER = 
+		RegistryDispatcher.<BiomeProvider.Serializer<?>, BiomeProvider>makeDispatchForgeRegistry(
+			BiomeProvider.Serializer.class,
+			new ResourceLocation(MODID, Names.BIOME_PROVIDER),
+			builder -> builder
+				.disableSaving()
+				.disableSync()
+			);
 	
 	// forge registry objects
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
@@ -96,8 +126,13 @@ public class WorkshopsOfDoom
 	public final RegistryObject<LoadableJigsawStructure> badlandsMines;
 	public final RegistryObject<LoadableJigsawStructure> workshop;
 	
-	public final RegistryObject<GlobalNoiseSettingsModifier.Serializer<NoNoiseSettingsModifier>> noNoiseSettingsModifier;
-	public final RegistryObject<GlobalNoiseSettingsModifier.Serializer<ApplyIfTaggedNoiseSettingsModifier>> applyIfTaggedNoiseSettingsModifer;
+	public final RegistryObject<NoiseSettingsModifier.Serializer<NoNoiseSettingsModifier>> noNoiseSettingsModifier;
+	public final RegistryObject<NoiseSettingsModifier.Serializer<ApplyIfDimensionNoiseSettingsModifier>> applyIfDimensionNoiseSettingsModifer;
+	public final RegistryObject<NoiseSettingsModifier.Serializer<AddStructureNoiseSettingsModifier>> addStructureNoiseSettingsModifier;
+	
+	public final RegistryObject<BiomeProvider.Serializer<BiomesProvider>> biomesProvider;
+	public final RegistryObject<BiomeProvider.Serializer<BiomeCategoryProvider>> biomeCategoryProvider;
+	public final RegistryObject<BiomeProvider.Serializer<BiomeTypeProvider>> biomeTypeProvider;
 	
 	public WorkshopsOfDoom() // invoked by forge due to @Mod
 	{
@@ -109,22 +144,16 @@ public class WorkshopsOfDoom
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		
 		// custom registries
-		this.globalNoiseModifiersDispatcher =
-			RegistryDispatcher.<GlobalNoiseSettingsModifier.Serializer<?>, GlobalNoiseSettingsModifier>makeDispatchForgeRegistry(
-				modBus,
-				GlobalNoiseSettingsModifier.Serializer.class,
-				new ResourceLocation(MODID, Names.GLOBAL_NOISE_GENERATOR_SETTINGS_MODIFIERS),
-				builder -> builder
-					.disableSaving()
-					.disableSync()
-				);
+		NOISE_SETTINGS_MODIFIER_DISPATCHER.subscribe(modBus);
+		BIOME_PROVIDER_DISPATCHER.subscribe(modBus);
 		
 		// create and register deferred registers
 		DeferredRegister<Item> items = registerRegister(modBus, ForgeRegistries.ITEMS);
 		DeferredRegister<EntityType<?>> entities = registerRegister(modBus, ForgeRegistries.ENTITIES);
 		DeferredRegister<Feature<?>> features = registerRegister(modBus, ForgeRegistries.FEATURES);
 		DeferredRegister<StructureFeature<?>> structures = registerRegister(modBus, ForgeRegistries.STRUCTURE_FEATURES);
-		DeferredRegister<GlobalNoiseSettingsModifier.Serializer<?>> globalNoiseSettingsModifiers = this.globalNoiseModifiersDispatcher.makeDeferredRegister(MODID);
+		DeferredRegister<NoiseSettingsModifier.Serializer<?>> noiseSettingsModifiers = registerRegister(modBus, NOISE_SETTINGS_MODIFIER_DISPATCHER);
+		DeferredRegister<BiomeProvider.Serializer<?>> biomeProviders = registerRegister(modBus, BIOME_PROVIDER_DISPATCHER);
 		
 		// register registry objects
 		
@@ -144,9 +173,15 @@ public class WorkshopsOfDoom
 		features.register(Names.SPAWN_LEASHED_ENTITY, () -> new SpawnLeashedEntityFeature(SpawnLeashedEntityFeature.LeashedEntityConfig.CODEC));
 		
 		// global noise modifiers
-		this.noNoiseSettingsModifier = globalNoiseSettingsModifiers.register(Names.NONE, () -> new GlobalNoiseSettingsModifier.Serializer<>(NoNoiseSettingsModifier.CODEC));
-		this.applyIfTaggedNoiseSettingsModifer = globalNoiseSettingsModifiers.register(Names.APPLY_IF_TAGGED, () -> new GlobalNoiseSettingsModifier.Serializer<>(ApplyIfTaggedNoiseSettingsModifier.CODEC));
+		this.noNoiseSettingsModifier = noiseSettingsModifiers.register(Names.NONE, () -> new NoiseSettingsModifier.Serializer<>(NoNoiseSettingsModifier.CODEC));
+		this.applyIfDimensionNoiseSettingsModifer = noiseSettingsModifiers.register(Names.APPLY_IF_DIMENSION, () -> new NoiseSettingsModifier.Serializer<>(ApplyIfDimensionNoiseSettingsModifier.CODEC));
+		this.addStructureNoiseSettingsModifier = noiseSettingsModifiers.register(Names.ADD_STRUCTURE, () -> new NoiseSettingsModifier.Serializer<>(AddStructureNoiseSettingsModifier.CODEC));
 
+		// biome providers
+		this.biomesProvider = biomeProviders.register(Names.BIOMES, () -> new BiomeProvider.Serializer<>(BiomesProvider.CODEC));
+		this.biomeCategoryProvider = biomeProviders.register(Names.BIOME_CATEGORY, () -> new BiomeProvider.Serializer<>(BiomeCategoryProvider.CODEC));
+		this.biomeTypeProvider = biomeProviders.register(Names.BIOME_TYPE, () -> new BiomeProvider.Serializer<>(BiomeTypeProvider.CODEC));
+		
 		// server config needs to be initialized after entity registry objects intialize but before structures
 		this.serverConfig = ConfigHelper.register(ModConfig.Type.SERVER, ServerConfig::new);
 		
@@ -169,6 +204,8 @@ public class WorkshopsOfDoom
 		modBus.addListener(this::onRegisterEntityAttributes);
 		
 		forgeBus.addListener(this::onAddReloadListeners);
+		forgeBus.addListener(this::onServerAboutToStart);
+		forgeBus.addListener(EventPriority.HIGH, this::onWorldLoad);
 		
 		if (FMLEnvironment.dist == Dist.CLIENT)
 		{
@@ -176,12 +213,12 @@ public class WorkshopsOfDoom
 		}
 	}
 	
-	void onCommonSetup(FMLCommonSetupEvent event)
+	private void onCommonSetup(FMLCommonSetupEvent event)
 	{
 		event.enqueueWork(this::afterCommonSetup);
 	}
 	
-	void afterCommonSetup()
+	private void afterCommonSetup()
 	{
 		// add spawn egg behaviours to dispenser
 //		DefaultDispenseItemBehavior spawnEggBehavior = new DefaultDispenseItemBehavior()
@@ -203,7 +240,7 @@ public class WorkshopsOfDoom
 //		DispenserBlock.registerBehavior(this.excavatorSpawnEgg.get(), spawnEggBehavior);
 		
 		// add custom dynamic registries
-		BuiltinRegistries.registerSimple(STRUCTURE_NOISE_REGISTRY_KEY, () -> NoNoiseSettingsModifier.INSTANCE);
+		BuiltinRegistries.registerSimple(CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY, () -> NoNoiseSettingsModifier.INSTANCE);
 		
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
@@ -226,7 +263,7 @@ public class WorkshopsOfDoom
 		registerVanilla(Registry.POS_RULE_TEST, Names.HEIGHT, HeightInWorldTest.DESERIALIZER);
 	}
 	
-	void onRegisterEntityAttributes(EntityAttributeCreationEvent event)
+	private void onRegisterEntityAttributes(EntityAttributeCreationEvent event)
 	{
 		event.put(this.excavator.get(),
 			Monster.createMonsterAttributes()
@@ -238,15 +275,69 @@ public class WorkshopsOfDoom
 				.build());
 	}
 	
-	void onAddReloadListeners(AddReloadListenerEvent event)
+	private void onAddReloadListeners(AddReloadListenerEvent event)
 	{
-		event.addListener(NOISE_GEN_SETTINGS_TAGS);
+		event.addListener(DIMENSION_TAGS);
+	}
+	
+	private void onServerAboutToStart(ServerAboutToStartEvent event)
+	{
+//		MinecraftServer server = event.getServer();
+//		RegistryAccess registryAccess = server.registryAccess();
+//		
+//		NoiseGeneratorSettings overworldNoise = registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY).get(NoiseGeneratorSettings.OVERWORLD);
+//		var overworldStructures = overworldNoise.structureSettings();
+//		NoiseGeneratorSettings netherNoise = registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY).get(NoiseGeneratorSettings.NETHER);
+//		var netherStructures = netherNoise.structureSettings();
+//		NoiseGeneratorSettings largeNoise = registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY).get(NoiseGeneratorSettings.LARGE_BIOMES);
+//		var largeStructures = largeNoise.structureSettings();
+//		Biome desert = registryAccess.registryOrThrow(Registry.BIOME_REGISTRY).get(Biomes.DESERT);
+//		
+//		// get all the noise settings and all the noise settings modifiers and apply all of the modifiers to all of the settings
+//		for (var noiseSettingsEntry : registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY).entrySet())
+//		{
+//			var noiseSettingsKey = noiseSettingsEntry.getKey();
+//			var noiseSettings = noiseSettingsEntry.getValue();
+//			for (var modifier : registryAccess.registryOrThrow(WorkshopsOfDoom.CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY))
+//			{
+//				modifier.modify(noiseSettingsKey, noiseSettings);
+//			}
+//		}
+	}
+	
+	// noise settings are still jank
+	// they're not deep-copied like other dynamic registry objects on server start,
+	// chunkgenerators use them from builtinregistries for some reason (unless, presumably, a datapack overrides them)
+	// so modifications will persist across multiple world create/joins
+	// we don't want this!
+	// so we'll continue doing it on world load for now,
+	// where we can at least give each chunk generator its own copy
+	private void onWorldLoad(WorldEvent.Load event)
+	{
+		var world = event.getWorld();
+		if (world instanceof ServerLevel serverLevel)
+		{
+			MinecraftServer server = world.getServer();
+			
+			RegistryAccess registryAccess = server.registryAccess();
+			for (var modifier : registryAccess.registryOrThrow(WorkshopsOfDoom.CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY))
+			{
+				modifier.modify(serverLevel);
+			}
+		}
 	}
 	
 	// create and register a forge deferred register
 	private static <T extends IForgeRegistryEntry<T>> DeferredRegister<T> registerRegister(IEventBus modBus, IForgeRegistry<T> registry)
 	{
 		DeferredRegister<T> register = DeferredRegister.create(registry, MODID);
+		register.register(modBus);
+		return register;
+	}
+	
+	private static <T extends IForgeRegistryEntry<T>> DeferredRegister<T> registerRegister(IEventBus modBus, RegistryDispatcher<T,?> dispatcher)
+	{
+		DeferredRegister<T> register = dispatcher.makeDeferredRegister(MODID);
 		register.register(modBus);
 		return register;
 	}
@@ -269,7 +360,7 @@ public class WorkshopsOfDoom
 			true,
 			monsterSpawnerGetter,
 			creatureSpawnerGetter,
-			false);
+			true);
 	}
 	
 	/**

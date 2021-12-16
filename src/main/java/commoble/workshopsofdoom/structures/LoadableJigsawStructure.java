@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.mojang.serialization.Codec;
 
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.JigsawFeature;
@@ -70,4 +71,14 @@ public class LoadableJigsawStructure extends JigsawFeature
 	{
 		return this.restrictSpawnBoxes;
 	}
+
+	@Override
+	public List<SpawnerData> getDefaultSpawnList(MobCategory category)
+	{
+		return category == MobCategory.MONSTER ? this.getDefaultSpawnList()
+			: category == MobCategory.CREATURE ? this.getDefaultCreatureSpawnList()
+			: super.getDefaultSpawnList(category);
+	}
+	
+	
 }

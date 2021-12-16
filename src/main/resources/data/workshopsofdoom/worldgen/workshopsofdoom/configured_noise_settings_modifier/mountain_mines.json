@@ -1,0 +1,24 @@
+{
+	"type": "workshopsofdoom:apply_if_dimension",
+	"tag": "workshopsofdoom:spawn_workshopsofdoom_structures",
+	"delegate":
+	{
+		"type": "workshopsofdoom:add_structure",
+		"structure": "workshopsofdoom:mountain_mines",
+		"config":
+		{
+			"spacing": 32,
+			"separation": 12,
+			"salt": 305511170
+		},
+		"biomes":
+		{
+			"type": "workshopsofdoom:categories",
+			"categories":
+			[
+				"extreme_hills",
+				"mountain"
+			]
+		}
+	}
+}

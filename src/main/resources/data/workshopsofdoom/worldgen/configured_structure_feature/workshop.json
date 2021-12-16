@@ -1,0 +1,8 @@
+{
+	"type": "workshopsofdoom:workshop",
+	"config":
+	{
+		"size": 20,
+		"start_pool": "workshopsofdoom:workshop/start"
+	}
+}

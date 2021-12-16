@@ -1,5 +1,9 @@
 package commoble.workshopsofdoom.util;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -19,4 +23,9 @@ public class Codecs
 				Codec.intRange(0, Integer.MAX_VALUE).fieldOf("size").forGetter(JigsawConfiguration::maxDepth)
 			).apply(instance, JigsawConfiguration::new)
 		);
+	
+	public static <T extends Enum<T>> Codec<Set<T>> makeEnumSetCodec(Codec<T> codec)
+	{
+		return codec.listOf().xmap(EnumSet::copyOf, ImmutableList::copyOf);
+	}
 }

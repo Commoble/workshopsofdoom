@@ -1,0 +1,20 @@
+{
+	"type": "workshopsofdoom:apply_if_dimension",
+	"tag": "workshopsofdoom:spawn_workshopsofdoom_structures",
+	"delegate":
+	{
+		"type": "workshopsofdoom:add_structure",
+		"structure": "workshopsofdoom:desert_quarry",
+		"config":
+		{
+			"spacing": 24,
+			"separation": 10,
+			"salt": 420764282
+		},
+		"biomes":
+		{
+			"type": "workshopsofdoom:categories",
+			"categories": ["desert"]
+		}
+	}
+}

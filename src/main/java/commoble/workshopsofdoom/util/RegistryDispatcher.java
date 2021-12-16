@@ -17,8 +17,8 @@ import net.minecraftforge.registries.RegistryBuilder;
 public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPATCHABLES>
 {
 	/**
-	 * Call in your mod constructor (or any time before the RegistryEvent.NewRegistry event fires, really)
-	 * @param modBus Your mod's mod bus from FMLJavaModLoadingContext.get().getModEventBus();
+	 * Call in static init or your mod constructor (or any time before the RegistryEvent.NewRegistry event fires, really)
+	 * You'll need to #subscribe this dispatcher to the mod bus in your mod constructor as well
 	 * @param registryClass the .class object for this registry (deferred registers will use this class to find the correct registry)
 	 *		The type of this is genargified with an unchecked cast, so don't use the wrong class object here
 	 * @param registryID the id of this registry, e.g. "yourmod:cheeses"
@@ -26,7 +26,6 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
 	 * 		This consumer is called after .setName() and .setType() are called but before .create()
 	 */
 	public static <DTYPE extends Dispatcher<DTYPE, ? extends DISPATCHABLES>, DISPATCHABLES extends Dispatchable<DTYPE>> RegistryDispatcher<DTYPE, DISPATCHABLES> makeDispatchForgeRegistry(
-			final IEventBus modBus,
 			final Class<?> registryClass,
 			final ResourceLocation registryID,
 			final Consumer<RegistryBuilder<DTYPE>> extraSettings)
@@ -48,22 +47,22 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
 			wrapper.setRegistry(registry);
 		};
 		
-		modBus.addListener(newRegistryListener);
-		
-		return new RegistryDispatcher<>(wrapper, genargifiedClass, dispatcherCodec, dispatchedCodec);
+		return new RegistryDispatcher<>(wrapper, genargifiedClass, dispatcherCodec, dispatchedCodec, newRegistryListener);
 	}
 	
 	private final Supplier<IForgeRegistry<DTYPE>> registryGetter;
 	private final Class<DTYPE> registryClass;
 	private final Codec<DTYPE> dispatcherCodec;
 	private final Codec<DISPATCHABLES> dispatchedCodec;
+	private final Consumer<RegistryEvent.NewRegistry> newRegistryListener;
 	
-	private RegistryDispatcher(Supplier<IForgeRegistry<DTYPE>> registryGetter, Class<DTYPE> registryClass, Codec<DTYPE> dispatcherCodec, Codec<DISPATCHABLES> dispatchedCodec)
+	private RegistryDispatcher(Supplier<IForgeRegistry<DTYPE>> registryGetter, Class<DTYPE> registryClass, Codec<DTYPE> dispatcherCodec, Codec<DISPATCHABLES> dispatchedCodec, Consumer<RegistryEvent.NewRegistry> newRegistryListener)
 	{
 		this.registryGetter = registryGetter;
 		this.registryClass = registryClass;
 		this.dispatcherCodec = dispatcherCodec;
 		this.dispatchedCodec = dispatchedCodec;
+		this.newRegistryListener = newRegistryListener;
 	}
 
 	/**
@@ -104,6 +103,15 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
 	 */
 	public DeferredRegister<DTYPE> makeDeferredRegister(String modid)
 	{ return DeferredRegister.create(this.getRegistryClass(), modid); }
+	
+	/**
+	 * Subscribes this dispatcher to the mod bus (make sure to do this)
+	 * @param modBus The mod bus from FMLJavaModLoadingContext.get().getModEventBus()
+	 */
+	public void subscribe(IEventBus modBus)
+	{
+		modBus.addListener(this.newRegistryListener);
+	}
 	
 	/**
 	 * Class for the dispatchers/serializers

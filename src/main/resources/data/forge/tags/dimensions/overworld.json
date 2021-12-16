@@ -2,8 +2,6 @@
 	"replace": false,
 	"values":
 	[
-		"amplified",
-		"large_biomes",
 		"overworld"
 	]
 }

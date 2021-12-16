@@ -1,0 +1,8 @@
+{
+	"type": "workshopsofdoom:plains_quarry",
+	"config":
+	{
+		"size": 12,
+		"start_pool": "workshopsofdoom:quarry/plains/start"
+	}
+}

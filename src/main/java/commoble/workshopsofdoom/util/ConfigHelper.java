@@ -325,7 +325,7 @@ public class ConfigHelper
 		@Override
 		public Object createBoolean(boolean value)
 		{
-			return new Boolean(value);
+			return Boolean.valueOf(value);
 		}
 
 		@Override
