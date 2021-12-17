@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:desert_quarry",
+  "spawner": {
+    "type": "minecraft:witch",
+    "weight": 10,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

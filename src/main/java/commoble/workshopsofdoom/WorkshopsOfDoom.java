@@ -1,6 +1,5 @@
 package commoble.workshopsofdoom;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +33,6 @@ import commoble.workshopsofdoom.structure_processors.PredicatedStructureProcesso
 import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
 import commoble.workshopsofdoom.structures.LoadableJigsawStructure;
 import commoble.workshopsofdoom.util.Codecs;
-import commoble.workshopsofdoom.util.ConfigHelper;
 import commoble.workshopsofdoom.util.RegistryDispatcher;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -51,11 +49,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.PillagerOutpostFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
@@ -70,7 +64,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -94,9 +87,6 @@ public class WorkshopsOfDoom
 	public static final FakeTagManager<ResourceKey<Level>> DIMENSION_TAGS = new FakeTagManager<>(
 		ResourceKey.elementKey(Registry.DIMENSION_REGISTRY),
 		"tags/dimensions");
-	
-	// configs
-	public final ServerConfig serverConfig;
 	
 	// custom registries
 	public static final RegistryDispatcher<NoiseSettingsModifier.Serializer<?>, NoiseSettingsModifier> NOISE_SETTINGS_MODIFIER_DISPATCHER = 
@@ -181,23 +171,23 @@ public class WorkshopsOfDoom
 		this.biomesProvider = biomeProviders.register(Names.BIOMES, () -> new BiomeProvider.Serializer<>(BiomesProvider.CODEC));
 		this.biomeCategoryProvider = biomeProviders.register(Names.BIOME_CATEGORY, () -> new BiomeProvider.Serializer<>(BiomeCategoryProvider.CODEC));
 		this.biomeTypeProvider = biomeProviders.register(Names.BIOME_TYPE, () -> new BiomeProvider.Serializer<>(BiomeTypeProvider.CODEC));
-		
-		// server config needs to be initialized after entity registry objects intialize but before structures
-		this.serverConfig = ConfigHelper.register(ModConfig.Type.SERVER, ServerConfig::new);
-		
-		List<SpawnerData> noSpawnList = ImmutableList.of();
-		Supplier<List<SpawnerData>> noSpawns = () -> noSpawnList;
+				
 
-		this.desertQuarry = structures.register(Names.DESERT_QUARRY,
-			makePillagerStructureFactory(() -> this.serverConfig.desertQuarryMonsters.get().get(), noSpawns));
-		this.plainsQuarry = structures.register(Names.PLAINS_QUARRY,
-			makePillagerStructureFactory(() -> this.serverConfig.plainsQuarryMonsters.get().get(), noSpawns));
-		this.mountainsMines = structures.register(Names.MOUNTAIN_MINES,
-			makePillagerStructureFactory(() -> this.serverConfig.mountainMinesMonsters.get().get(), noSpawns));
-		this.badlandsMines = structures.register(Names.BADLANDS_MINES,
-			makePillagerStructureFactory(() -> this.serverConfig.badlandsMinesMonsters.get().get(), noSpawns));
-		this.workshop = structures.register(Names.WORKSHOP,
-			makePillagerStructureFactory(noSpawns, noSpawns));
+		Supplier<Supplier<LoadableJigsawStructure>> pillagerStructureFactory = () -> () -> new LoadableJigsawStructure(
+			Codecs.JUMBO_JIGSAW_CONFIG_CODEC,
+			0,
+			false,
+			true,
+			PillagerOutpostFeature::checkLocation,
+			GenerationStep.Decoration.SURFACE_STRUCTURES,
+			false,
+			true);
+
+		this.desertQuarry = structures.register(Names.DESERT_QUARRY, pillagerStructureFactory.get());
+		this.plainsQuarry = structures.register(Names.PLAINS_QUARRY, pillagerStructureFactory.get());
+		this.mountainsMines = structures.register(Names.MOUNTAIN_MINES, pillagerStructureFactory.get());
+		this.badlandsMines = structures.register(Names.BADLANDS_MINES, pillagerStructureFactory.get());
+		this.workshop = structures.register(Names.WORKSHOP, pillagerStructureFactory.get());
 		
 		// add event listeners to event busses
 		modBus.addListener(this::onCommonSetup);
@@ -346,21 +336,6 @@ public class WorkshopsOfDoom
 	private static <T> T registerVanilla(Registry<T> registry, String name, T thing)
 	{
 		return Registry.register(registry, new ResourceLocation(MODID, name), thing);
-	}
-	
-	private static Supplier<LoadableJigsawStructure> makePillagerStructureFactory(Supplier<List<SpawnerData>> monsterSpawnerGetter, Supplier<List<SpawnerData>> creatureSpawnerGetter)
-	{
-		return () -> new LoadableJigsawStructure(
-			Codecs.JUMBO_JIGSAW_CONFIG_CODEC,
-			0,
-			false,
-			true,
-			PillagerOutpostFeature::checkLocation,
-			GenerationStep.Decoration.SURFACE_STRUCTURES,
-			true,
-			monsterSpawnerGetter,
-			creatureSpawnerGetter,
-			true);
 	}
 	
 	/**

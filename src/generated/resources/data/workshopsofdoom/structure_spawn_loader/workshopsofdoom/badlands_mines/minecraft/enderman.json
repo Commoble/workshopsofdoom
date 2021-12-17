@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:badlands_mines",
+  "spawner": {
+    "type": "minecraft:enderman",
+    "weight": 10,
+    "minCount": 1,
+    "maxCount": 4
+  }
+}

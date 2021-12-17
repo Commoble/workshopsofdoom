@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:workshop",
+  "spawner": {
+    "type": "workshopsofdoom:excavator",
+    "weight": 500,
+    "minCount": 1,
+    "maxCount": 4
+  }
+}

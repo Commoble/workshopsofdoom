@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:mountain_mines",
+  "spawner": {
+    "type": "minecraft:zombie_villager",
+    "weight": 5,
+    "minCount": 4,
+    "maxCount": 4
+  }
+}

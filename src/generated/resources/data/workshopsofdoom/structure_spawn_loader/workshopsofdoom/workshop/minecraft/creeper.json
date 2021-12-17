@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:workshop",
+  "spawner": {
+    "type": "minecraft:creeper",
+    "weight": 100,
+    "minCount": 4,
+    "maxCount": 4
+  }
+}

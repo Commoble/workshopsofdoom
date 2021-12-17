@@ -1,0 +1,9 @@
+{
+  "structure": "workshopsofdoom:plains_quarry",
+  "spawner": {
+    "type": "workshopsofdoom:excavator",
+    "weight": 1000,
+    "minCount": 1,
+    "maxCount": 4
+  }
+}

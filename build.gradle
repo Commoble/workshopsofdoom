@@ -24,6 +24,17 @@ archivesBaseName = "${modid}-${mc_version}"
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+sourceSets
+{
+	main
+	test
+	datagen
+	generated
+}
+
+sourceSets.main.resources { srcDirs += sourceSets.generated.resources.srcDirs }
+
+
 minecraft {
     mappings channel: 'official', version: "${mc_version}"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -67,9 +78,12 @@ minecraft {
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
             arg "-mixin.config=${modid}.mixins.json"
 
-            args '--mod', 'workshopsofdoom', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'workshopsofdoom_datagen', '--all', '--output', file('src/generated/resources/')
 
             mods {
+                workshopsofdoom_datagen {
+                    source sourceSets.datagen
+                }
                 workshopsofdoom {
                     source sourceSets.main
                 }
@@ -80,6 +94,7 @@ minecraft {
 
 repositories {
 	maven { url="https://www.cubicinterpolation.net/maven/" }
+	maven { url "https://cursemaven.com" }
     jcenter()
     mavenCentral()
 }
@@ -88,6 +103,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor' // enables mixins
     compileOnly fg.deobf("commoble.looot:${looot_branch}:${looot_version}")
+    implementation fg.deobf("curse.maven:structure_spawn_loader-557581:${structure_spawn_loader_file_id}")
 
 }
 
