@@ -4,6 +4,6 @@
     "type": "workshopsofdoom:excavator",
     "weight": 500,
     "minCount": 1,
-    "maxCount": 4
+    "maxCount": 1
   }
 }

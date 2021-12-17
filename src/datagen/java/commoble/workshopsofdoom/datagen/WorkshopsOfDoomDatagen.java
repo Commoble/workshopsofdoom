@@ -72,11 +72,11 @@ public class WorkshopsOfDoomDatagen
 			);
 		List<SpawnerData> excavationPillagers = Lists.newArrayList(
 			new SpawnerData(EntityType.PILLAGER, 1000, 1, 1),
-			new SpawnerData(WorkshopsOfDoom.INSTANCE.excavator.get(), 1000, 1, 4)
+			new SpawnerData(WorkshopsOfDoom.INSTANCE.excavator.get(), 1000, 1, 1)
 			);
 		List<SpawnerData> workshopPillagers = Lists.newArrayList(
 			new SpawnerData(EntityType.PILLAGER, 500, 1, 1),
-			new SpawnerData(WorkshopsOfDoom.INSTANCE.excavator.get(), 500, 1, 4),
+			new SpawnerData(WorkshopsOfDoom.INSTANCE.excavator.get(), 500, 1, 1),
 			new SpawnerData(EntityType.VINDICATOR, 1, 1, 1)
 			);
 		
