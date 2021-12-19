@@ -27,3 +27,5 @@
 * Added copper ore and ingots to loot tables
 * Loot tables that roll ingots and gems will now generate vanilla items by default instead of anything with the same forge tag (datapacks and mods can still add items to these loot tables by adding items to the loot tags)
 * Reduced the spawn rate of minecarts, increased the chance of them spawning with a chest
+* Pillager Outpost chests now have a map to a random mine or quarry
+* Overseer's Sheds in mines and quarries now have a map to a workshop

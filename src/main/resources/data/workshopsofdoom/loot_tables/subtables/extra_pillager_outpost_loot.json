@@ -1,0 +1,64 @@
+{
+	"type": "minecraft:generic",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:item",
+					"functions": 
+					[
+						{
+							"function": "minecraft:exploration_map",
+							"destination": "workshopsofdoom:badlands_mines",
+							"decoration": "target_point",
+							"skip_existing_chunks": false
+						}
+					],
+					"name": "minecraft:map"
+				},
+				{
+					"type": "minecraft:item",
+					"functions": 
+					[
+						{
+							"function": "minecraft:exploration_map",
+							"destination": "workshopsofdoom:desert_quarry",
+							"decoration": "target_point",
+							"skip_existing_chunks": false
+						}
+					],
+					"name": "minecraft:map"
+				},
+				{
+					"type": "minecraft:item",
+					"functions": 
+					[
+						{
+							"function": "minecraft:exploration_map",
+							"destination": "workshopsofdoom:mountain_mines",
+							"decoration": "target_point",
+							"skip_existing_chunks": false
+						}
+					],
+					"name": "minecraft:map"
+				},
+				{
+					"type": "minecraft:item",
+					"functions": 
+					[
+						{
+							"function": "minecraft:exploration_map",
+							"destination": "workshopsofdoom:plains_quarry",
+							"decoration": "target_point",
+							"skip_existing_chunks": false
+						}
+					],
+					"name": "minecraft:map"
+				}
+			]
+		}
+	]
+}

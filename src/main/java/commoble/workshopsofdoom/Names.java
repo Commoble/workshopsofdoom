@@ -36,6 +36,9 @@ public class Names
 	public static final String AND = "and";
 	public static final String HEIGHT = "height";
 	
+	// loot modifier types
+	public static final String ADD_TABLE = "add_table";
+	
 	// structure processors
 	public static final String EDIT_POOL = "edit_pool";
 	public static final String SET_NBT = "set_nbt";

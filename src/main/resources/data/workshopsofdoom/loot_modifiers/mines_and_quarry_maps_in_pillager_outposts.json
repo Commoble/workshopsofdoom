@@ -1,0 +1,11 @@
+{
+	"type": "workshopsofdoom:add_table",
+	"conditions":
+	[
+		{
+			"condition": "forge:loot_table_id",
+			"loot_table_id": "minecraft:chests/pillager_outpost"
+		}
+	],
+	"table": "workshopsofdoom:subtables/extra_pillager_outpost_loot"
+}

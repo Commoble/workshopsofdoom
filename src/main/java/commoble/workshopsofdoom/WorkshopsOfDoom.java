@@ -17,6 +17,7 @@ import commoble.workshopsofdoom.entities.ExcavatorEntity;
 import commoble.workshopsofdoom.features.BlockMoundFeature;
 import commoble.workshopsofdoom.features.SpawnEntityFeature;
 import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature;
+import commoble.workshopsofdoom.loot_modifiers.AddTableModifier;
 import commoble.workshopsofdoom.noise_settings_modifiers.AddStructureNoiseSettingsModifier;
 import commoble.workshopsofdoom.noise_settings_modifiers.ApplyIfDimensionNoiseSettingsModifier;
 import commoble.workshopsofdoom.noise_settings_modifiers.NoNoiseSettingsModifier;
@@ -57,6 +58,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.BlockPileConfig
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -144,6 +146,7 @@ public class WorkshopsOfDoom
 		DeferredRegister<StructureFeature<?>> structures = registerRegister(modBus, ForgeRegistries.STRUCTURE_FEATURES);
 		DeferredRegister<NoiseSettingsModifier.Serializer<?>> noiseSettingsModifiers = registerRegister(modBus, NOISE_SETTINGS_MODIFIER_DISPATCHER);
 		DeferredRegister<BiomeProvider.Serializer<?>> biomeProviders = registerRegister(modBus, BIOME_PROVIDER_DISPATCHER);
+		DeferredRegister<GlobalLootModifierSerializer<?>> lootModifierSerializers = registerRegister(modBus, ForgeRegistries.LOOT_MODIFIER_SERIALIZERS);
 		
 		// register registry objects
 		
@@ -161,6 +164,9 @@ public class WorkshopsOfDoom
 		features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockPileConfiguration.CODEC));
 		features.register(Names.SPAWN_ENTITY, () -> new SpawnEntityFeature(SpawnEntityFeature.EntityConfig.CODEC));
 		features.register(Names.SPAWN_LEASHED_ENTITY, () -> new SpawnLeashedEntityFeature(SpawnLeashedEntityFeature.LeashedEntityConfig.CODEC));
+		
+		// loot modifiers
+		lootModifierSerializers.register(Names.ADD_TABLE, () -> new AddTableModifier.Serializer());
 		
 		// global noise modifiers
 		this.noNoiseSettingsModifier = noiseSettingsModifiers.register(Names.NONE, () -> new NoiseSettingsModifier.Serializer<>(NoNoiseSettingsModifier.CODEC));

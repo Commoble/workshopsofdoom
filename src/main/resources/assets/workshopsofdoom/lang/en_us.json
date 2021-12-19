@@ -1,6 +1,11 @@
 {
 	"item.workshopsofdoom.excavator_spawn_egg": "Excavator Spawn Egg",
 	"entity.workshopsofdoom.excavator": "Excavator",
+	"filled_map.workshopsofdoom:badlands_mines": "Badlands Mines Map",
+	"filled_map.workshopsofdoom:desert_quarry": "Desert Quarry Map",
+	"filled_map.workshopsofdoom:mountain_mines": "Mountain Mines Map",
+	"filled_map.workshopsofdoom:plains_quarry": "Plains Quarry Map",
+	"filled_map.workshopsofdoom:workshop": "Workshop Map",
 	"workshopsofdoom.advancements.find_workshop.title": "This is Where the Doom is Made",
 	"workshopsofdoom.advancements.find_workshop.description": "Find the Workshops of Doom",
 	"workshopsofdoom.advancements.find_quarry_or_mines.title": "Industrial Espionage",

@@ -3,6 +3,25 @@
 	"pools": 
 	[
 		{
+			"rolls": 1,
+			"entries":
+			[
+				{
+					"type": "minecraft:item",
+					"functions": 
+					[
+						{
+							"function": "minecraft:exploration_map",
+							"destination": "workshopsofdoom:workshop",
+							"decoration": "target_point",
+							"skip_existing_chunks": false
+						}
+					],
+					"name": "minecraft:map"
+				}
+			]
+		},
+		{
 			"rolls": 
 			{
 				"min": 1,
