@@ -73,3 +73,10 @@ Be wary that mines and workshops are quite large and may take quite some time to
     versionRange="[1.1.0.0,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.workshopsofdoom]]
+    modId="structure_spawn_loader"
+    mandatory=true
+    versionRange="[1.0.0.0,)"
+    ordering="NONE"
+    side="BOTH"
+
