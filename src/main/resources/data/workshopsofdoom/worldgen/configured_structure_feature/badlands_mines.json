@@ -2,7 +2,7 @@
 	"type": "workshopsofdoom:badlands_mines",
 	"config":
 	{
-		"size": 20,
+		"size": 25,
 		"start_pool": "workshopsofdoom:quarry/badlands/start"
 	}
 }

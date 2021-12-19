@@ -2,7 +2,7 @@
 	"type": "workshopsofdoom:workshop",
 	"config":
 	{
-		"size": 20,
+		"size": 30,
 		"start_pool": "workshopsofdoom:workshop/start"
 	}
 }

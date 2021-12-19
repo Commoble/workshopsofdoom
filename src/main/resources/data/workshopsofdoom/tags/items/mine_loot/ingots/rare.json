@@ -2,7 +2,7 @@
 	"replace": false,
 	"values": 
 	[
-		"#forge:gems/diamond",
-		"#forge:gems/lapis"
+		"diamond",
+		"lapis_lazuli"
 	]
 }

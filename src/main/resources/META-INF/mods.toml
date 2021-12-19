@@ -29,7 +29,7 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/workshops-of-doom" #opt
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
-credits="Thanks to TelepathicGrunt for explaining how structures work" #optional
+credits="Thanks to TelepathicGrunt for explaining how structures work | Octree-based structure generation inspired by TelepathicGrunt and Yung's use of octrees in Repurposed Structures and Better Strongholds" #optional
 # A text field displayed in the mod UI
 authors="Commoble"
 # The description text for the mod (multi line!) (#mandatory)

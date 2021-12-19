@@ -31,7 +31,7 @@ import commoble.workshopsofdoom.structure_processors.HeightProcessor;
 import commoble.workshopsofdoom.structure_processors.ItemFrameLootProcessor;
 import commoble.workshopsofdoom.structure_processors.PredicatedStructureProcessor;
 import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
-import commoble.workshopsofdoom.structures.LoadableJigsawStructure;
+import commoble.workshopsofdoom.structures.FastJigsawStructure;
 import commoble.workshopsofdoom.util.Codecs;
 import commoble.workshopsofdoom.util.RegistryDispatcher;
 import net.minecraft.core.Registry;
@@ -110,11 +110,11 @@ public class WorkshopsOfDoom
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
 	public final RegistryObject<EntityType<ExcavatorEntity>> excavator;
 	
-	public final RegistryObject<LoadableJigsawStructure> desertQuarry;
-	public final RegistryObject<LoadableJigsawStructure> plainsQuarry;
-	public final RegistryObject<LoadableJigsawStructure> mountainsMines;
-	public final RegistryObject<LoadableJigsawStructure> badlandsMines;
-	public final RegistryObject<LoadableJigsawStructure> workshop;
+	public final RegistryObject<FastJigsawStructure> desertQuarry;
+	public final RegistryObject<FastJigsawStructure> plainsQuarry;
+	public final RegistryObject<FastJigsawStructure> mountainsMines;
+	public final RegistryObject<FastJigsawStructure> badlandsMines;
+	public final RegistryObject<FastJigsawStructure> workshop;
 	
 	public final RegistryObject<NoiseSettingsModifier.Serializer<NoNoiseSettingsModifier>> noNoiseSettingsModifier;
 	public final RegistryObject<NoiseSettingsModifier.Serializer<ApplyIfDimensionNoiseSettingsModifier>> applyIfDimensionNoiseSettingsModifer;
@@ -173,10 +173,9 @@ public class WorkshopsOfDoom
 		this.biomeTypeProvider = biomeProviders.register(Names.BIOME_TYPE, () -> new BiomeProvider.Serializer<>(BiomeTypeProvider.CODEC));
 				
 
-		Supplier<Supplier<LoadableJigsawStructure>> pillagerStructureFactory = () -> () -> new LoadableJigsawStructure(
+		Supplier<Supplier<FastJigsawStructure>> pillagerStructureFactory = () -> () -> new FastJigsawStructure(
 			Codecs.JUMBO_JIGSAW_CONFIG_CODEC,
 			0,
-			false,
 			true,
 			PillagerOutpostFeature::checkLocation,
 			GenerationStep.Decoration.SURFACE_STRUCTURES,
@@ -343,7 +342,7 @@ public class WorkshopsOfDoom
 	 * @param <STRUCTURE> The type of the structure
 	 * @param structure A registered Structure instance (LoadableJigsawStructure has extra fields for structure registry)
 	 * */
-	private static <STRUCTURE extends LoadableJigsawStructure> void setStructureInfo(STRUCTURE structure)
+	private static <STRUCTURE extends FastJigsawStructure> void setStructureInfo(STRUCTURE structure)
 	{
 		StructureFeature.STRUCTURES_REGISTRY.put(structure.getRegistryName().toString(), structure);
 		

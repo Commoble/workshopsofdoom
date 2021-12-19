@@ -2,7 +2,7 @@
 	"replace": false,
 	"values": 
 	[
-		"#forge:dusts/redstone",
-		"#forge:ingots/gold"
+		"redstone",
+		"gold_ingot"
 	]
 }

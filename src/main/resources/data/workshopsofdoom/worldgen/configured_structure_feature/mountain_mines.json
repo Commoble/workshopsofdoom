@@ -2,7 +2,7 @@
 	"type": "workshopsofdoom:mountain_mines",
 	"config":
 	{
-		"size": 20,
+		"size": 25,
 		"start_pool": "workshopsofdoom:quarry/mountains/start"
 	}
 }

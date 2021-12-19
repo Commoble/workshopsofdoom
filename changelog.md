@@ -22,3 +22,8 @@
 * (The biome spawn lists are still overridden, so mods or datapacks must add Structure Spawn Loader entries for workshops of doom structures to allow other mods' mobs to spawn within Workshops of Doom structures)
 * Reduced the amount of persistant mobs spawned when workshops are first generated -- half as many vindicators and pillagers are generated, excavators are spawned at about 1/4 the former rate
 * Workshops now override the biome spawn lists, allowing pillagers and excavators to randomly spawn in addition to standard mobs (see two points above for ramifications re: other mods' mobs)
+* Substantially optimized structure generation for Workshops of Doom structures
+* Increased generation depth of Workshops of Doom structures
+* Added copper ore and ingots to loot tables
+* Loot tables that roll ingots and gems will now generate vanilla items by default instead of anything with the same forge tag (datapacks and mods can still add items to these loot tables by adding items to the loot tags)
+* Reduced the spawn rate of minecarts, increased the chance of them spawning with a chest

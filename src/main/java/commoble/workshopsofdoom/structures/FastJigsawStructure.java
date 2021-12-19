@@ -1,5 +1,6 @@
 package commoble.workshopsofdoom.structures;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
@@ -7,12 +8,17 @@ import org.apache.logging.log4j.Logger;
 
 import com.mojang.serialization.Codec;
 
+import commoble.workshopsofdoom.util.OctreeJigsawPlacer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.data.worldgen.Pools;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.JigsawFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.JigsawConfiguration;
+import net.minecraft.world.level.levelgen.feature.structures.JigsawPlacement;
+import net.minecraft.world.level.levelgen.structure.NoiseAffectingStructureFeature;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier;
 
-public class LoadableJigsawStructure extends JigsawFeature
+public class FastJigsawStructure extends NoiseAffectingStructureFeature<JigsawConfiguration>
 {	
 	static final Logger LOGGER = LogManager.getLogger();
 	private final GenerationStep.Decoration generationStage;
@@ -32,12 +38,28 @@ public class LoadableJigsawStructure extends JigsawFeature
 		// ~TelepathicGrunt<br>
 		// (vanilla only uses this for villages, outposts, and Nether Fossils)
 	 */
-	public LoadableJigsawStructure(Codec<JigsawConfiguration> codec, int startY, boolean enableLegacyJigsawHack, boolean snapToHeightMap, Predicate<PieceGeneratorSupplier.Context<JigsawConfiguration>> placementPredicate, GenerationStep.Decoration generationStage, boolean restrictSpawnBoxes, boolean transformSurroundingLand)
+	public FastJigsawStructure(Codec<JigsawConfiguration> codec, int startY, boolean snapToHeightMap, Predicate<PieceGeneratorSupplier.Context<JigsawConfiguration>> placementPredicate, GenerationStep.Decoration generationStage, boolean restrictSpawnBoxes, boolean transformSurroundingLand)
 	{
-		super(codec, startY, enableLegacyJigsawHack, snapToHeightMap, placementPredicate);
+		super(codec, createGenerator(startY, snapToHeightMap, placementPredicate));
 		this.generationStage = generationStage;
 		this.restrictSpawnBoxes = restrictSpawnBoxes;
 		this.transformSurroundingLand = transformSurroundingLand;
+	}
+	
+	public static PieceGeneratorSupplier<JigsawConfiguration> createGenerator(int startY, boolean snapToHeightMap, Predicate<PieceGeneratorSupplier.Context<JigsawConfiguration>> placementPredicate)
+	{
+		return (context) -> {
+			if (!placementPredicate.test(context))
+			{
+				return Optional.empty();
+			}
+			else
+			{
+				BlockPos blockpos = new BlockPos(context.chunkPos().getMinBlockX(), startY, context.chunkPos().getMinBlockZ());
+				Pools.bootstrap();
+				return OctreeJigsawPlacer.addPieces(context, PoolElementStructurePiece::new, blockpos, snapToHeightMap);
+			}
+		};
 	}
 	
 	@Override

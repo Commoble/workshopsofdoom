@@ -13,7 +13,7 @@
 			}
 		},
 		{
-			"weight": 1,
+			"weight": 2,
 			"element": 
 			{
 				"feature": "workshopsofdoom:entities/desert_quarry_chest_minecart",
@@ -31,7 +31,7 @@
 			}
 		},
 		{
-			"weight": 1,
+			"weight": 6,
 			"element": 
 			{
 				"element_type":"minecraft:empty_pool_element"
