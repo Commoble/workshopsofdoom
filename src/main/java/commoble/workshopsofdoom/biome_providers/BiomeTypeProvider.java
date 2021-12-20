@@ -1,49 +1,44 @@
 package commoble.workshopsofdoom.biome_providers;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
-import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.RegistryLookupCodec;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 
 public class BiomeTypeProvider extends BiomeProvider
 {
 	public static final Codec<BiomeTypeProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.STRING.xmap(BiomeDictionary.Type::getType, BiomeDictionary.Type::getName).fieldOf("biome_type").forGetter(BiomeTypeProvider::getBiomeType),
-			RegistryLookupCodec.create(Registry.BIOME_REGISTRY).forGetter(BiomeTypeProvider::getBiomeRegistry)
+			Codec.STRING.xmap(BiomeDictionary.Type::getType, BiomeDictionary.Type::getName).fieldOf("biome_type").forGetter(BiomeTypeProvider::getBiomeType)
 		).apply(instance, BiomeTypeProvider::new));
 	
 	private final BiomeDictionary.Type biomeType;
 	public BiomeDictionary.Type getBiomeType() { return this.biomeType; }
-	
-	private final Registry<Biome> biomeRegistry;
-	public Registry<Biome> getBiomeRegistry() { return this.biomeRegistry; }
-	
-	private final Supplier<List<Biome>> biomes;
 
-	public BiomeTypeProvider(BiomeDictionary.Type biomeType, Registry<Biome> biomeRegistry)
+	public BiomeTypeProvider(BiomeDictionary.Type biomeType)
 	{
 		super(WorkshopsOfDoom.INSTANCE.biomeTypeProvider);
 		this.biomeType = biomeType;
-		this.biomeRegistry = biomeRegistry;
-		this.biomes = Suppliers.memoize(() -> this.biomeRegistry.entrySet().stream()
-			.filter(entry -> BiomeDictionary.hasType(entry.getKey(), this.biomeType))
-			.map(Map.Entry::getValue)
-			.toList());
 	}
 
 	@Override
-	public List<Biome> getBiomes()
+	public List<Biome> getBiomes(MinecraftServer server)
 	{
-		return this.biomes.get();
+		Registry<Biome> biomeRegistry = server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+		List<Biome> biomeList = new ArrayList<>();
+		for (var key : BiomeDictionary.getBiomes(this.getBiomeType()))
+		{
+			Biome biome = biomeRegistry.get(key);
+			if (key != null)
+				biomeList.add(biome);
+		}
+		return biomeList;
 	}
 
 }

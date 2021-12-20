@@ -43,10 +43,6 @@ minecraft {
         client {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
-            // mixin properties
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
-            arg "-mixin.config=${modid}.mixins.json"
 
             mods {
                 workshopsofdoom {
@@ -58,10 +54,6 @@ minecraft {
         server {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
-            // mixin properties
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
-            arg "-mixin.config=${modid}.mixins.json"
 
             mods {
                 workshopsofdoom {
@@ -73,10 +65,6 @@ minecraft {
         data {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
-            // mixin properties
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
-            arg "-mixin.config=${modid}.mixins.json"
 
             args '--mod', 'workshopsofdoom_datagen', '--all', '--output', file('src/generated/resources/')
 
@@ -135,11 +123,4 @@ publishing {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
     }
-}
-
-// enables mixingradle, which will generate a refmap for us
-apply plugin: 'org.spongepowered.mixin'
-
-mixin {
-    add sourceSets.main, "${modid}.refmap.json"
 }

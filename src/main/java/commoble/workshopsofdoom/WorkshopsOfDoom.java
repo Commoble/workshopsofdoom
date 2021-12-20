@@ -33,6 +33,7 @@ import commoble.workshopsofdoom.structure_processors.ItemFrameLootProcessor;
 import commoble.workshopsofdoom.structure_processors.PredicatedStructureProcessor;
 import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
 import commoble.workshopsofdoom.structures.FastJigsawStructure;
+import commoble.workshopsofdoom.util.CodecJsonDataManager;
 import commoble.workshopsofdoom.util.Codecs;
 import commoble.workshopsofdoom.util.RegistryDispatcher;
 import net.minecraft.core.Registry;
@@ -82,14 +83,6 @@ public class WorkshopsOfDoom
 	public static final Logger logger = LogManager.getLogger();
 	public static WorkshopsOfDoom INSTANCE;
 	
-	// resource keys
-	public static final ResourceKey<Registry<NoiseSettingsModifier>> CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, Names.CONFIGURED_NOISE_SETTINGS_MODIFIERS));
-	
-	// data loaders
-	public static final FakeTagManager<ResourceKey<Level>> DIMENSION_TAGS = new FakeTagManager<>(
-		ResourceKey.elementKey(Registry.DIMENSION_REGISTRY),
-		"tags/dimensions");
-	
 	// custom registries
 	public static final RegistryDispatcher<NoiseSettingsModifier.Serializer<?>, NoiseSettingsModifier> NOISE_SETTINGS_MODIFIER_DISPATCHER = 
 		RegistryDispatcher.<NoiseSettingsModifier.Serializer<?>, NoiseSettingsModifier>makeDispatchForgeRegistry(
@@ -107,6 +100,15 @@ public class WorkshopsOfDoom
 				.disableSaving()
 				.disableSync()
 			);
+	
+	// data loaders
+	public static final FakeTagManager<ResourceKey<Level>> DIMENSION_TAGS = new FakeTagManager<>(
+		ResourceKey.elementKey(Registry.DIMENSION_REGISTRY),
+		"tags/dimensions");
+	public static final CodecJsonDataManager<NoiseSettingsModifier> NOISE_SETTINGS_MODIFIER_LOADER = new CodecJsonDataManager<>(
+		Names.CONFIGURED_NOISE_SETTINGS_MODIFIERS,
+		NoiseSettingsModifier.CODEC,
+		logger);
 	
 	// forge registry objects
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
@@ -215,28 +217,6 @@ public class WorkshopsOfDoom
 	
 	private void afterCommonSetup()
 	{
-		// add spawn egg behaviours to dispenser
-//		DefaultDispenseItemBehavior spawnEggBehavior = new DefaultDispenseItemBehavior()
-//		{
-//			/**
-//			 * Dispense the specified stack, play the dispense sound and spawn particles.
-//			 */
-//			@Override
-//			public ItemStack execute(BlockSource source, ItemStack stack)
-//			{
-//				Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-//				EntityType<?> entitytype = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
-//				entitytype.spawn(source.getLevel(), stack, (Player) null, source.getPos().relative(direction), MobSpawnType.DISPENSER, direction != Direction.UP, false);
-//				stack.shrink(1);
-//				return stack;
-//			}
-//		};
-//		
-//		DispenserBlock.registerBehavior(this.excavatorSpawnEgg.get(), spawnEggBehavior);
-		
-		// add custom dynamic registries
-		BuiltinRegistries.registerSimple(CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY, () -> NoNoiseSettingsModifier.INSTANCE);
-		
 		// this needs to be called for each Structure instance
 		// structures use this weird placement info per-world instead of feature placements
 		setStructureInfo(this.desertQuarry.get());
@@ -273,6 +253,7 @@ public class WorkshopsOfDoom
 	private void onAddReloadListeners(AddReloadListenerEvent event)
 	{
 		event.addListener(DIMENSION_TAGS);
+		event.addListener(NOISE_SETTINGS_MODIFIER_LOADER);
 	}
 	
 	private void onServerAboutToStart(ServerAboutToStartEvent event)
@@ -311,11 +292,8 @@ public class WorkshopsOfDoom
 	{
 		var world = event.getWorld();
 		if (world instanceof ServerLevel serverLevel)
-		{
-			MinecraftServer server = world.getServer();
-			
-			RegistryAccess registryAccess = server.registryAccess();
-			for (var modifier : registryAccess.registryOrThrow(WorkshopsOfDoom.CONFIGURED_NOISE_SETTINGS_MODIFIER_REGISTRY_KEY))
+		{			
+			for (var modifier : NOISE_SETTINGS_MODIFIER_LOADER.values())
 			{
 				modifier.modify(serverLevel);
 			}

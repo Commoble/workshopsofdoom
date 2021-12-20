@@ -17,7 +17,7 @@ public class ApplyIfDimensionNoiseSettingsModifier extends NoiseSettingsModifier
 {
 	public static final Codec<ApplyIfDimensionNoiseSettingsModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				ResourceLocation.CODEC.fieldOf("tag").forGetter(ApplyIfDimensionNoiseSettingsModifier::getTagId),
-				NoiseSettingsModifier.DIRECT_CODEC.fieldOf("delegate").forGetter(ApplyIfDimensionNoiseSettingsModifier::getDelegate)
+				NoiseSettingsModifier.CODEC.fieldOf("delegate").forGetter(ApplyIfDimensionNoiseSettingsModifier::getDelegate)
 			).apply(instance, ApplyIfDimensionNoiseSettingsModifier::new));
 	
 	private final ResourceLocation tagId;

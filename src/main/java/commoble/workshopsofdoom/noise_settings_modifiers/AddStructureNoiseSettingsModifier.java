@@ -2,7 +2,6 @@ package commoble.workshopsofdoom.noise_settings_modifiers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +16,8 @@ import commoble.workshopsofdoom.biome_providers.BiomeProvider;
 import commoble.workshopsofdoom.util.ReflectionUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -29,13 +30,13 @@ public class AddStructureNoiseSettingsModifier extends NoiseSettingsModifier
 {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final Codec<AddStructureNoiseSettingsModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ConfiguredStructureFeature.CODEC.fieldOf("structure").forGetter(AddStructureNoiseSettingsModifier::getStructure),
+			ResourceLocation.CODEC.fieldOf("structure").forGetter(AddStructureNoiseSettingsModifier::getStructure),
 			StructureFeatureConfiguration.CODEC.fieldOf("config").forGetter(AddStructureNoiseSettingsModifier::getConfig),
 			BiomeProvider.CODEC.fieldOf("biomes").forGetter(AddStructureNoiseSettingsModifier::getBiomeProvider)
 		).apply(instance, AddStructureNoiseSettingsModifier::new));
 	
-	private final Supplier<ConfiguredStructureFeature<?,?>> structure;
-	public Supplier<ConfiguredStructureFeature<?,?>> getStructure() { return this.structure; }
+	private final ResourceLocation structure;
+	public ResourceLocation getStructure() { return this.structure; }
 	
 	private final StructureFeatureConfiguration config;
 	public StructureFeatureConfiguration getConfig() { return this.config; }
@@ -43,7 +44,7 @@ public class AddStructureNoiseSettingsModifier extends NoiseSettingsModifier
 	private final BiomeProvider biomeProvider;
 	public BiomeProvider getBiomeProvider() { return this.biomeProvider; }
 	
-	public AddStructureNoiseSettingsModifier(Supplier<ConfiguredStructureFeature<?,?>> structure, StructureFeatureConfiguration config, BiomeProvider biomeProvider)
+	public AddStructureNoiseSettingsModifier(ResourceLocation structure, StructureFeatureConfiguration config, BiomeProvider biomeProvider)
 	{
 		super(WorkshopsOfDoom.INSTANCE.addStructureNoiseSettingsModifier);
 		this.structure = structure;
@@ -54,7 +55,11 @@ public class AddStructureNoiseSettingsModifier extends NoiseSettingsModifier
 	@Override
 	public void modify(ServerLevel level)
 	{
-		ConfiguredStructureFeature<?,?> configuredStructure = this.structure.get();
+		MinecraftServer server = level.getServer();
+		ConfiguredStructureFeature<?,?> configuredStructure = level.getServer()
+			.registryAccess()
+			.registryOrThrow(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY)
+			.get(ResourceKey.create(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, this.getStructure()));
 		StructureFeature<?> structure = configuredStructure.feature;
 		ChunkGenerator chunkGenerator = level.getChunkSource().getGenerator();
 		StructureSettings structureSettings = chunkGenerator.getSettings();
@@ -89,7 +94,7 @@ public class AddStructureNoiseSettingsModifier extends NoiseSettingsModifier
 		structureBiomeBuilder.putAll(structureBiomes);
 		
 		ImmutableMultimap.Builder<ConfiguredStructureFeature<?, ?>, ResourceKey<Biome>> multiBuilder = ImmutableMultimap.builder();
-		this.biomeProvider.getBiomes().forEach(biome -> multiBuilder.put(configuredStructure, ResourceKey.create(Registry.BIOME_REGISTRY, biome.getRegistryName())));
+		this.biomeProvider.getBiomes(server).forEach(biome -> multiBuilder.put(configuredStructure, ResourceKey.create(Registry.BIOME_REGISTRY, biome.getRegistryName())));
 		
 		structureBiomeBuilder.put(structure, multiBuilder.build());
 		newStructureSettings.configuredStructures = ImmutableMap.copyOf(structureBiomeBuilder);
