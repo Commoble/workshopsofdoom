@@ -8,10 +8,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import org.apache.commons.compress.utils.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import net.minecraft.core.BlockPos;
