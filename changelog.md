@@ -1,3 +1,14 @@
+## 1.18.1-2.1.0.2
+* Rails in mines and quarries will now always generate with a firm foundation instead of hanging in midair sometimes
+* This should reduce the lag or indefinite hangs that result from hundreds of rails breaking at once
+* Be mindful that this may cause strangeness if partially-generated structures finish generating after updating to this update, or if chunks containing old structures are regenerated
+
+## 1.18.1-2.1.0.1
+* fixed another crash on world load (due to apache Lists ClassNotFoundException)
+
+## 1.18.1-2.1.0.0
+* Fix crash on world load
+
 ## 1.18.1-2.0.0.0
 * Workshops of Doom now depends on Structure Spawn Loader https://www.curseforge.com/minecraft/mc-mods/structure-spawn-loader
 * Substantially refactored configuration, everything that was previously in forge configs is now defined via jsons
