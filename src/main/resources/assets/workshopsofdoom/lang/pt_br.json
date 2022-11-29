@@ -1,0 +1,13 @@
+{
+	"item.workshopsofdoom.excavator_spawn_egg": "Ovo de Geração de Escavadora",
+	"entity.workshopsofdoom.excavator": "Escavadora",
+	"filled_map.workshopsofdoom:badlands_mines": "Mapa das Minas de Badlands",
+	"filled_map.workshopsofdoom:desert_quarry": "Mapa da Pedreira do Deserto",
+	"filled_map.workshopsofdoom:mountain_mines": "Mapa das Minas da Montanha",
+	"filled_map.workshopsofdoom:plains_quarry": "Mapa da Pedreira de Planícies",
+	"filled_map.workshopsofdoom:workshop": "Mapa da Oficina",
+	"workshopsofdoom.advancements.find_workshop.title": "É aqui que o Doom é feito",
+	"workshopsofdoom.advancements.find_workshop.description": "Encontre as Oficinas de Doom",
+	"workshopsofdoom.advancements.find_quarry_or_mines.title": "Espionagem industrial",
+	"workshopsofdoom.advancements.find_quarry_or_mines.description": "Encontrar uma Pedreira ou Minas"
+}
