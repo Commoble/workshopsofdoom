@@ -5,6 +5,7 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -29,8 +30,6 @@ public class ItemFrameLootProcessor extends StructureProcessor
 	public static final Codec<ItemFrameLootProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ResourceLocation.CODEC.fieldOf("loot_table").forGetter(ItemFrameLootProcessor::getLootTable)
 		).apply(instance, ItemFrameLootProcessor::new));
-	
-	public static final StructureProcessorType<ItemFrameLootProcessor> DESERIALIZER = () -> CODEC;
 
 	private final ResourceLocation lootTable;	public ResourceLocation getLootTable() { return this.lootTable; }
 	
@@ -43,9 +42,10 @@ public class ItemFrameLootProcessor extends StructureProcessor
 	@Override
 	protected StructureProcessorType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.itemFrameLootProcessor.get();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public StructureEntityInfo processEntity(LevelReader world, BlockPos seedPos, StructureEntityInfo rawEntityInfo, StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template)
 	{
@@ -54,7 +54,7 @@ public class ItemFrameLootProcessor extends StructureProcessor
 		CompoundTag entityNBT = currentInfo.nbt;
 		
 		String id = entityNBT.getString("id"); // entity type ID
-		if (world instanceof ServerLevelAccessor && EntityType.ITEM_FRAME.getRegistryName().toString().equals(id))
+		if (world instanceof ServerLevelAccessor && EntityType.ITEM_FRAME.builtInRegistryHolder().key().location().toString().equals(id))
 		{
 			ServerLevel serverWorld = ((ServerLevelAccessor)world).getLevel();
 			this.writeEntityNBT(serverWorld, currentInfo.blockPos, entityNBT, placementSettings);

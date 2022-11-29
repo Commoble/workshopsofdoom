@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
@@ -26,7 +27,6 @@ public class EditPoolStructureProcessor extends StructureProcessor
 			Codec.STRING.fieldOf("replace").forGetter(EditPoolStructureProcessor::getInput),
 			Codec.STRING.fieldOf("with").forGetter(EditPoolStructureProcessor::getOutput)
 		).apply(instance, EditPoolStructureProcessor::new));
-	public static final StructureProcessorType<EditPoolStructureProcessor> DESERIALIZER = () -> CODEC;
 	public static final String POOL = "pool"; // name of the field in jigsaw block NBT
 	
 	private final String input; public String getInput() { return this.input; }
@@ -45,7 +45,7 @@ public class EditPoolStructureProcessor extends StructureProcessor
 	@Override
 	protected StructureProcessorType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.editPoolStructureProcessor.get();
 	}
 
 	// This is only ran on jigsaw blockinfos

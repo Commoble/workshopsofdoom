@@ -1,0 +1,6 @@
+// 1.19.2	2022-11-28T20:50:14.8334253	Tags for minecraft:worldgen/biome
+45707864d688ef531d52bd0287366ea1e7736874 data/workshopsofdoom/tags/worldgen/biome/has_badlands_mines.json
+66231d74902a9f3a4339266335581c57c91784dd data/workshopsofdoom/tags/worldgen/biome/has_desert_quarry.json
+7c043ad3be1197814afc865992467c9e4022fe11 data/workshopsofdoom/tags/worldgen/biome/has_mountain_mines.json
+832581beee9dcc935e17a4bf4291e980990d257a data/workshopsofdoom/tags/worldgen/biome/has_plains_quarry.json
+9e0a944e1ab552118d6c5dab9abe322d66208502 data/workshopsofdoom/tags/worldgen/biome/has_workshop.json

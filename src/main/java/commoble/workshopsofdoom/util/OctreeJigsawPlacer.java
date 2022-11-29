@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,88 +15,95 @@ import com.google.common.collect.Queues;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.QuartPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Vec3i;
 import net.minecraft.data.worldgen.Pools;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.JigsawConfiguration;
-import net.minecraft.world.level.levelgen.feature.structures.EmptyPoolElement;
-import net.minecraft.world.level.levelgen.feature.structures.JigsawJunction;
-import net.minecraft.world.level.levelgen.feature.structures.JigsawPlacement;
-import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
-import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGenerator;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.pools.EmptyPoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawJunction;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
 // as JigsawPlacement but with octrees instead of voxelshapes
 // that means the whole thing has to be rewritten! eugh
-public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, int maxDepth, JigsawPlacement.PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolElementStructurePiece> pieces, Random rand, Deque<OctreePieceState> placingQueue)
+public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, int maxDepth, ChunkGenerator chunkGenerator, StructureTemplateManager structureManager, List<? super PoolElementStructurePiece> pieces, RandomSource rand, Deque<OctreePieceState> placingQueue)
 {
 	public static final Logger LOGGER = LogManager.getLogger();
 	
-	public static Optional<PieceGenerator<JigsawConfiguration>> addPieces(PieceGeneratorSupplier.Context<JigsawConfiguration> context, JigsawPlacement.PieceFactory pieceFactory, BlockPos origin, boolean snapToHeightMap)
+	public static Optional<Structure.GenerationStub> addPieces(Structure.GenerationContext context, Holder<StructureTemplatePool> startPoolHolder, Optional<ResourceLocation> startJigsawName, int maxDepth, BlockPos chunkCornerPos, boolean useExpansionHack, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter)
 	{
-		long seed = context.seed();
-		ChunkPos chunkPos = context.chunkPos();
 		RegistryAccess registries = context.registryAccess();
-		JigsawConfiguration config = context.config();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
-		StructureManager structureManager = context.structureManager();
+		StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
 		LevelHeightAccessor heightAccessor = context.heightAccessor();
-		Predicate<Biome> biomePredicate = context.validBiome();
-		
 		WorldgenRandom rand = new WorldgenRandom(new LegacyRandomSource(0L));
-		rand.setLargeFeatureSeed(seed, chunkPos.x, chunkPos.z);
-		StructureFeature.bootstrap();
 		Registry<StructureTemplatePool> templatePools = registries.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
 		Rotation rotation = Rotation.getRandom(rand);
-		StructureTemplatePool startPool = config.startPool().get();
+		StructureTemplatePool startPool = startPoolHolder.value();
 		StructurePoolElement startElement = startPool.getRandomTemplate(rand);
 		if (startElement == EmptyPoolElement.INSTANCE)
 		{
 			return Optional.empty();
 		}
 		
-		PoolElementStructurePiece startPiece = pieceFactory.create(
-			structureManager, startElement, origin, startElement.getGroundLevelDelta(), rotation,
-			startElement.getBoundingBox(structureManager, origin, rotation));
+		BlockPos startPos = chunkCornerPos;
+		if (startJigsawName.isPresent())
+		{
+			ResourceLocation name = startJigsawName.get();
+			Optional<BlockPos> randomJigsawPos = JigsawPlacement.getRandomNamedJigsaw(startElement, name, chunkCornerPos, rotation, structureTemplateManager, rand);
+			if (randomJigsawPos.isEmpty())
+			{
+				LOGGER.error("No starting jigsaw {} found in start pool {}", name, startPoolHolder.unwrapKey().get().location());
+				return Optional.empty();
+			}
+			startPos = randomJigsawPos.get();
+		}
+		
+		Vec3i startPosInChunk = startPos.subtract(chunkCornerPos);
+		BlockPos startPosReverseOffset = chunkCornerPos.subtract(startPosInChunk);
+		
+		PoolElementStructurePiece startPiece = new PoolElementStructurePiece(
+			structureTemplateManager,
+			startElement,
+			startPosReverseOffset,
+			startElement.getGroundLevelDelta(),
+			rotation,
+			startElement.getBoundingBox(structureTemplateManager, startPosReverseOffset, rotation));
 		
 		BoundingBox startBounds = startPiece.getBoundingBox();
 		int centerX = (startBounds.maxX() + startBounds.minX()) / 2;
 		int centerZ = (startBounds.maxZ() + startBounds.minZ()) / 2;
-		int startHeight = snapToHeightMap
-			? origin.getY() + chunkGenerator.getFirstFreeHeight(centerX, centerZ, Heightmap.Types.WORLD_SURFACE_WG, heightAccessor)
-			: origin.getY();
-		
-		if (!biomePredicate.test(chunkGenerator.getNoiseBiome(QuartPos.fromBlock(centerX), QuartPos.fromBlock(startHeight), QuartPos.fromBlock(centerZ))))
-			return Optional.empty();
+		int startHeight = projectStartToHeightmap
+			.map(heightmap -> chunkCornerPos.getY() + chunkGenerator.getFirstFreeHeight(centerX, centerZ, heightmap, heightAccessor, context.randomState()))
+			.orElse(startPosReverseOffset.getY());
 		
 		int adjustedHeight = startBounds.minY() + startPiece.getGroundLevelDelta();
 		startPiece.move(0, startHeight-adjustedHeight, 0);
-		return Optional.of((builder,subContext)->
-		{
+		int adjustedStartHeight = startHeight + startPosInChunk.getY();
+		return Optional.of(new Structure.GenerationStub(new BlockPos(centerX, adjustedStartHeight, centerZ), builder -> {
 			List<PoolElementStructurePiece> pieces = Lists.newArrayList();
 			pieces.add(startPiece);
-			if (config.maxDepth() > 0)
+			if (maxDepth > 0)
 			{
-				int radius = 80;
-				BoundingBox totalBounds = new BoundingBox(centerX-radius, startHeight-radius, centerZ-radius, centerX+radius, startHeight+radius, centerZ+radius);
-				OctreeJigsawPlacer placer = new OctreeJigsawPlacer(templatePools, config.maxDepth(), pieceFactory, chunkGenerator, structureManager, pieces, rand, Queues.newArrayDeque());
+				BoundingBox totalBounds = new BoundingBox(centerX-maxDistanceFromCenter, startHeight-maxDistanceFromCenter, centerZ-maxDistanceFromCenter, centerX+maxDistanceFromCenter, startHeight+maxDistanceFromCenter, centerZ+maxDistanceFromCenter);
+				OctreeJigsawPlacer placer = new OctreeJigsawPlacer(templatePools, maxDepth, chunkGenerator, structureTemplateManager, pieces, rand, Queues.newArrayDeque());
 				SubtractiveOctree octree = new SubtractiveOctree.NonEmpty(totalBounds);
 				boolean totallySubtracted = octree.subtract(startBounds);
 				if (totallySubtracted)
@@ -109,12 +115,12 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 				while (!placer.placingQueue.isEmpty())
 				{
 					OctreePieceState state = placer.placingQueue.removeFirst();
-					placer.tryPlacingChildren(state, heightAccessor);
+					placer.tryPlacingChildren(state, heightAccessor, context.randomState());
 				}
 				
 				pieces.forEach(builder::addPiece);
 			}
-		});
+		}));
 	}
 	
 	private static Predicate<StructureTemplatePool> isValidPool(ResourceLocation location)
@@ -122,7 +128,7 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 		return pool -> pool.size() != 0 || Objects.equals(location, Pools.EMPTY.location());
 	}
 	
-	private void tryPlacingChildren(OctreePieceState state, LevelHeightAccessor heightAccessor)
+	private void tryPlacingChildren(OctreePieceState state, LevelHeightAccessor heightAccessor, RandomState randomState)
 	{
 		SubtractiveOctree totalOctree = state.octree();
 		PoolElementStructurePiece parentPiece = state.piece();
@@ -195,7 +201,7 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 							boolean mutualRigid = parentRigid && childRigid;
 							if (!mutualRigid && firstFreeHeight == -1)
 							{
-								firstFreeHeight = this.chunkGenerator.getFirstFreeHeight(parentJigsawPos.getX(), parentJigsawPos.getZ(), Heightmap.Types.WORLD_SURFACE_WG, heightAccessor);
+								firstFreeHeight = this.chunkGenerator.getFirstFreeHeight(parentJigsawPos.getX(), parentJigsawPos.getZ(), Heightmap.Types.WORLD_SURFACE_WG, heightAccessor, randomState);
 							}
 							int childJigsawTargetY = mutualRigid
 								? parentFloorY + childDeltaY
@@ -209,10 +215,10 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 								permittedSpace.subtract(offsetChildBounds);
 								int parentGroundLevelDelta = parentPiece.getGroundLevelDelta();
 								int adjustedChildGroundDelta = childRigid ? parentGroundLevelDelta - childDeltaY : childElement.getGroundLevelDelta();
-								PoolElementStructurePiece childPiece = this.pieceFactory.create(this.structureManager, childElement, adjustedChildJigsawOffset, adjustedChildGroundDelta, childRotation, offsetChildBounds);
+								PoolElementStructurePiece childPiece = new PoolElementStructurePiece(this.structureManager, childElement, adjustedChildJigsawOffset, adjustedChildGroundDelta, childRotation, offsetChildBounds);
 								if (!mutualRigid && firstFreeHeight == -1)
 								{
-									firstFreeHeight = this.chunkGenerator.getFirstFreeHeight(parentJigsawPos.getX(), parentJigsawPos.getZ(), Heightmap.Types.WORLD_SURFACE_WG, heightAccessor);
+									firstFreeHeight = this.chunkGenerator.getFirstFreeHeight(parentJigsawPos.getX(), parentJigsawPos.getZ(), Heightmap.Types.WORLD_SURFACE_WG, heightAccessor, randomState);
 								}
 								int finalChildJigsawY = parentRigid ? parentJigsawPos.getY()
 									: childRigid ? childJigsawY + childJigsawTargetY

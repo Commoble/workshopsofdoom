@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1398115502,
+    "separation": 10,
+    "spacing": 24
+  },
+  "structures": [
+    {
+      "structure": "workshopsofdoom:desert_quarry",
+      "weight": 1
+    },
+    {
+      "structure": "workshopsofdoom:plains_quarry",
+      "weight": 1
+    }
+  ]
+}

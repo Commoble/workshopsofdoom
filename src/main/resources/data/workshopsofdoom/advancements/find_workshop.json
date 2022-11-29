@@ -53,10 +53,20 @@
 			"trigger": "minecraft:location",
 			"conditions": 
 			{
-				"location": 
-				{
-					"feature": "workshopsofdoom:workshop"
-				}
+				"player": 
+				[
+					{
+						"condition": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": 
+						{
+							"location": 
+							{
+								"structure": "workshopsofdoom:workshop"
+							}
+						}
+					}
+				]
 			}
 		}
 	}

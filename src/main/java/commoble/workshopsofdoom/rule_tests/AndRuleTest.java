@@ -1,14 +1,15 @@
 package commoble.workshopsofdoom.rule_tests;
 
 import java.util.List;
-import java.util.Random;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 // composite rule test
 // returns true if all of its subrules return true
@@ -19,8 +20,6 @@ public class AndRuleTest extends RuleTest
 	public static final Codec<AndRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RuleTest.CODEC.listOf().fieldOf("predicates").forGetter(AndRuleTest::getPredicates)
 		).apply(instance, AndRuleTest::new));
-	
-	public static final RuleTestType<AndRuleTest> DESERIALIZER = () -> CODEC;
 
 	private final List<RuleTest> predicates;	public List<RuleTest> getPredicates() { return this.predicates; }
 
@@ -30,7 +29,7 @@ public class AndRuleTest extends RuleTest
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random)
+	public boolean test(BlockState state, RandomSource random)
 	{
 		for (RuleTest test : this.predicates)
 		{
@@ -45,6 +44,6 @@ public class AndRuleTest extends RuleTest
 	@Override
 	protected RuleTestType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.andRuleTest.get();
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
@@ -24,8 +25,6 @@ public class HeightProcessor extends StructureProcessor
 			StructureProcessorType.SINGLE_CODEC.listOf().fieldOf("processors").forGetter(HeightProcessor::getProcessors)
 		).apply(instance, HeightProcessor::new));
 
-	public static final StructureProcessorType<HeightProcessor> DESERIALIZER = () -> CODEC;
-
 	private final int min;	public int getMin() { return this.min; }
 	private final int max;	public int getMax() { return this.max; }
 	private final List<StructureProcessor> processors;	public List<StructureProcessor> getProcessors() { return this.processors; }
@@ -40,7 +39,7 @@ public class HeightProcessor extends StructureProcessor
 	@Override
 	protected StructureProcessorType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.heightProcessor.get();
 	}
 
 	@Override

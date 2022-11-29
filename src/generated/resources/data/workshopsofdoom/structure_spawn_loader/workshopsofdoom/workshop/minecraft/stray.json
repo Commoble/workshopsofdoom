@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:workshop",
-  "spawner": {
-    "type": "minecraft:stray",
-    "weight": 80,
-    "minCount": 4,
-    "maxCount": 4
-  }
-}

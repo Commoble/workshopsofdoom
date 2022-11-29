@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:badlands_mines",
-  "spawner": {
-    "type": "workshopsofdoom:excavator",
-    "weight": 1000,
-    "minCount": 1,
-    "maxCount": 1
-  }
-}

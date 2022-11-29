@@ -1,0 +1,6 @@
+// 1.19.2	2022-11-28T19:53:11.8223636	worldgen/structure generator for workshopsofdoom
+1992aff9d57854cd18efdea0cbb10c577137a04c data/workshopsofdoom/worldgen/structure/badlands_mines.json
+a74539b95e25dbed8098f503604d5fa48fc572ef data/workshopsofdoom/worldgen/structure/desert_quarry.json
+12b1c3b0307a6a6884a08bde460494cc66710a02 data/workshopsofdoom/worldgen/structure/mountain_mines.json
+f0d035bf115498b577734dbca27df42078cb0248 data/workshopsofdoom/worldgen/structure/plains_quarry.json
+943bfb9166665a769b9975c5c0c94c5cdfca7a6b data/workshopsofdoom/worldgen/structure/workshop.json

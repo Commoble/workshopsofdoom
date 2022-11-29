@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:plains_quarry",
-  "spawner": {
-    "type": "minecraft:spider",
-    "weight": 100,
-    "minCount": 4,
-    "maxCount": 4
-  }
-}

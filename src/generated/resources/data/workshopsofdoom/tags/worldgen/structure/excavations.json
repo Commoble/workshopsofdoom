@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "#workshopsofdoom:quarries",
+      "required": false
+    },
+    {
+      "id": "#workshopsofdoom:mines",
+      "required": false
+    }
+  ]
+}

@@ -1,21 +1,21 @@
 package commoble.workshopsofdoom.structure_processors;
 
 import java.util.List;
-import java.util.Random;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosAlwaysTrueTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureEntityInfo;
@@ -31,8 +31,6 @@ public class PredicatedStructureProcessor extends StructureProcessor
 			PosRuleTest.CODEC.optionalFieldOf("position_predicate", PosAlwaysTrueTest.INSTANCE).forGetter(PredicatedStructureProcessor::getPositionPredicate),
 			StructureProcessorType.SINGLE_CODEC.listOf().fieldOf("processors").forGetter(PredicatedStructureProcessor::getProcessors)
 		).apply(instance, PredicatedStructureProcessor::new));
-	
-	public static final StructureProcessorType<PredicatedStructureProcessor> DESERIALIZER = () -> CODEC;
 
 	// input blockinfo in the structure file
 	private final RuleTest inputPredicate;	public RuleTest getInputpredicate() { return this.inputPredicate; }
@@ -54,14 +52,14 @@ public class PredicatedStructureProcessor extends StructureProcessor
 	@Override
 	protected StructureProcessorType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.predicatedStructureProcessor.get();
 	}
 
 	@Override
 	public StructureBlockInfo process(LevelReader world, BlockPos originalPos, BlockPos structureOrigin, StructureBlockInfo originalInfo, StructureBlockInfo transformedInfo, StructurePlaceSettings placement,
 		StructureTemplate template)
 	{
-		Random random = new Random(Mth.getSeed(transformedInfo.pos));
+		RandomSource random = placement.getRandom(transformedInfo.pos);
 		if (this.inputPredicate.test(transformedInfo.state, random))
 		{
 			if (this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))

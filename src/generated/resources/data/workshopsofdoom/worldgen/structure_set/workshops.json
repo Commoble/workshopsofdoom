@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1640641664,
+    "separation": 12,
+    "spacing": 32
+  },
+  "structures": [
+    {
+      "structure": "workshopsofdoom:workshop",
+      "weight": 1
+    }
+  ]
+}

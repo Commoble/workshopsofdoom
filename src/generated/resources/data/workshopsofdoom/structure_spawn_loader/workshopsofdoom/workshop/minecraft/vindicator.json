@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:workshop",
-  "spawner": {
-    "type": "minecraft:vindicator",
-    "weight": 1,
-    "minCount": 1,
-    "maxCount": 1
-  }
-}

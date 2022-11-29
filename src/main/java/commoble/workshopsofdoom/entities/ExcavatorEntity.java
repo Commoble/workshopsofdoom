@@ -5,6 +5,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
@@ -55,16 +56,16 @@ public class ExcavatorEntity extends Vindicator
 		return false;
 	}
 
-	public ItemStack getStartingWeapon()
+	public ItemStack getStartingWeapon(RandomSource rand)
 	{
-		Item item = this.level.random.nextBoolean() ? Items.IRON_PICKAXE : Items.IRON_SHOVEL;
+		Item item = rand.nextBoolean() ? Items.IRON_PICKAXE : Items.IRON_SHOVEL;
 		return new ItemStack(item);
 	}
 
 	@Override
 	public void applyRaidBuffs(int wave, boolean p_213660_2_)
 	{
-		ItemStack itemstack = this.getStartingWeapon();
+		ItemStack itemstack = this.getStartingWeapon(this.level.random);
 		Raid raid = this.getCurrentRaid();
 		int i = 1;
 		if (wave > raid.getNumGroups(Difficulty.NORMAL))
@@ -87,11 +88,11 @@ public class ExcavatorEntity extends Vindicator
 	 * Gives armor or weapon for entity based on given DifficultyInstance
 	 */
 	@Override
-	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty)
+	protected void populateDefaultEquipmentSlots(RandomSource rand, DifficultyInstance difficulty)
 	{
 		if (this.getCurrentRaid() == null)
 		{
-			this.setItemSlot(EquipmentSlot.MAINHAND, this.getStartingWeapon());
+			this.setItemSlot(EquipmentSlot.MAINHAND, this.getStartingWeapon(rand));
 		}
 
 	}

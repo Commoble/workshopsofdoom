@@ -26,10 +26,20 @@
 			"trigger": "minecraft:location",
 			"conditions": 
 			{
-				"location": 
-				{
-					"feature": "workshopsofdoom:desert_quarry"
-				}
+				"player": 
+				[
+					{
+						"condition": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": 
+						{
+							"location": 
+							{
+								"structure": "workshopsofdoom:desert_quarry"
+							}
+						}
+					}
+				]
 			}
 		},
 		"workshopsofdoom:plains_quarry": 
@@ -37,10 +47,20 @@
 			"trigger": "minecraft:location",
 			"conditions": 
 			{
-				"location": 
-				{
-					"feature": "workshopsofdoom:plains_quarry"
-				}
+				"player": 
+				[
+					{
+						"condition": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": 
+						{
+							"location": 
+							{
+								"structure": "workshopsofdoom:plains_quarry"
+							}
+						}
+					}
+				]
 			}
 		},
 		"workshopsofdoom:mountain_mines":
@@ -48,10 +68,20 @@
 			"trigger": "minecraft:location",
 			"conditions": 
 			{
-				"location": 
-				{
-					"feature": "workshopsofdoom:mountain_mines"
-				}
+				"player": 
+				[
+					{
+						"condition": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": 
+						{
+							"location": 
+							{
+								"structure": "workshopsofdoom:mountain_mines"
+							}
+						}
+					}
+				]
 			}
 		},
 		"workshopsofdoom:badlands_mines":
@@ -59,10 +89,20 @@
 			"trigger": "minecraft:location",
 			"conditions": 
 			{
-				"location": 
-				{
-					"feature": "workshopsofdoom:badlands_mines"
-				}
+				"player": 
+				[
+					{
+						"condition": "minecraft:entity_properties",
+						"entity": "this",
+						"predicate": 
+						{
+							"location": 
+							{
+								"structure": "workshopsofdoom:badlands_mines"
+							}
+						}
+					}
+				]
 			}
 		}
 	},

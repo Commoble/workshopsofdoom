@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "workshopsofdoom:mountain_mines",
+      "required": false
+    },
+    {
+      "id": "workshopsofdoom:badlands_mines",
+      "required": false
+    }
+  ]
+}

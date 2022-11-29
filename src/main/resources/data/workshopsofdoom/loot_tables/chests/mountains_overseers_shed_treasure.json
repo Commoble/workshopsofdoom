@@ -12,7 +12,7 @@
 					[
 						{
 							"function": "minecraft:exploration_map",
-							"destination": "workshopsofdoom:workshop",
+							"destination": "workshopsofdoom:workshops",
 							"decoration": "target_point",
 							"skip_existing_chunks": false
 						}

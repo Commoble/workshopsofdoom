@@ -1,23 +1,22 @@
 package commoble.workshopsofdoom.structure_processors;
 
-import java.util.Random;
-
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.nbt.CompoundTag;
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosAlwaysTrueTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 // the rule entry structure processor allows the setting of NBT in template blockinfos,
@@ -32,8 +31,6 @@ public class SetNBTStructureProcessor extends StructureProcessor
 			RuleTest.CODEC.optionalFieldOf("location_predicate", AlwaysTrueTest.INSTANCE).forGetter(SetNBTStructureProcessor::getLocationPredicate),
 			PosRuleTest.CODEC.optionalFieldOf("position_predicate", PosAlwaysTrueTest.INSTANCE).forGetter(SetNBTStructureProcessor::getPositionPredicate))
 		.apply(instance, SetNBTStructureProcessor::new));
-
-	public static final StructureProcessorType<SetNBTStructureProcessor> DESERIALIZER = () -> CODEC;
 
 	/** The nbt to set for a given blockinfo in a structure template (required) **/
 	public CompoundTag getNBT()
@@ -80,7 +77,7 @@ public class SetNBTStructureProcessor extends StructureProcessor
 	@Override
 	protected StructureProcessorType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.setNbtStructureProcessor.get();
 	}
 
 	@Override
@@ -88,7 +85,7 @@ public class SetNBTStructureProcessor extends StructureProcessor
 	public StructureTemplate.StructureBlockInfo process(@Nullable LevelReader world, BlockPos offset, @Nullable BlockPos structureOrigin, StructureTemplate.StructureBlockInfo originalInfo, StructureTemplate.StructureBlockInfo transformedInfo,
 		StructurePlaceSettings placementSettings, @Nullable StructureTemplate template)
 	{
-		Random random = new Random(Mth.getSeed(transformedInfo.pos));
+		RandomSource random = placementSettings.getRandom(transformedInfo.pos);
 		if (this.inputPredicate.test(transformedInfo.state, random)
 			&& this.locationPredicate.test(world.getBlockState(transformedInfo.pos), random)
 			&& this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))

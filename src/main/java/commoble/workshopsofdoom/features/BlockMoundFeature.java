@@ -1,11 +1,10 @@
 package commoble.workshopsofdoom.features;
 
-import java.util.Random;
-
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +30,7 @@ public class BlockMoundFeature extends Feature<BlockPileConfiguration>
 			return false;
 		}
 		
-		Random rand = context.random();
+		RandomSource rand = context.random();
 		WorldGenLevel level = context.level();
 		BlockPileConfiguration config = context.config();
 		
@@ -56,14 +55,14 @@ public class BlockMoundFeature extends Feature<BlockPileConfiguration>
 		return true;
 	}
 
-	private boolean canPlaceOn(WorldGenLevel worldIn, BlockPos pos, Random random)
+	private boolean canPlaceOn(WorldGenLevel worldIn, BlockPos pos, RandomSource random)
 	{
 		BlockPos belowPos = pos.below();
 		BlockState belowState = worldIn.getBlockState(belowPos);
 		return belowState.is(Blocks.DIRT_PATH) ? random.nextBoolean() : belowState.isFaceSturdy(worldIn, belowPos, Direction.UP);
 	}
 
-	private void setBlock(WorldGenLevel world, BlockPos pos, Random rand, BlockPileConfiguration config)
+	private void setBlock(WorldGenLevel world, BlockPos pos, RandomSource rand, BlockPileConfiguration config)
 	{
 		if (world.isEmptyBlock(pos) && this.canPlaceOn(world, pos, rand))
 		{

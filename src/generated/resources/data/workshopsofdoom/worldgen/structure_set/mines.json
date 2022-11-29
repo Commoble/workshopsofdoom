@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 635902772,
+    "separation": 12,
+    "spacing": 32
+  },
+  "structures": [
+    {
+      "structure": "workshopsofdoom:mountain_mines",
+      "weight": 1
+    },
+    {
+      "structure": "workshopsofdoom:badlands_mines",
+      "weight": 1
+    }
+  ]
+}

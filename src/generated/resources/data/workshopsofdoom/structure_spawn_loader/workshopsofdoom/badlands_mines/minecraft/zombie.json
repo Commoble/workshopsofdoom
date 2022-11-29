@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:badlands_mines",
-  "spawner": {
-    "type": "minecraft:zombie",
-    "weight": 95,
-    "minCount": 4,
-    "maxCount": 4
-  }
-}

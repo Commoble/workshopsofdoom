@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:mountain_mines",
-  "spawner": {
-    "type": "minecraft:pillager",
-    "weight": 1000,
-    "minCount": 1,
-    "maxCount": 1
-  }
-}

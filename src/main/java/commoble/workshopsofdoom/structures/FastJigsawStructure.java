@@ -1,76 +1,64 @@
 package commoble.workshopsofdoom.structures;
 
 import java.util.Optional;
-import java.util.function.Predicate;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import commoble.workshopsofdoom.util.OctreeJigsawPlacer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.Pools;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.configurations.JigsawConfiguration;
-import net.minecraft.world.level.levelgen.feature.structures.JigsawPlacement;
-import net.minecraft.world.level.levelgen.structure.NoiseAffectingStructureFeature;
-import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
-public class FastJigsawStructure extends NoiseAffectingStructureFeature<JigsawConfiguration>
-{	
-	static final Logger LOGGER = LogManager.getLogger();
-	private final GenerationStep.Decoration generationStage;
-	private final boolean restrictSpawnBoxes;
-	public final boolean transformSurroundingLand;
-	
-	/**
-	 * 
-	 * @param codec The deserializer for the config
-	 * @param generationStage When to generate the structure
-	 * @param restrictSpawnBoxes If true, the structure's spawn entries are only used in the bounding boxes of the structure pieces.
-	 * If false, the structure's spawn entries will be used inside the structure's entire AABB cuboid.
-	 * @param placementSalt A salt added to the location seed by the structure placer; for best results this should be large and not the same as any other structure's seed (see DimensionStructuresSettings for vanilla values)
-	 * @param transformSurroundingLand <br>
-		// " Will add land at the base of the structure like it does for Villages and Outposts. "<br>
-		// " Doesn't work well on structure that have pieces stacked vertically or change in heights. "<br>
-		// ~TelepathicGrunt<br>
-		// (vanilla only uses this for villages, outposts, and Nether Fossils)
-	 */
-	public FastJigsawStructure(Codec<JigsawConfiguration> codec, int startY, boolean snapToHeightMap, Predicate<PieceGeneratorSupplier.Context<JigsawConfiguration>> placementPredicate, GenerationStep.Decoration generationStage, boolean restrictSpawnBoxes, boolean transformSurroundingLand)
+public class FastJigsawStructure extends JigsawStructure
+{
+	// same as the vanilla codec but doesn't cap size to 7 and doesn't use the expansion hack
+	public static final Codec<FastJigsawStructure> CODEC = RecordCodecBuilder.<FastJigsawStructure>mapCodec((builder) -> builder.group(
+				settingsCodec(builder),
+				StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
+				ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
+				Codec.intRange(0, Integer.MAX_VALUE).fieldOf("size").forGetter(structure -> structure.maxDepth),
+				HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
+				Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
+				Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
+			).apply(builder, FastJigsawStructure::new)).codec();
+
+	public FastJigsawStructure(
+		Structure.StructureSettings settings,
+		Holder<StructureTemplatePool> startPool,
+		Optional<ResourceLocation> startJigsawName,
+		int size,
+		HeightProvider startHeight,
+		Optional<Heightmap.Types> projectStartToHeightmap,
+		int maxDistanceFromCenter)
 	{
-		super(codec, createGenerator(startY, snapToHeightMap, placementPredicate));
-		this.generationStage = generationStage;
-		this.restrictSpawnBoxes = restrictSpawnBoxes;
-		this.transformSurroundingLand = transformSurroundingLand;
+		super(settings, startPool, startJigsawName, size, startHeight, false, projectStartToHeightmap, maxDistanceFromCenter);
 	}
 	
-	public static PieceGeneratorSupplier<JigsawConfiguration> createGenerator(int startY, boolean snapToHeightMap, Predicate<PieceGeneratorSupplier.Context<JigsawConfiguration>> placementPredicate)
-	{
-		return (context) -> {
-			if (!placementPredicate.test(context))
-			{
-				return Optional.empty();
-			}
-			else
-			{
-				BlockPos blockpos = new BlockPos(context.chunkPos().getMinBlockX(), startY, context.chunkPos().getMinBlockZ());
-				Pools.bootstrap();
-				return OctreeJigsawPlacer.addPieces(context, PoolElementStructurePiece::new, blockpos, snapToHeightMap);
-			}
-		};
-	}
-	
+	@SuppressWarnings("deprecation")
 	@Override
-	public GenerationStep.Decoration step()
+	public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context)
 	{
-		return this.generationStage;
+		ChunkPos chunkpos = context.chunkPos();
+		int i = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
+		BlockPos blockpos = new BlockPos(chunkpos.getMinBlockX(), i, chunkpos.getMinBlockZ());
+		Pools.forceBootstrap();
+		return OctreeJigsawPlacer.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockpos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
 	}
 
 	@Override
-	public boolean getDefaultRestrictsSpawnsToInside()
+	public StructureType<?> type()
 	{
-		return this.restrictSpawnBoxes;
-	}	
+		return WorkshopsOfDoom.INSTANCE.fastJigsawStructure.get();
+	}
 }

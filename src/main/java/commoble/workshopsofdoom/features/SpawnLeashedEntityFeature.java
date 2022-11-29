@@ -1,7 +1,6 @@
 package commoble.workshopsofdoom.features;
 
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -16,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -45,7 +45,7 @@ public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 
 		Mob mob = (Mob) entity;
 		BlockPos pos = context.origin();
-		Random rand = context.random();
+		RandomSource rand = context.random();
 		
 		mob.moveTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, Mth.wrapDegrees(rand.nextFloat() * 360.0F), 0.0F);
 		// this bit comes from EntityType::spawn

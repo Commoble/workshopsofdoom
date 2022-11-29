@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:plains_quarry",
-  "spawner": {
-    "type": "minecraft:zombie_villager",
-    "weight": 1,
-    "minCount": 1,
-    "maxCount": 1
-  }
-}

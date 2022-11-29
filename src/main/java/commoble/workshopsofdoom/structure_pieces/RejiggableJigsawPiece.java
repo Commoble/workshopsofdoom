@@ -2,28 +2,29 @@ package commoble.workshopsofdoom.structure_pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Rotation;
+import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElementType;
-import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool.Projection;
-import net.minecraft.world.level.levelgen.feature.structures.SinglePoolElement;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.ProcessorLists;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool.Projection;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
 public class RejiggableJigsawPiece extends SinglePoolElement
 {
@@ -35,12 +36,11 @@ public class RejiggableJigsawPiece extends SinglePoolElement
 			// field for the extra jigsaw processors
 			StructureProcessorType.LIST_CODEC.fieldOf("jigsaw_processors").forGetter(RejiggableJigsawPiece::getJigsawProcessors)
 		).apply(instance, RejiggableJigsawPiece::new));
-	public static final StructurePoolElementType<RejiggableJigsawPiece> DESERIALIZER = () -> CODEC;
 			
-	protected final Supplier<StructureProcessorList> jigsawProcessors;
-	public Supplier<StructureProcessorList> getJigsawProcessors() { return this.jigsawProcessors; }
+	protected final Holder<StructureProcessorList> jigsawProcessors;
+	public Holder<StructureProcessorList> getJigsawProcessors() { return this.jigsawProcessors; }
 
-	protected RejiggableJigsawPiece(Either<ResourceLocation, StructureTemplate> location, Supplier<StructureProcessorList> processors, Projection projection, Supplier<StructureProcessorList> jigsawProcessors)
+	protected RejiggableJigsawPiece(Either<ResourceLocation, StructureTemplate> location, Holder<StructureProcessorList> processors, Projection projection, Holder<StructureProcessorList> jigsawProcessors)
 	{
 		super(location, processors, projection);
 		this.jigsawProcessors = jigsawProcessors;
@@ -49,18 +49,18 @@ public class RejiggableJigsawPiece extends SinglePoolElement
 	protected RejiggableJigsawPiece(StructureTemplate template)
 	{
 		this(Either.right(template),
-			() -> ProcessorLists.EMPTY,
+			ProcessorLists.EMPTY,
 			Projection.RIGID,
-			() -> ProcessorLists.EMPTY);
+			ProcessorLists.EMPTY);
 	}
 
-	protected StructureTemplate getTemplate(StructureManager p_236843_1_)
+	protected StructureTemplate getTemplate(StructureTemplateManager templates)
 	{
-		return this.template.map(p_236843_1_::getOrCreate, Function.identity());
+		return this.template.map(templates::getOrCreate, Function.identity());
 	}
 
 	@Override
-	public List<StructureTemplate.StructureBlockInfo> getShuffledJigsawBlocks(StructureManager templateManager, BlockPos structureOffset, Rotation rotation, Random rand)
+	public List<StructureTemplate.StructureBlockInfo> getShuffledJigsawBlocks(StructureTemplateManager templateManager, BlockPos structureOffset, Rotation rotation, RandomSource rand)
 	{
 		List<StructureBlockInfo> oldJigsaws = super.getShuffledJigsawBlocks(templateManager, structureOffset, rotation, rand);
 		
@@ -90,4 +90,9 @@ public class RejiggableJigsawPiece extends SinglePoolElement
 		return transformedInfo;
 	}
 
+	@Override
+	public StructurePoolElementType<?> getType()
+	{
+		return WorkshopsOfDoom.INSTANCE.rejiggableJigsawPiece.get();
+	}
 }

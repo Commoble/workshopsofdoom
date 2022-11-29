@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "workshopsofdoom:desert_quarry",
+      "required": false
+    },
+    {
+      "id": "workshopsofdoom:plains_quarry",
+      "required": false
+    }
+  ]
+}

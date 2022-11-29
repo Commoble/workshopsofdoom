@@ -1,3 +1,20 @@
+## 1.19.2-3.0.0.0
+* Updated to 1.19.2 (requires forge build 43.1.28 or higher)
+* No longer requires the Structure Spawn Loader mod
+* Removed datapack apis for adding structures to overworld biomes as this can be done with vanilla datapack apis now
+* Added biome tags defining which biomes structures can spawn in (which biomes the structures spawn in have changed due to this)
+  * workshopsofdoom:has_badlands_mines, defaulting to #minecraft:is_badlands
+  * workshopsofdoom:has_desert_quarry, defaulting to #forge:is_desert
+  * workshopsofdoom:has_mountain_mines, defaulting to #forge:is_mountain and #minecraft:is_hill
+  * workshopsofdoom:has_plains_quarry, defaulting to #forge:is_plains
+  * workshopsofdoom:has_workshop, defaulting to snowy plains and ice spikes
+* Added structure tags
+  * workshopsofdoom:excavations (containing workshopsofdoom:mines and workshopsofdoom:quarries)
+  * workshopsofdoom:mines
+  * workshopsofdoom:quarries
+  * workshopsofdoom:workshops
+* Maps to mines and quarries that can be found in pillager outposts now point to a structure from the workshopsofdoom:excavations tag instead of randomly choosing one of the four quarry/mine structures specifically
+
 ## 1.18.1-2.1.0.2
 * Rails in mines and quarries will now always generate with a firm foundation instead of hanging in midair sometimes
 * This should reduce the lag or indefinite hangs that result from hundreds of rails breaking at once

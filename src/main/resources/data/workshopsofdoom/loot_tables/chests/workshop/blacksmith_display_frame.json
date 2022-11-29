@@ -10,7 +10,7 @@
 					"type": "minecraft:tag",
 					"weight": 1,
 					"expand": true,
-					"name": "forge:armor/iron"
+					"name": "forge:armors/iron"
 				},
 				{
 					"type": "minecraft:tag",
@@ -28,7 +28,7 @@
 					"type": "minecraft:tag",
 					"weight": 1,
 					"expand": true,
-					"name": "forge:armor/chainmail"
+					"name": "forge:armors/chainmail"
 				}
 			]
 		}

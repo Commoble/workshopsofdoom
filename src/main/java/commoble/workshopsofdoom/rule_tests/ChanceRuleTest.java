@@ -1,21 +1,19 @@
 package commoble.workshopsofdoom.rule_tests;
 
-import java.util.Random;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import commoble.workshopsofdoom.WorkshopsOfDoom;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 public class ChanceRuleTest extends RuleTest
 {
 	public static final Codec<ChanceRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.FLOAT.fieldOf("probability").forGetter(ChanceRuleTest::getProbability)
 		).apply(instance, ChanceRuleTest::new));
-	
-	public static final RuleTestType<ChanceRuleTest> DESERIALIZER = () -> CODEC;
 
 	private final float probability;	public float getProbability() { return this.probability; }
 
@@ -25,7 +23,7 @@ public class ChanceRuleTest extends RuleTest
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random)
+	public boolean test(BlockState state, RandomSource random)
 	{
 		return random.nextFloat() < this.probability;
 	}
@@ -33,6 +31,6 @@ public class ChanceRuleTest extends RuleTest
 	@Override
 	protected RuleTestType<?> getType()
 	{
-		return DESERIALIZER;
+		return WorkshopsOfDoom.INSTANCE.chanceRuleTest.get();
 	}
 }

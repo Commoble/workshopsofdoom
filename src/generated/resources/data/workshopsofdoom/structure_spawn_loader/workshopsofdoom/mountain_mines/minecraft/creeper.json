@@ -1,9 +1,0 @@
-{
-  "structure": "workshopsofdoom:mountain_mines",
-  "spawner": {
-    "type": "minecraft:creeper",
-    "weight": 100,
-    "minCount": 4,
-    "maxCount": 4
-  }
-}
