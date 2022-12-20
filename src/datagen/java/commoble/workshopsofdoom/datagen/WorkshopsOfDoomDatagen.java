@@ -18,6 +18,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Vec3i;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.RegistryOps;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.heightproviders.ConstantHeight;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
@@ -43,6 +45,7 @@ import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride.Bound
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.JsonCodecProvider;
@@ -73,6 +76,7 @@ public class WorkshopsOfDoomDatagen
 		RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
 		
 		Registry<Structure> structures = registries.registryOrThrow(Registry.STRUCTURE_REGISTRY);
+		Registry<StructureSet> structureSets = registries.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
 		
 		Function<TagKey<Biome>, HolderSet<Biome>> biomeTagHolderSet = (tag) -> new HolderSet.Named<>(registries.registryOrThrow(Registry.BIOME_REGISTRY), tag);
 		Function<HolderSet<Biome>, HolderSet<Biome>> overworldBiomes = (biomes) -> new AndHolderSet<>(List.of(biomes, biomeTagHolderSet.apply(BiomeTags.IS_OVERWORLD)));
@@ -156,13 +160,13 @@ public class WorkshopsOfDoomDatagen
 		generator.addProvider(true, JsonCodecProvider.forDatapackRegistry(generator, efh, WorkshopsOfDoom.MODID, ops, Registry.STRUCTURE_SET_REGISTRY, Map.of(
 			rl(Names.QUARRIES), new StructureSet(
 				List.of(new StructureSelectionEntry(structureHolder.apply(Names.DESERT_QUARRY), 1), new StructureSelectionEntry(structureHolder.apply(Names.PLAINS_QUARRY), 1)),
-				new RandomSpreadStructurePlacement(24, 10, RandomSpreadType.LINEAR, 1398115502)),
+				outpostLike(structureSets, 1398115502)),
 			rl(Names.MINES), new StructureSet(
 				List.of(new StructureSelectionEntry(structureHolder.apply(Names.MOUNTAIN_MINES), 1), new StructureSelectionEntry(structureHolder.apply(Names.BADLANDS_MINES), 1)),
-				new RandomSpreadStructurePlacement(32, 12, RandomSpreadType.LINEAR, 635902772)),
+				outpostLike(structureSets, 635902772)),
 			rl(Names.WORKSHOPS), new StructureSet(
 				List.of(new StructureSelectionEntry(structureHolder.apply(Names.WORKSHOP), 1)),
-				new RandomSpreadStructurePlacement(32, 12, RandomSpreadType.LINEAR, 1640641664))
+				outpostLike(structureSets, 1640641664))
 			)));
 	}
 	
@@ -179,12 +183,18 @@ public class WorkshopsOfDoomDatagen
 				biomes,
 				monsters.length > 0 ? Map.of(MobCategory.MONSTER, new StructureSpawnOverride(BoundingBoxType.STRUCTURE, WeightedRandomList.create(Stream.of(monsters).flatMap(List::stream).toList()))) : Map.of(),
 				GenerationStep.Decoration.SURFACE_STRUCTURES,
-				TerrainAdjustment.BEARD_THIN),
+				TerrainAdjustment.BEARD_BOX),
 			registries.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY).getOrCreateHolderOrThrow(ResourceKey.create(Registry.TEMPLATE_POOL_REGISTRY, pool)),
 			Optional.empty(),
 			depth,
 			ConstantHeight.ZERO,
 			Optional.of(Heightmap.Types.WORLD_SURFACE_WG),
 			80);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private static RandomSpreadStructurePlacement outpostLike(Registry<StructureSet> structureSets, int seed)
+	{
+		return new RandomSpreadStructurePlacement(Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.DEFAULT, 0.2F, seed, Optional.of(new StructurePlacement.ExclusionZone(structureSets.getOrCreateHolderOrThrow(BuiltinStructureSets.VILLAGES), 10)), 32, 8, RandomSpreadType.LINEAR);
 	}
 }

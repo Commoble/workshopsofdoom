@@ -88,5 +88,5 @@
   },
   "start_pool": "workshopsofdoom:workshop/start",
   "step": "surface_structures",
-  "terrain_adaptation": "beard_thin"
+  "terrain_adaptation": "beard_box"
 }
