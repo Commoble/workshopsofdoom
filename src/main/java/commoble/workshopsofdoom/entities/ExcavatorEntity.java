@@ -65,7 +65,8 @@ public class ExcavatorEntity extends Vindicator
 	@Override
 	public void applyRaidBuffs(int wave, boolean p_213660_2_)
 	{
-		ItemStack itemstack = this.getStartingWeapon(this.level.random);
+		@SuppressWarnings("resource")
+		ItemStack itemstack = this.getStartingWeapon(this.level().random);
 		Raid raid = this.getCurrentRaid();
 		int i = 1;
 		if (wave > raid.getNumGroups(Difficulty.NORMAL))
@@ -125,9 +126,9 @@ public class ExcavatorEntity extends Vindicator
 		}
 
 		@Override
-		protected BlockPathTypes evaluateBlockPathType(BlockGetter world, boolean canOpenDoors, boolean canEnterDoors, BlockPos pos, BlockPathTypes pathNodeType)
+		protected BlockPathTypes evaluateBlockPathType(BlockGetter world, BlockPos pos, BlockPathTypes pathNodeType)
 		{
-			BlockPathTypes base = super.evaluateBlockPathType(world, canOpenDoors, canEnterDoors, pos, pathNodeType);
+			BlockPathTypes base = super.evaluateBlockPathType(world, pos, pathNodeType);
 			return base == BlockPathTypes.RAIL || base == BlockPathTypes.UNPASSABLE_RAIL
 				? BlockPathTypes.WALKABLE
 				: base;

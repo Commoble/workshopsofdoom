@@ -11,7 +11,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import commoble.workshopsofdoom.WorkshopsOfDoom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.data.worldgen.ProcessorLists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Rotation;
@@ -44,14 +43,6 @@ public class RejiggableJigsawPiece extends SinglePoolElement
 	{
 		super(location, processors, projection);
 		this.jigsawProcessors = jigsawProcessors;
-	}
-	
-	protected RejiggableJigsawPiece(StructureTemplate template)
-	{
-		this(Either.right(template),
-			ProcessorLists.EMPTY,
-			Projection.RIGID,
-			ProcessorLists.EMPTY);
 	}
 
 	protected StructureTemplate getTemplate(StructureTemplateManager templates)

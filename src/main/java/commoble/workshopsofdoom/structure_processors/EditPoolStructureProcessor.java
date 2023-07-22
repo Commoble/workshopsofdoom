@@ -56,16 +56,16 @@ public class EditPoolStructureProcessor extends StructureProcessor
 		StructurePlaceSettings placementSettings, @Nullable StructureTemplate template)
 	{
 		
-		if (transformedInfo.state.getBlock() == Blocks.JIGSAW)
+		if (transformedInfo.state().getBlock() == Blocks.JIGSAW)
 		{
-			CompoundTag nbt = transformedInfo.nbt;
+			CompoundTag nbt = transformedInfo.nbt();
 			if (nbt != null)
 			{
 				String oldPool = nbt.getString(POOL);
 				StringTag newPool = this.cache.computeIfAbsent(oldPool, this::editPoolName);
 				CompoundTag newNBT = nbt.copy();
 				newNBT.put(POOL, newPool);
-				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos, transformedInfo.state, newNBT);
+				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos(), transformedInfo.state(), newNBT);
 			}
 		}
 

@@ -57,4 +57,11 @@ public class Names
 	public static final String STONE_MOUND = "stone_mound";
 	public static final String COBBLESTONE_MOUND = "cobblestone_mound";
 	public static final String SANDSTONE_MOUND = "sandstone_mound";
+	
+	// tags
+	public static final String HAS_DESERT_QUARRY = "has_desert_quarry";
+	public static final String HAS_PLAINS_QUARRY = "has_plains_quarry";
+	public static final String HAS_MOUNTAIN_MINES = "has_mountain_mines";
+	public static final String HAS_BADLANDS_MINES = "has_badlands_mines";
+	public static final String HAS_WORKSHOP = "has_workshop";
 }

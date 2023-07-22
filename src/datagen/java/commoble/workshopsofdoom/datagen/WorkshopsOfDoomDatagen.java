@@ -1,27 +1,31 @@
 package commoble.workshopsofdoom.datagen;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 
 import commoble.workshopsofdoom.Names;
 import commoble.workshopsofdoom.WorkshopsOfDoom;
 import commoble.workshopsofdoom.structures.FastJigsawStructure;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -47,8 +51,8 @@ import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStruct
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.JsonCodecProvider;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -71,25 +75,20 @@ public class WorkshopsOfDoomDatagen
 	{
 		DataGenerator generator = event.getGenerator();
 		ExistingFileHelper efh = event.getExistingFileHelper();
+		PackOutput packOutput = generator.getPackOutput();
+		var lookup = event.getLookupProvider();
 		
-		RegistryAccess registries = RegistryAccess.builtinCopy();
-		RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
-		
-		Registry<Structure> structures = registries.registryOrThrow(Registry.STRUCTURE_REGISTRY);
-		Registry<StructureSet> structureSets = registries.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
-		
-		Function<TagKey<Biome>, HolderSet<Biome>> biomeTagHolderSet = (tag) -> new HolderSet.Named<>(registries.registryOrThrow(Registry.BIOME_REGISTRY), tag);
-		Function<HolderSet<Biome>, HolderSet<Biome>> overworldBiomes = (biomes) -> new AndHolderSet<>(List.of(biomes, biomeTagHolderSet.apply(BiomeTags.IS_OVERWORLD)));
-		Function<String, ResourceKey<Structure>> structureKey = id -> ResourceKey.create(Registry.STRUCTURE_REGISTRY, new ResourceLocation(WorkshopsOfDoom.MODID, id));
-		Function<String, Holder<Structure>> structureHolder = id -> structures.getOrCreateHolderOrThrow(structureKey.apply(id));
+		BiFunction<BootstapContext<?>, TagKey<Biome>, HolderSet<Biome>> biomeTagHolderSet = (context, tag) -> context.lookup(Registries.BIOME).getOrThrow(tag);
+		BiFunction<BootstapContext<?>, TagKey<Biome>, HolderSet<Biome>> overworldBiomes = (context, biomes) -> new AndHolderSet<>(List.of(biomeTagHolderSet.apply(context, biomes), biomeTagHolderSet.apply(context, BiomeTags.IS_OVERWORLD)));
+		BiFunction<BootstapContext<?>, ResourceKey<Structure>, Holder<Structure>> structureHolder = (context, id) -> context.lookup(Registries.STRUCTURE).getOrThrow(id);
 		
 		// tags
 		
-		generator.addProvider(true, new TagsProvider<Biome>(generator, registries.registryOrThrow(Registry.BIOME_REGISTRY), WorkshopsOfDoom.MODID, efh)
+		generator.addProvider(true, new TagsProvider<Biome>(packOutput, Registries.BIOME, lookup, WorkshopsOfDoom.MODID, efh)
 		{
 			@SuppressWarnings("unchecked")
 			@Override
-			protected void addTags()
+			protected void addTags(HolderLookup.Provider provider)
 			{
 				this.tag(WorkshopsOfDoom.Tags.Biomes.HAS_DESERT_QUARRY).addTag(Tags.Biomes.IS_DESERT);
 				this.tag(WorkshopsOfDoom.Tags.Biomes.HAS_PLAINS_QUARRY).addTag(Tags.Biomes.IS_PLAINS);
@@ -99,10 +98,10 @@ public class WorkshopsOfDoomDatagen
 			}
 		});
 		
-		generator.addProvider(true, new TagsProvider<Structure>(generator, registries.registryOrThrow(Registry.STRUCTURE_REGISTRY), WorkshopsOfDoom.MODID, efh)
+		generator.addProvider(true, new TagsProvider<Structure>(packOutput, Registries.STRUCTURE, lookup, WorkshopsOfDoom.MODID, efh)
 		{
 			@Override
-			protected void addTags()
+			protected void addTags(HolderLookup.Provider provider)
 			{
 				// using optional references here due to a forge bug that causes false-negative missing-reference-in-tag logspam when creating singleplayer worlds
 				this.tag(WorkshopsOfDoom.Tags.Structures.QUARRIES).addOptional(rl(Names.DESERT_QUARRY)).addOptional(rl(Names.PLAINS_QUARRY));
@@ -144,30 +143,55 @@ public class WorkshopsOfDoomDatagen
 			new SpawnerData(WorkshopsOfDoom.INSTANCE.excavator.get(), 500, 1, 1),
 			new SpawnerData(EntityType.VINDICATOR, 1, 1, 1)
 			);
-		
-		// structures
-		
-		generator.addProvider(true, JsonCodecProvider.forDatapackRegistry(generator, efh, WorkshopsOfDoom.MODID, ops, Registry.STRUCTURE_REGISTRY, Map.of(
-			rl(Names.DESERT_QUARRY), structure(registries, overworldBiomes.apply(biomeTagHolderSet.apply(Tags.Biomes.IS_DESERT)), rl(Names.DESERT_QUARRY_START), 15, standardMonsters, desertZombies, standardSkeletons, excavationPillagers),
-			rl(Names.PLAINS_QUARRY), structure(registries, overworldBiomes.apply(biomeTagHolderSet.apply(Tags.Biomes.IS_PLAINS)), rl(Names.PLAINS_QUARRY_START), 15, standardMonsters, standardZombies, standardSkeletons, excavationPillagers),
-			rl(Names.MOUNTAIN_MINES), structure(registries, overworldBiomes.apply(biomeTagHolderSet.apply(Tags.Biomes.IS_MOUNTAIN)), rl(Names.MOUNTAIN_MINES_START), 25, standardMonsters, standardZombies, standardSkeletons, excavationPillagers),
-			rl(Names.BADLANDS_MINES), structure(registries, overworldBiomes.apply(biomeTagHolderSet.apply(BiomeTags.IS_BADLANDS)), rl(Names.BADLANDS_MINES_START), 25, standardMonsters, standardZombies, standardSkeletons, excavationPillagers),
-			rl(Names.WORKSHOP), structure(registries, biomeTagHolderSet.apply(WorkshopsOfDoom.Tags.Biomes.HAS_WORKSHOP), rl(Names.WORKSHOP_START), 30, standardMonsters, standardZombies, coldSkeletons, workshopPillagers)
-			)));
-		
-		// structure sets
-		
-		generator.addProvider(true, JsonCodecProvider.forDatapackRegistry(generator, efh, WorkshopsOfDoom.MODID, ops, Registry.STRUCTURE_SET_REGISTRY, Map.of(
-			rl(Names.QUARRIES), new StructureSet(
-				List.of(new StructureSelectionEntry(structureHolder.apply(Names.DESERT_QUARRY), 1), new StructureSelectionEntry(structureHolder.apply(Names.PLAINS_QUARRY), 1)),
-				outpostLike(structureSets, 1398115502)),
-			rl(Names.MINES), new StructureSet(
-				List.of(new StructureSelectionEntry(structureHolder.apply(Names.MOUNTAIN_MINES), 1), new StructureSelectionEntry(structureHolder.apply(Names.BADLANDS_MINES), 1)),
-				outpostLike(structureSets, 635902772)),
-			rl(Names.WORKSHOPS), new StructureSet(
-				List.of(new StructureSelectionEntry(structureHolder.apply(Names.WORKSHOP), 1)),
-				outpostLike(structureSets, 1640641664))
-			)));
+
+		RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
+		{
+			public HolderLookup.Provider buildPatch(RegistryAccess registries, HolderLookup.Provider lookup)
+			{
+				RegistrySetBuilder.BuildState state = this.createState(registries);
+				Map<ResourceKey<? extends Registry<?>>, RegistrySetBuilder.RegistryContents<?>> map = new HashMap<>();
+				state.collectReferencedRegistries().forEach((p_272339_) -> {
+					map.put(p_272339_.key(), p_272339_);
+				});
+				this.entries.stream().map((RegistryStub<?> stub) -> stub.collectChanges(state)).forEach((contents) -> map.put(contents.key(), contents));
+				Stream<HolderLookup.RegistryLookup<?>> stream = registries.registries().map((entry) -> entry.value().asLookup());
+				HolderLookup.Provider holderlookup$provider = HolderLookup.Provider
+					.create(Stream.concat(stream, map.values().stream().map(RegistrySetBuilder.RegistryContents::buildAsLookup).peek(state::addOwner)));
+				state.fillMissingHolders(lookup);
+				// don't validate missing holder values
+				state.throwOnError();
+				return holderlookup$provider;
+			}
+		}
+			.add(Registries.STRUCTURE, context -> {
+				context.register(WorkshopsOfDoom.Keys.Structures.DESERT_QUARRY,
+					structure(context, overworldBiomes.apply(context, Tags.Biomes.IS_DESERT), WorkshopsOfDoom.ResourceLocations.DESERT_QUARRY_START, 15, standardMonsters, desertZombies, standardSkeletons, excavationPillagers));
+				context.register(WorkshopsOfDoom.Keys.Structures.PLAINS_QUARRY,
+					structure(context, overworldBiomes.apply(context, Tags.Biomes.IS_PLAINS), WorkshopsOfDoom.ResourceLocations.PLAINS_QUARRY_START, 15, standardMonsters, standardZombies, standardSkeletons, excavationPillagers));
+				context.register(WorkshopsOfDoom.Keys.Structures.MOUNTAIN_MINES,
+					structure(context, overworldBiomes.apply(context, Tags.Biomes.IS_MOUNTAIN), WorkshopsOfDoom.ResourceLocations.MOUNTAIN_MINES_START, 25, standardMonsters, standardZombies, standardSkeletons, excavationPillagers));
+				context.register(WorkshopsOfDoom.Keys.Structures.BADLANDS_MINES,
+					structure(context, overworldBiomes.apply(context, BiomeTags.IS_BADLANDS), WorkshopsOfDoom.ResourceLocations.BADLANDS_MINES_START, 25, standardMonsters, standardZombies, standardSkeletons, excavationPillagers));
+				context.register(WorkshopsOfDoom.Keys.Structures.WORKSHOP,
+					structure(context, biomeTagHolderSet.apply(context, WorkshopsOfDoom.Tags.Biomes.HAS_WORKSHOP), WorkshopsOfDoom.ResourceLocations.WORKSHOP_START, 30, standardMonsters, standardZombies, coldSkeletons, workshopPillagers));
+			})
+			.add(Registries.STRUCTURE_SET, context -> {
+				context.register(WorkshopsOfDoom.Keys.StructureSets.QUARRIES, new StructureSet(
+					List.of(
+						new StructureSelectionEntry(structureHolder.apply(context, WorkshopsOfDoom.Keys.Structures.DESERT_QUARRY), 1),
+						new StructureSelectionEntry(structureHolder.apply(context, WorkshopsOfDoom.Keys.Structures.PLAINS_QUARRY), 1)),
+					outpostLike(context, 1398115502)));
+				context.register(WorkshopsOfDoom.Keys.StructureSets.MINES, new StructureSet(
+					List.of(
+						new StructureSelectionEntry(structureHolder.apply(context, WorkshopsOfDoom.Keys.Structures.MOUNTAIN_MINES), 1),
+						new StructureSelectionEntry(structureHolder.apply(context, WorkshopsOfDoom.Keys.Structures.BADLANDS_MINES), 1)),
+					outpostLike(context, 635902772)));
+				context.register(WorkshopsOfDoom.Keys.StructureSets.WORKSHOPS, new StructureSet(
+					List.of(new StructureSelectionEntry(structureHolder.apply(context, WorkshopsOfDoom.Keys.Structures.WORKSHOP), 1)),
+					outpostLike(context, 1640641664)));
+			});
+		DatapackBuiltinEntriesProvider dbep = new DatapackBuiltinEntriesProvider(packOutput, lookup, registrySetBuilder, Set.of(WorkshopsOfDoom.MODID));
+		generator.addProvider(true, dbep);
 	}
 	
 	private static ResourceLocation rl(String id)
@@ -176,7 +200,7 @@ public class WorkshopsOfDoomDatagen
 	}
 	
 	@SafeVarargs
-	private static FastJigsawStructure structure(RegistryAccess registries, HolderSet<Biome> biomes, ResourceLocation pool, int depth, List<SpawnerData>... monsters)
+	private static FastJigsawStructure structure(BootstapContext<Structure> registries, HolderSet<Biome> biomes, ResourceLocation pool, int depth, List<SpawnerData>... monsters)
 	{
 		return new FastJigsawStructure(
 			new StructureSettings(
@@ -184,7 +208,7 @@ public class WorkshopsOfDoomDatagen
 				monsters.length > 0 ? Map.of(MobCategory.MONSTER, new StructureSpawnOverride(BoundingBoxType.STRUCTURE, WeightedRandomList.create(Stream.of(monsters).flatMap(List::stream).toList()))) : Map.of(),
 				GenerationStep.Decoration.SURFACE_STRUCTURES,
 				TerrainAdjustment.BEARD_BOX),
-			registries.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY).getOrCreateHolderOrThrow(ResourceKey.create(Registry.TEMPLATE_POOL_REGISTRY, pool)),
+			registries.lookup(Registries.TEMPLATE_POOL).getOrThrow(ResourceKey.create(Registries.TEMPLATE_POOL, pool)),
 			Optional.empty(),
 			depth,
 			ConstantHeight.ZERO,
@@ -193,8 +217,8 @@ public class WorkshopsOfDoomDatagen
 	}
 	
 	@SuppressWarnings("deprecation")
-	private static RandomSpreadStructurePlacement outpostLike(Registry<StructureSet> structureSets, int seed)
+	private static RandomSpreadStructurePlacement outpostLike(BootstapContext<?> context, int seed)
 	{
-		return new RandomSpreadStructurePlacement(Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.DEFAULT, 0.2F, seed, Optional.of(new StructurePlacement.ExclusionZone(structureSets.getOrCreateHolderOrThrow(BuiltinStructureSets.VILLAGES), 10)), 32, 8, RandomSpreadType.LINEAR);
+		return new RandomSpreadStructurePlacement(Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.DEFAULT, 0.2F, seed, Optional.of(new StructurePlacement.ExclusionZone(context.lookup(Registries.STRUCTURE_SET).getOrThrow(BuiltinStructureSets.VILLAGES), 10)), 32, 8, RandomSpreadType.LINEAR);
 	}
 }

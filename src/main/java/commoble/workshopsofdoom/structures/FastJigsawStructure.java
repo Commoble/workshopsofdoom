@@ -9,7 +9,6 @@ import commoble.workshopsofdoom.WorkshopsOfDoom;
 import commoble.workshopsofdoom.util.OctreeJigsawPlacer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.data.worldgen.Pools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -45,14 +44,13 @@ public class FastJigsawStructure extends JigsawStructure
 		super(settings, startPool, startJigsawName, size, startHeight, false, projectStartToHeightmap, maxDistanceFromCenter);
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context)
 	{
 		ChunkPos chunkpos = context.chunkPos();
 		int i = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
 		BlockPos blockpos = new BlockPos(chunkpos.getMinBlockX(), i, chunkpos.getMinBlockZ());
-		Pools.forceBootstrap();
+//		Pools.forceBootstrap();
 		return OctreeJigsawPlacer.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockpos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter);
 	}
 

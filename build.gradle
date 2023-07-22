@@ -24,6 +24,8 @@ archivesBaseName = "${modid}-${mc_version}"
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+jarJar.enable()
+
 sourceSets
 {
 	main
@@ -88,12 +90,19 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor' // enables mixins
-    compileOnly fg.deobf("commoble.looot:${looot_branch}:${looot_version}")
+    implementation fg.deobf("commoble.looot:looot-${looot_mc_version}:${looot_version}")
 
+	implementation fg.deobf("commoble.looot:looot-${looot_mc_version}:${looot_version}")
+	jarJar(group: "commoble.looot", name: "looot-${looot_mc_version}", version: "[${looot_version}, ${looot_next_version})")
+}
+
+tasks.jarJar.configure {
+    classifier ''
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
+	classifier 'slim'
     manifest {
         attributes([
             "Specification-Title": "${modid}",
@@ -107,7 +116,13 @@ jar {
     }
 }
 
-jar.finalizedBy('reobfJar') 
+reobf {
+    jarJar { }
+}
+
+// this replaces jar.finalizedBy('reobfJar') in the standard forge mod buildscript
+tasks.build.dependsOn tasks.jarJar
+jar.finalizedBy('reobfJarJar')
 
 publishing {
     publications {

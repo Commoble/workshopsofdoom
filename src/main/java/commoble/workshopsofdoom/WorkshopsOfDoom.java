@@ -20,6 +20,7 @@ import commoble.workshopsofdoom.structure_processors.PredicatedStructureProcesso
 import commoble.workshopsofdoom.structure_processors.SetNBTStructureProcessor;
 import commoble.workshopsofdoom.structures.FastJigsawStructure;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -27,13 +28,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.BlockPileConfiguration;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
@@ -42,10 +44,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.DeferredRegister;
@@ -58,40 +60,93 @@ public class WorkshopsOfDoom
 	public static final Logger logger = LogManager.getLogger();
 	public static WorkshopsOfDoom INSTANCE;
 	
-	public static class Tags
+	public static class ResourceLocations
 	{
-		private static <T> TagKey<T> tag(ResourceKey<Registry<T>> registryKey, String id)
-		{
-			return TagKey.create(registryKey, new ResourceLocation(MODID, id));
-		}
+		private static final ResourceLocation wsdrl(String name) { return new ResourceLocation(MODID, name); }
 		
+		public static final ResourceLocation DESERT_QUARRY = wsdrl(Names.DESERT_QUARRY);
+		public static final ResourceLocation PLAINS_QUARRY = wsdrl(Names.PLAINS_QUARRY);
+		public static final ResourceLocation MOUNTAIN_MINES = wsdrl(Names.MOUNTAIN_MINES);
+		public static final ResourceLocation BADLANDS_MINES = wsdrl(Names.BADLANDS_MINES);
+		public static final ResourceLocation WORKSHOP = wsdrl(Names.WORKSHOP);
+		
+		public static final ResourceLocation HAS_DESERT_QUARRY = wsdrl(Names.HAS_DESERT_QUARRY);
+		public static final ResourceLocation HAS_PLAINS_QUARRY = wsdrl(Names.HAS_PLAINS_QUARRY);
+		public static final ResourceLocation HAS_MOUNTAIN_MINES = wsdrl(Names.HAS_MOUNTAIN_MINES);
+		public static final ResourceLocation HAS_BADLANDS_MINES = wsdrl(Names.HAS_BADLANDS_MINES);
+		public static final ResourceLocation HAS_WORKSHOP = wsdrl(Names.WORKSHOP);
+		
+		public static final ResourceLocation DESERT_QUARRY_START = wsdrl(Names.DESERT_QUARRY_START);
+		public static final ResourceLocation PLAINS_QUARRY_START = wsdrl(Names.PLAINS_QUARRY_START);
+		public static final ResourceLocation MOUNTAIN_MINES_START = wsdrl(Names.MOUNTAIN_MINES_START);
+		public static final ResourceLocation BADLANDS_MINES_START = wsdrl(Names.BADLANDS_MINES_START);
+		public static final ResourceLocation WORKSHOP_START = wsdrl(Names.WORKSHOP_START);
+		
+		public static final ResourceLocation QUARRIES = wsdrl(Names.QUARRIES);
+		public static final ResourceLocation MINES = wsdrl(Names.MINES);
+		public static final ResourceLocation EXCAVATIONS = wsdrl(Names.EXCAVATIONS);
+		public static final ResourceLocation WORKSHOPS = wsdrl(Names.WORKSHOPS);
+	}
+	
+	public static class Tags
+	{		
 		public static class Biomes
 		{
-			private static TagKey<Biome> tag(String id)
+			private static TagKey<Biome> tag(ResourceLocation id)
 			{
-				return Tags.tag(Registry.BIOME_REGISTRY, id);
+				return TagKey.create(Registries.BIOME, id);
 			}
 			
-			public static final TagKey<Biome> HAS_DESERT_QUARRY = tag("has_desert_quarry");
-			public static final TagKey<Biome> HAS_PLAINS_QUARRY = tag("has_plains_quarry");
-			public static final TagKey<Biome> HAS_MOUNTAIN_MINES = tag("has_mountain_mines");
-			public static final TagKey<Biome> HAS_BADLANDS_MINES = tag("has_badlands_mines");
-			public static final TagKey<Biome> HAS_WORKSHOP = tag("has_workshop");
+			public static final TagKey<Biome> HAS_DESERT_QUARRY = tag(ResourceLocations.HAS_DESERT_QUARRY);
+			public static final TagKey<Biome> HAS_PLAINS_QUARRY = tag(ResourceLocations.HAS_PLAINS_QUARRY);
+			public static final TagKey<Biome> HAS_MOUNTAIN_MINES = tag(ResourceLocations.HAS_MOUNTAIN_MINES);
+			public static final TagKey<Biome> HAS_BADLANDS_MINES = tag(ResourceLocations.HAS_BADLANDS_MINES);
+			public static final TagKey<Biome> HAS_WORKSHOP = tag(ResourceLocations.HAS_WORKSHOP);
 		}
 		
 		public static class Structures
 		{
-			private static TagKey<Structure> tag(String id)
+			private static TagKey<Structure> tag(ResourceLocation id)
 			{
-				return Tags.tag(Registry.STRUCTURE_REGISTRY, id);
+				return TagKey.create(Registries.STRUCTURE, id);
 			}
 			
-			public static final TagKey<Structure> QUARRIES = tag(Names.QUARRIES);
-			public static final TagKey<Structure> MINES = tag(Names.MINES);
-			public static final TagKey<Structure> EXCAVATIONS = tag(Names.EXCAVATIONS);
-			public static final TagKey<Structure> WORKSHOPS = tag(Names.WORKSHOPS);
+			public static final TagKey<Structure> QUARRIES = tag(ResourceLocations.QUARRIES);
+			public static final TagKey<Structure> MINES = tag(ResourceLocations.MINES);
+			public static final TagKey<Structure> EXCAVATIONS = tag(ResourceLocations.EXCAVATIONS);
+			public static final TagKey<Structure> WORKSHOPS = tag(ResourceLocations.WORKSHOPS);
 		}
 	}
+	
+	public static class Keys
+	{
+		public static class Structures
+		{
+			private static final ResourceKey<Structure> k(ResourceLocation id)
+			{
+				return ResourceKey.create(Registries.STRUCTURE, id);
+			}
+			
+			public static final ResourceKey<Structure> DESERT_QUARRY = k(ResourceLocations.DESERT_QUARRY);
+			public static final ResourceKey<Structure> PLAINS_QUARRY = k(ResourceLocations.PLAINS_QUARRY);
+			public static final ResourceKey<Structure> MOUNTAIN_MINES = k(ResourceLocations.MOUNTAIN_MINES);
+			public static final ResourceKey<Structure> BADLANDS_MINES = k(ResourceLocations.BADLANDS_MINES);
+			public static final ResourceKey<Structure> WORKSHOP = k(ResourceLocations.WORKSHOP);
+		}
+		
+		public static class StructureSets
+		{
+			private static final ResourceKey<StructureSet> k(ResourceLocation id)
+			{
+				return ResourceKey.create(Registries.STRUCTURE_SET, id);
+			}
+			
+			public static final ResourceKey<StructureSet> QUARRIES = k(ResourceLocations.QUARRIES);
+			public static final ResourceKey<StructureSet> MINES = k(ResourceLocations.MINES);
+			public static final ResourceKey<StructureSet> WORKSHOPS = k(ResourceLocations.WORKSHOPS);
+		}
+	}
+	
 	
 	// forge registry objects
 	public final RegistryObject<SpawnEggItem> excavatorSpawnEgg;
@@ -118,14 +173,14 @@ public class WorkshopsOfDoom
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		
 		// create and register deferred registers
-		DeferredRegister<Item> items = registerRegister(modBus, Registry.ITEM_REGISTRY);
-		DeferredRegister<EntityType<?>> entities = registerRegister(modBus, Registry.ENTITY_TYPE_REGISTRY);
-		DeferredRegister<Feature<?>> features = registerRegister(modBus, Registry.FEATURE_REGISTRY);
-		DeferredRegister<StructureType<?>> structures = registerRegister(modBus, Registry.STRUCTURE_TYPE_REGISTRY);
-		DeferredRegister<StructurePoolElementType<?>> structurePoolElements = registerRegister(modBus, Registry.STRUCTURE_POOL_ELEMENT_REGISTRY);
-		DeferredRegister<StructureProcessorType<?>> structureProcessors = registerRegister(modBus, Registry.STRUCTURE_PROCESSOR_REGISTRY);
-		DeferredRegister<RuleTestType<?>> ruleTests = registerRegister(modBus, Registry.RULE_TEST_REGISTRY);
-		DeferredRegister<PosRuleTestType<?>> posRuleTests = registerRegister(modBus, Registry.POS_RULE_TEST_REGISTRY);
+		DeferredRegister<Item> items = registerRegister(modBus, Registries.ITEM);
+		DeferredRegister<EntityType<?>> entities = registerRegister(modBus, Registries.ENTITY_TYPE);
+		DeferredRegister<Feature<?>> features = registerRegister(modBus, Registries.FEATURE);
+		DeferredRegister<StructureType<?>> structures = registerRegister(modBus, Registries.STRUCTURE_TYPE);
+		DeferredRegister<StructurePoolElementType<?>> structurePoolElements = registerRegister(modBus, Registries.STRUCTURE_POOL_ELEMENT);
+		DeferredRegister<StructureProcessorType<?>> structureProcessors = registerRegister(modBus, Registries.STRUCTURE_PROCESSOR);
+		DeferredRegister<RuleTestType<?>> ruleTests = registerRegister(modBus, Registries.RULE_TEST);
+		DeferredRegister<PosRuleTestType<?>> posRuleTests = registerRegister(modBus, Registries.POS_RULE_TEST);
 		
 		// register registry objects
 		
@@ -137,7 +192,7 @@ public class WorkshopsOfDoom
 		
 		// register items
 		this.excavatorSpawnEgg = items.register(Names.EXCAVATOR_SPAWN_EGG, () ->
-			new ForgeSpawnEggItem(this.excavator, 0x884724, 0xacf228, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
+			new ForgeSpawnEggItem(this.excavator, 0x884724, 0xacf228, new Item.Properties()));
 		
 		// register features
 		features.register(Names.BLOCK_MOUND, () -> new BlockMoundFeature(BlockPileConfiguration.CODEC));
@@ -159,6 +214,7 @@ public class WorkshopsOfDoom
 		
 		// add event listeners to event busses
 		modBus.addListener(this::onRegisterEntityAttributes);
+		modBus.addListener(this::onBuildTabContents);
 		
 		if (FMLEnvironment.dist == Dist.CLIENT)
 		{
@@ -176,6 +232,14 @@ public class WorkshopsOfDoom
 				.add(Attributes.ATTACK_DAMAGE, 4.0D)
 				.add(Attributes.ARMOR, 2.0D)
 				.build());
+	}
+	
+	private void onBuildTabContents(BuildCreativeModeTabContentsEvent event)
+	{
+		if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS)
+		{
+			event.accept(this.excavatorSpawnEgg);
+		}
 	}
 	
 	// create and register a forge deferred register

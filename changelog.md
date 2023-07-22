@@ -1,3 +1,7 @@
+## 1.20.1-4.0.0.0
+* Updated to 1.20.1 (requires forge build 47.1.0 or higher)
+* Looot is now bundled with Workshops of Doom via jar-in-jar, it is no longer required to be installed separately
+
 ## 1.19.2-3.0.0.0
 * Updated to 1.19.2 (requires forge build 43.1.28 or higher)
 * No longer requires the Structure Spawn Loader mod

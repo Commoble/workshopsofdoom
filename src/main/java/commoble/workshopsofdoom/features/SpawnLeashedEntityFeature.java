@@ -10,7 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import commoble.workshopsofdoom.features.SpawnLeashedEntityFeature.LeashedEntityConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +25,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 {
@@ -70,7 +71,7 @@ public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 		// as structures generate well outside of the instant-despawn range
 		// so there's no point in making transient entities via structure generation
 		mob.setPersistenceRequired();
-		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData)null, entity.serializeNBT());
+		ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData)null, entity.serializeNBT());
 
 		// add entity and any riders
 		level.addFreshEntityWithPassengers(mob);
@@ -82,7 +83,7 @@ public class SpawnLeashedEntityFeature extends Feature<LeashedEntityConfig>
 	{
 		@SuppressWarnings("deprecation")
 		public static final Codec<LeashedEntityConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(LeashedEntityConfig::getEntityType),
+				BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(LeashedEntityConfig::getEntityType),
 				BlockPos.CODEC.fieldOf("leash_offset").forGetter(LeashedEntityConfig::getLeashOffset),
 				CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(LeashedEntityConfig::getNBT)
 			).apply(instance, LeashedEntityConfig::new));

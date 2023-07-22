@@ -85,12 +85,12 @@ public class SetNBTStructureProcessor extends StructureProcessor
 	public StructureTemplate.StructureBlockInfo process(@Nullable LevelReader world, BlockPos offset, @Nullable BlockPos structureOrigin, StructureTemplate.StructureBlockInfo originalInfo, StructureTemplate.StructureBlockInfo transformedInfo,
 		StructurePlaceSettings placementSettings, @Nullable StructureTemplate template)
 	{
-		RandomSource random = placementSettings.getRandom(transformedInfo.pos);
-		if (this.inputPredicate.test(transformedInfo.state, random)
-			&& this.locationPredicate.test(world.getBlockState(transformedInfo.pos), random)
-			&& this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
+		RandomSource random = placementSettings.getRandom(transformedInfo.pos());
+		if (this.inputPredicate.test(transformedInfo.state(), random)
+			&& this.locationPredicate.test(world.getBlockState(transformedInfo.pos()), random)
+			&& this.positionPredicate.test(originalInfo.pos(), transformedInfo.pos(), structureOrigin, random))
 			{
-				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos, transformedInfo.state, this.nbt);
+				return new StructureTemplate.StructureBlockInfo(transformedInfo.pos(), transformedInfo.state(), this.nbt);
 			}
 		else
 		{

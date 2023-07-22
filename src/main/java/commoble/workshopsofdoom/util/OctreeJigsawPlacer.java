@@ -19,6 +19,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.Pools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -54,7 +55,7 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 		StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
 		LevelHeightAccessor heightAccessor = context.heightAccessor();
 		WorldgenRandom rand = new WorldgenRandom(new LegacyRandomSource(0L));
-		Registry<StructureTemplatePool> templatePools = registries.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
+		Registry<StructureTemplatePool> templatePools = registries.registryOrThrow(Registries.TEMPLATE_POOL);
 		Rotation rotation = Rotation.getRandom(rand);
 		StructureTemplatePool startPool = startPoolHolder.value();
 		StructurePoolElement startElement = startPool.getRandomTemplate(rand);
@@ -144,12 +145,12 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 		forEachJigsaw:
 		for (StructureBlockInfo parentJigsaw : parentElement.getShuffledJigsawBlocks(this.structureManager, parentPos, parentRotation, this.rand))
 		{
-			Direction jigsawFacing = JigsawBlock.getFrontFacing(parentJigsaw.state);
-			BlockPos parentJigsawPos = parentJigsaw.pos;
+			Direction jigsawFacing = JigsawBlock.getFrontFacing(parentJigsaw.state());
+			BlockPos parentJigsawPos = parentJigsaw.pos();
 			BlockPos jigsawNeighborPos = parentJigsawPos.relative(jigsawFacing);
 			int jigsawOffsetY = parentJigsawPos.getY() - parentFloorY;
 			int firstFreeHeight = -1;
-			ResourceLocation poolLocation = new ResourceLocation(parentJigsaw.nbt.getString("pool"));
+			ResourceLocation poolLocation = new ResourceLocation(parentJigsaw.nbt().getString("pool"));
 			Optional<StructureTemplatePool> maybePool = templatePools.getOptional(poolLocation)
 				.filter(isValidPool(poolLocation));
 			if (maybePool.isEmpty())
@@ -158,7 +159,7 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 				continue;
 			}
 			StructureTemplatePool pool = maybePool.get();
-			ResourceLocation fallbackId = pool.getFallback();
+			ResourceLocation fallbackId = pool.getFallback().unwrapKey().get().location();
 			Optional<StructureTemplatePool> maybeFallback = templatePools.getOptional(fallbackId)
 				.filter(isValidPool(fallbackId));
 			if (maybeFallback.isEmpty())
@@ -190,14 +191,14 @@ public record OctreeJigsawPlacer(Registry<StructureTemplatePool> templatePools, 
 					{
 						if (JigsawBlock.canAttach(parentJigsaw, childJigsaw))
 						{
-							BlockPos childJigsawPos = childJigsaw.pos;
+							BlockPos childJigsawPos = childJigsaw.pos();
 							BlockPos childJigsawOffset = jigsawNeighborPos.subtract(childJigsawPos);
 							BoundingBox childBounds = childElement.getBoundingBox(this.structureManager, childJigsawOffset, childRotation);
 							int childBoundsFloorY = childBounds.minY();
 							StructureTemplatePool.Projection childProjection = childElement.getProjection();
 							boolean childRigid = childProjection == StructureTemplatePool.Projection.RIGID;
 							int childJigsawY = childJigsawPos.getY();
-							int childDeltaY = jigsawOffsetY - childJigsawY + JigsawBlock.getFrontFacing(parentJigsaw.state).getStepY();
+							int childDeltaY = jigsawOffsetY - childJigsawY + JigsawBlock.getFrontFacing(parentJigsaw.state()).getStepY();
 							boolean mutualRigid = parentRigid && childRigid;
 							if (!mutualRigid && firstFreeHeight == -1)
 							{

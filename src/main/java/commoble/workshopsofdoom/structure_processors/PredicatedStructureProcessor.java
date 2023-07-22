@@ -59,12 +59,12 @@ public class PredicatedStructureProcessor extends StructureProcessor
 	public StructureBlockInfo process(LevelReader world, BlockPos originalPos, BlockPos structureOrigin, StructureBlockInfo originalInfo, StructureBlockInfo transformedInfo, StructurePlaceSettings placement,
 		StructureTemplate template)
 	{
-		RandomSource random = placement.getRandom(transformedInfo.pos);
-		if (this.inputPredicate.test(transformedInfo.state, random))
+		RandomSource random = placement.getRandom(transformedInfo.pos());
+		if (this.inputPredicate.test(transformedInfo.state(), random))
 		{
-			if (this.positionPredicate.test(originalInfo.pos, transformedInfo.pos, structureOrigin, random))
+			if (this.positionPredicate.test(originalInfo.pos(), transformedInfo.pos(), structureOrigin, random))
 			{
-				if (this.locationPredicate.test(world.getBlockState(transformedInfo.pos), random))
+				if (this.locationPredicate.test(world.getBlockState(transformedInfo.pos()), random))
 				{
 					StructureBlockInfo output = transformedInfo;
 					for (StructureProcessor processor : this.processors)

@@ -46,7 +46,7 @@ public class HeightProcessor extends StructureProcessor
 	public StructureBlockInfo process(LevelReader world, BlockPos originalPos, BlockPos structureOrigin, StructureBlockInfo originalInfo, StructureBlockInfo transformedInfo, StructurePlaceSettings placement,
 		StructureTemplate template)
 	{
-		int y = transformedInfo.pos.getY();
+		int y = transformedInfo.pos().getY();
 		if( y >= this.min && y <= this.max)
 		{
 			// we pass the test, run each subprocess

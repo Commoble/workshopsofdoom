@@ -10,7 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import commoble.workshopsofdoom.features.SpawnEntityFeature.EntityConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -24,6 +24,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class SpawnEntityFeature extends Feature<EntityConfig>
 {
@@ -62,7 +63,7 @@ public class SpawnEntityFeature extends Feature<EntityConfig>
 			// as structures generate well outside of the instant-despawn range
 			// so there's no point in making transient entities via structure generation
 			mob.setPersistenceRequired();
-			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData)null, entity.serializeNBT());
+			ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData)null, entity.serializeNBT());
             
 		}
 		// add entity and any riders
@@ -75,7 +76,7 @@ public class SpawnEntityFeature extends Feature<EntityConfig>
 	{
 		@SuppressWarnings("deprecation")
 		public static final Codec<EntityConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(EntityConfig::getEntityType),
+				BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(EntityConfig::getEntityType),
 				CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(EntityConfig::getNBT)).
 			apply(instance, EntityConfig::new));
 
