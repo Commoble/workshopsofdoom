@@ -1,3 +1,6 @@
+## 1.20.1-4.0.0.1
+* Bump looot dependency to 1.2.0.4 to fix infinite loop bug in pillager outpost chests
+
 ## 1.20.1-4.0.0.0
 * Updated to 1.20.1 (requires forge build 47.1.0 or higher)
 * Looot is now bundled with Workshops of Doom via jar-in-jar, it is no longer required to be installed separately
